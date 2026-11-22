@@ -46,6 +46,24 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     color: var(--muted-foreground);
     font-weight: 400;
   }
+  /* the graph's header: its title keeps its word and the layer switch scrolls sideways in a narrow panel - with the
+     switch as wide as its layers, the title shrank to nothing and Compact ran past the panel's edge */
+  [aria-labelledby='kg-graph-title'] > .panel-header {
+    & .panel-title {
+      flex: 0 1 auto;
+      min-inline-size: 3.5rem;
+    }
+    & .panel-tools {
+      flex: 1 1 auto;
+      min-inline-size: 0;
+      justify-content: flex-end;
+    }
+    & [data-graph-explorer-outlet='layers'] {
+      min-inline-size: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+  }
   .kg-title-sub {
     color: var(--muted-foreground);
     font-weight: 400;

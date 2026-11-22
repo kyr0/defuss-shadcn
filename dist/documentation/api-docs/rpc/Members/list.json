@@ -1,0 +1,69 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Members/list",
+  "namespace": "Members",
+  "name": "list",
+  "signature": "async list(role?: Role | undefined): Promise<Member[]>",
+  "async": true,
+  "generator": false,
+  "description": "Lists the members.",
+  "params": [
+    {
+      "name": "role",
+      "type": "Role | undefined",
+      "schema": {
+        "enum": [
+          "admin",
+          "member",
+          "guest"
+        ]
+      },
+      "optional": true,
+      "description": "Only the members with this role."
+    }
+  ],
+  "returns": {
+    "type": "Member[]",
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "admin",
+              "member",
+              "guest"
+            ]
+          },
+          "invited": {
+            "type": "boolean",
+            "description": "Invited members have not accepted yet."
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "role",
+          "invited"
+        ]
+      }
+    },
+    "description": "The members, in the order they joined."
+  },
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Members",
+      "methodName": "list",
+      "args": []
+    }
+  },
+  "markdown": "list.md"
+}

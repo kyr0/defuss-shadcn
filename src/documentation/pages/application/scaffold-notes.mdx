@@ -5181,6 +5181,14 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
   // roadmap database (views, drag between columns, the peek, new items)
   (() => {
     const app = document.querySelector('[data-nt]');
+    // the authored blocks as a reader would have typed them: .nt-text keeps every space (pre-wrap, so typed spaces
+    // stay), and the example's source wraps long lines - a wrap and its indent showed as a line break and a gap
+    // ("Click anywhere and / start typing"). Before anything reads the page; a stored workspace is left as it is
+    app.querySelectorAll('.nt-text').forEach((t) => {
+      const walk = document.createTreeWalker(t, NodeFilter.SHOW_TEXT);
+      for (let n = walk.nextNode(); n; n = walk.nextNode())
+        if (n.data.includes('\n')) n.data = n.data.replace(/\s*\n\s*/g, ' ');
+    });
     const PREFIX = {
       todo: '<input class="checkbox nt-check" type="checkbox" aria-label="Done">',
       toggle: '<button class="nt-arrow" type="button" aria-expanded="false" aria-label="Expand"></button>',

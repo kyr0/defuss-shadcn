@@ -1,0 +1,53 @@
+{
+  "kind": "resource",
+  "route": "#/ref/tasks",
+  "id": "tasks",
+  "title": "Tasks",
+  "lead": "A task is a piece of work in a workspace with a status, an assignee and a due date.",
+  "object": "task",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "description": "Unique identifier, starting with t_."
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "description": "What has to be done."
+    },
+    {
+      "name": "status",
+      "type": "enum",
+      "description": "todo, doing or done."
+    },
+    {
+      "name": "assignee",
+      "type": "string | null",
+      "description": "The member who does it, or null."
+    },
+    {
+      "name": "due_on",
+      "type": "date | null",
+      "description": "The day it is due, as YYYY-MM-DD."
+    },
+    {
+      "name": "workspace",
+      "type": "string",
+      "description": "The workspace it belongs to."
+    },
+    {
+      "name": "created_at",
+      "type": "timestamp",
+      "description": "When it was created, in UTC."
+    }
+  ],
+  "endpoints": [
+    "list",
+    "create",
+    "retrieve",
+    "update",
+    "delete"
+  ],
+  "markdown": "tasks.md"
+}

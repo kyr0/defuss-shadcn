@@ -47,6 +47,16 @@ if (head.status !== 0) process.exit(head.status ?? 1);
 const searchWorker = spawnSync('bun', [join(ROOT, 'scripts', 'build-search-worker.ts')], { cwd: ROOT, stdio: ['ignore', 'ignore', 'inherit'] });
 if (searchWorker.status !== 0) process.exit(searchWorker.status ?? 1);
 
+// 1d. the Database Explorer's defuss-db (runtime/db/ → js/db/): db.js + the OPFS worker, bundled with their packages
+//     (scripts/build-db.ts)
+const dbBundle = spawnSync('bun', [join(ROOT, 'scripts', 'build-db.ts')], { cwd: ROOT, stdio: ['ignore', 'ignore', 'inherit'] });
+if (dbBundle.status !== 0) process.exit(dbBundle.status ?? 1);
+
+// 1e. the API Documentation scaffold's defuss-rpc runtime (runtime/api-docs/ → js/api-docs/): the documented schema, the
+//     example API as the in-page mock and a wire client (scripts/build-rpc.ts)
+const rpcBundle = spawnSync('bun', [join(ROOT, 'scripts', 'build-rpc.ts')], { cwd: ROOT, stdio: ['ignore', 'ignore', 'inherit'] });
+if (rpcBundle.status !== 0) process.exit(rpcBundle.status ?? 1);
+
 // 2. components read repo files (component sources, skills, stats.json) at
 //    build time - the SSG copies the project into .ssg-temp, so pin the root
 process.env.DEFUSS_SHADCN_ROOT = ROOT;
@@ -162,6 +172,28 @@ ${fence[1].trimEnd()}
 `;
   writePage(standaloneAppFile(slug), html);
   console.log(`full-screen scaffold → dist/documentation/${standaloneAppFile(slug)}`);
+}
+
+// 4b. the API Documentation scaffold's pages as Markdown and JSON (runtime/api-docs/pages.ts): the REST reference of
+//     its data block and the defuss-rpc reference of rpc.docs.json, with index.md / index.json and llms.txt - every
+//     page readable without running the app
+{
+  const { apiDocsFiles } = await import('../src/documentation/runtime/api-docs/pages.ts');
+  const mdx = readFileSync(pageFile(join(DOCS, 'pages'), 'scaffold-api-docs'), 'utf8');
+  const block = mdx.match(/<script type="application\/json" id="ad-data">([\s\S]*?)<\/script>/);
+  if (!block) {
+    console.error('api-docs: no <script type="application/json" id="ad-data"> in pages/scaffold-api-docs.mdx');
+    process.exit(1);
+  }
+  const schema = JSON.parse(readFileSync(join(DOCS, 'runtime', 'api-docs', 'rpc.docs.json'), 'utf8'));
+  const files = apiDocsFiles(JSON.parse(block[1]!), schema, `../${standaloneAppFile('scaffold-api-docs')}`);
+  rmSync(join(ROOT, 'dist', 'documentation', 'api-docs'), { recursive: true, force: true });
+  for (const [rel, text] of files) {
+    const file = join(ROOT, 'dist', 'documentation', 'api-docs', rel);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, text);
+  }
+  console.log(`api docs → dist/documentation/api-docs/ (${files.size} files)`);
 }
 
 // 5. full-screen documents (the paper, the letter, the invoice, the Studio): a chrome-free page generated

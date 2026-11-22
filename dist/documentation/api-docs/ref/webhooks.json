@@ -1,0 +1,36 @@
+{
+  "kind": "resource",
+  "route": "#/ref/webhooks",
+  "id": "webhooks",
+  "title": "Webhooks",
+  "lead": "A webhook endpoint receives a signed POST for every event it subscribes to.",
+  "object": "webhook",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "description": "Unique identifier, starting with wh_."
+    },
+    {
+      "name": "url",
+      "type": "string",
+      "description": "Where the events are sent, over HTTPS."
+    },
+    {
+      "name": "events",
+      "type": "string[]",
+      "description": "The events it receives, such as task.created."
+    },
+    {
+      "name": "secret",
+      "type": "string",
+      "description": "Signs every delivery - shown once, on creation."
+    }
+  ],
+  "endpoints": [
+    "list",
+    "create",
+    "delete"
+  ],
+  "markdown": "webhooks.md"
+}

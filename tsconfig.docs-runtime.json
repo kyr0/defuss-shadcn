@@ -28,6 +28,10 @@
     "src/documentation/runtime/whats-new-core.ts",
     // the search worker and its semantic half: bundled into js/search/ by scripts/build-search-worker.ts
     "src/documentation/runtime/search-worker.ts",
-    "src/documentation/runtime/search-semantic.ts"
+    "src/documentation/runtime/search-semantic.ts",
+    // the Database Explorer's defuss-db runtime: bundled into js/db/ by scripts/build-db.ts
+    "src/documentation/runtime/db/**",
+    // the API Documentation scaffold's defuss-rpc example: bundled into js/api-docs/ by scripts/build-rpc.ts; server.ts runs on Bun
+    "src/documentation/runtime/api-docs/**"
   ]
 }

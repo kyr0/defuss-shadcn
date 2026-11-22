@@ -1,0 +1,290 @@
+[
+  {
+    "path": "guides/introduction",
+    "route": "#/",
+    "title": "Introduction",
+    "kind": "guide",
+    "markdown": "guides/introduction.md",
+    "json": "guides/introduction.json"
+  },
+  {
+    "path": "guides/authentication",
+    "route": "#/guides/authentication",
+    "title": "Authentication",
+    "kind": "guide",
+    "markdown": "guides/authentication.md",
+    "json": "guides/authentication.json"
+  },
+  {
+    "path": "guides/errors",
+    "route": "#/guides/errors",
+    "title": "Errors",
+    "kind": "guide",
+    "markdown": "guides/errors.md",
+    "json": "guides/errors.json"
+  },
+  {
+    "path": "guides/pagination",
+    "route": "#/guides/pagination",
+    "title": "Pagination",
+    "kind": "guide",
+    "markdown": "guides/pagination.md",
+    "json": "guides/pagination.json"
+  },
+  {
+    "path": "guides/rate-limits",
+    "route": "#/guides/rate-limits",
+    "title": "Rate limits",
+    "kind": "guide",
+    "markdown": "guides/rate-limits.md",
+    "json": "guides/rate-limits.json"
+  },
+  {
+    "path": "ref/tasks",
+    "route": "#/ref/tasks",
+    "title": "Tasks",
+    "kind": "resource",
+    "markdown": "ref/tasks.md",
+    "json": "ref/tasks.json"
+  },
+  {
+    "path": "ref/tasks/list",
+    "route": "#/ref/tasks/list",
+    "title": "List tasks",
+    "kind": "endpoint",
+    "markdown": "ref/tasks/list.md",
+    "json": "ref/tasks/list.json"
+  },
+  {
+    "path": "ref/tasks/create",
+    "route": "#/ref/tasks/create",
+    "title": "Create a task",
+    "kind": "endpoint",
+    "markdown": "ref/tasks/create.md",
+    "json": "ref/tasks/create.json"
+  },
+  {
+    "path": "ref/tasks/retrieve",
+    "route": "#/ref/tasks/retrieve",
+    "title": "Retrieve a task",
+    "kind": "endpoint",
+    "markdown": "ref/tasks/retrieve.md",
+    "json": "ref/tasks/retrieve.json"
+  },
+  {
+    "path": "ref/tasks/update",
+    "route": "#/ref/tasks/update",
+    "title": "Update a task",
+    "kind": "endpoint",
+    "markdown": "ref/tasks/update.md",
+    "json": "ref/tasks/update.json"
+  },
+  {
+    "path": "ref/tasks/delete",
+    "route": "#/ref/tasks/delete",
+    "title": "Delete a task",
+    "kind": "endpoint",
+    "markdown": "ref/tasks/delete.md",
+    "json": "ref/tasks/delete.json"
+  },
+  {
+    "path": "ref/docs",
+    "route": "#/ref/docs",
+    "title": "Docs",
+    "kind": "resource",
+    "markdown": "ref/docs.md",
+    "json": "ref/docs.json"
+  },
+  {
+    "path": "ref/docs/list",
+    "route": "#/ref/docs/list",
+    "title": "List docs",
+    "kind": "endpoint",
+    "markdown": "ref/docs/list.md",
+    "json": "ref/docs/list.json"
+  },
+  {
+    "path": "ref/docs/create",
+    "route": "#/ref/docs/create",
+    "title": "Create a doc",
+    "kind": "endpoint",
+    "markdown": "ref/docs/create.md",
+    "json": "ref/docs/create.json"
+  },
+  {
+    "path": "ref/docs/retrieve",
+    "route": "#/ref/docs/retrieve",
+    "title": "Retrieve a doc",
+    "kind": "endpoint",
+    "markdown": "ref/docs/retrieve.md",
+    "json": "ref/docs/retrieve.json"
+  },
+  {
+    "path": "ref/members",
+    "route": "#/ref/members",
+    "title": "Members",
+    "kind": "resource",
+    "markdown": "ref/members.md",
+    "json": "ref/members.json"
+  },
+  {
+    "path": "ref/members/list",
+    "route": "#/ref/members/list",
+    "title": "List members",
+    "kind": "endpoint",
+    "markdown": "ref/members/list.md",
+    "json": "ref/members/list.json"
+  },
+  {
+    "path": "ref/members/invite",
+    "route": "#/ref/members/invite",
+    "title": "Invite a member",
+    "kind": "endpoint",
+    "markdown": "ref/members/invite.md",
+    "json": "ref/members/invite.json"
+  },
+  {
+    "path": "ref/webhooks",
+    "route": "#/ref/webhooks",
+    "title": "Webhooks",
+    "kind": "resource",
+    "markdown": "ref/webhooks.md",
+    "json": "ref/webhooks.json"
+  },
+  {
+    "path": "ref/webhooks/list",
+    "route": "#/ref/webhooks/list",
+    "title": "List webhooks",
+    "kind": "endpoint",
+    "markdown": "ref/webhooks/list.md",
+    "json": "ref/webhooks/list.json"
+  },
+  {
+    "path": "ref/webhooks/create",
+    "route": "#/ref/webhooks/create",
+    "title": "Create a webhook",
+    "kind": "endpoint",
+    "markdown": "ref/webhooks/create.md",
+    "json": "ref/webhooks/create.json"
+  },
+  {
+    "path": "ref/webhooks/delete",
+    "route": "#/ref/webhooks/delete",
+    "title": "Delete a webhook",
+    "kind": "endpoint",
+    "markdown": "ref/webhooks/delete.md",
+    "json": "ref/webhooks/delete.json"
+  },
+  {
+    "path": "rpc/index",
+    "route": "#/rpc",
+    "title": "defuss-rpc API",
+    "kind": "rpc",
+    "markdown": "rpc/index.md",
+    "json": "rpc/index.json"
+  },
+  {
+    "path": "rpc/Tasks",
+    "route": "#/rpc/Tasks",
+    "title": "Tasks",
+    "kind": "namespace",
+    "markdown": "rpc/Tasks.md",
+    "json": "rpc/Tasks.json"
+  },
+  {
+    "path": "rpc/Tasks/list",
+    "route": "#/rpc/Tasks/list",
+    "title": "Tasks.list",
+    "kind": "method",
+    "markdown": "rpc/Tasks/list.md",
+    "json": "rpc/Tasks/list.json"
+  },
+  {
+    "path": "rpc/Tasks/get",
+    "route": "#/rpc/Tasks/get",
+    "title": "Tasks.get",
+    "kind": "method",
+    "markdown": "rpc/Tasks/get.md",
+    "json": "rpc/Tasks/get.json"
+  },
+  {
+    "path": "rpc/Tasks/create",
+    "route": "#/rpc/Tasks/create",
+    "title": "Tasks.create",
+    "kind": "method",
+    "markdown": "rpc/Tasks/create.md",
+    "json": "rpc/Tasks/create.json"
+  },
+  {
+    "path": "rpc/Tasks/move",
+    "route": "#/rpc/Tasks/move",
+    "title": "Tasks.move",
+    "kind": "method",
+    "markdown": "rpc/Tasks/move.md",
+    "json": "rpc/Tasks/move.json"
+  },
+  {
+    "path": "rpc/Tasks/remove",
+    "route": "#/rpc/Tasks/remove",
+    "title": "Tasks.remove",
+    "kind": "method",
+    "markdown": "rpc/Tasks/remove.md",
+    "json": "rpc/Tasks/remove.json"
+  },
+  {
+    "path": "rpc/Members",
+    "route": "#/rpc/Members",
+    "title": "Members",
+    "kind": "namespace",
+    "markdown": "rpc/Members.md",
+    "json": "rpc/Members.json"
+  },
+  {
+    "path": "rpc/Members/list",
+    "route": "#/rpc/Members/list",
+    "title": "Members.list",
+    "kind": "method",
+    "markdown": "rpc/Members/list.md",
+    "json": "rpc/Members/list.json"
+  },
+  {
+    "path": "rpc/Members/invite",
+    "route": "#/rpc/Members/invite",
+    "title": "Members.invite",
+    "kind": "method",
+    "markdown": "rpc/Members/invite.md",
+    "json": "rpc/Members/invite.json"
+  },
+  {
+    "path": "rpc/Activity",
+    "route": "#/rpc/Activity",
+    "title": "Activity",
+    "kind": "namespace",
+    "markdown": "rpc/Activity.md",
+    "json": "rpc/Activity.json"
+  },
+  {
+    "path": "rpc/Activity/recent",
+    "route": "#/rpc/Activity/recent",
+    "title": "Activity.recent",
+    "kind": "method",
+    "markdown": "rpc/Activity/recent.md",
+    "json": "rpc/Activity/recent.json"
+  },
+  {
+    "path": "rpc/Stats",
+    "route": "#/rpc/Stats",
+    "title": "Stats",
+    "kind": "namespace",
+    "markdown": "rpc/Stats.md",
+    "json": "rpc/Stats.json"
+  },
+  {
+    "path": "rpc/Stats/summary",
+    "route": "#/rpc/Stats/summary",
+    "title": "Stats.summary",
+    "kind": "method",
+    "markdown": "rpc/Stats/summary.md",
+    "json": "rpc/Stats/summary.json"
+  }
+]

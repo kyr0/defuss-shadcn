@@ -1,5 +1,16 @@
 import { fenceFlags } from '../../src/documentation/lib/mdx-example.ts';
-import { STANDALONE_APPS, STANDALONE_DECKS, STANDALONE_DOCS, appName, pageRel, pageSourceRel, standaloneAppId, standaloneDeckId, standaloneDocId, standaloneSource } from '../../src/documentation/lib/page-dirs.ts';
+import {
+  STANDALONE_APPS,
+  STANDALONE_DECKS,
+  STANDALONE_DOCS,
+  appName,
+  pageRel,
+  pageSourceRel,
+  standaloneAppId,
+  standaloneDeckId,
+  standaloneDocId,
+  standaloneSource,
+} from '../../src/documentation/lib/page-dirs.ts';
 /**
  * Why: src/documentation/ is a defuss-ssg project - the doc pages are authored
  * as MDX (pages/) with TSX components (lib/) and client runtime TS (runtime/),
@@ -62,8 +73,13 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
   if (r === 'js/search/search-worker.js') return 'documentation/runtime/search-worker.ts';
   // the worker and its semantic half exist only bundled: a js/search-worker.js beside the compiled runtime is tsc
   // output of a stray import (it once emitted both, unbundled) - mapped to no source, so `dist 1:1` flags it
-  if (r === 'js/search-worker.js' || r === 'js/search-semantic.js') return 'documentation/runtime/(bundled into js/search/)';
+  if (r === 'js/search-worker.js' || r === 'js/search-semantic.js')
+    return 'documentation/runtime/(bundled into js/search/)';
   if (r.startsWith('js/search/') || r.startsWith('search/')) return null;
+  // the Database Explorer's defuss-db bundle (scripts/build-db.ts): its two entries ← runtime/db/, its chunks have no
+  // source of their own
+  if (r === 'js/db/db.js' || r === 'js/db/db-worker.js') return `documentation/runtime/${r.slice(3, -3)}.ts`;
+  if (r.startsWith('js/db/')) return null;
   // compiled runtime: dist/documentation/js/{n}.js ← runtime/{n}.ts
   const js = r.match(/^js\/(.+)\.js$/);
   if (js) return `documentation/runtime/${js[1]}.ts`;
@@ -85,7 +101,9 @@ export function docsDistToSrc(relFromDistDocumentation: string): string | null {
  *  scripts/lib/format-pages.ts grows it); its closing fence is the same length. VERIFIED: (tests/format-pages.test.ts)
  *  a grown fence reads through here as its body. */
 export function exampleFence(mdx: string): string | null {
-  const fences = [...mdx.matchAll(/^(`{3,})(html example[^\n]*)\n([\s\S]*?)^\1$/gm)].map((m) => ({ flags: fenceFlags(m[2]), body: m[3] }));
+  const fences = [...mdx.matchAll(/^(`{3,})(html example[^\n]*)\n([\s\S]*?)^\1$/gm)].map((m) => ({
+    flags: fenceFlags(m[2]),
+    body: m[3],
+  }));
   return (fences.find((f) => f.flags.includes('standalone')) ?? fences[0])?.body ?? null;
 }
-

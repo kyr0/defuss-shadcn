@@ -82,12 +82,13 @@
     "d3-geo": "3.1.1",
     "defuss": "^3.4.9",
     "defuss-brotli": "0.3.0",
+    "defuss-db": "3.1.0",
     "defuss-dom-router": "0.1.1",
     "defuss-dson": "1.1.2",
     "defuss-i18n": "0.2.0",
     "defuss-lexicalsearch": "0.4.0",
     "defuss-lid": "0.5.0",
-    "defuss-rpc": "^1.6.2",
+    "defuss-rpc": "3.0.0",
     "defuss-search": "0.5.0",
     "defuss-ssg": "^0.7.5",
     "defuss-storage": "0.3.1",
@@ -121,7 +122,7 @@
   "dependencies": {
     "defuss-morph": "0.2.0",
     "defuss-query": "0.2.0",
-    "defuss-dataview": "0.6.0",
+    "defuss-dataview": "0.10.0",
     "defuss-store": "0.1.0"
   }
 }

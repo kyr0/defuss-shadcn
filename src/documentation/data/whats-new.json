@@ -2,6 +2,78 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [
+        "scaffold-db-explorer"
+      ],
+      "updated": [
+        "application-scaffolds",
+        "border-layout",
+        "button",
+        "data-grid",
+        "data-tree",
+        "index",
+        "panel",
+        "scaffold-api-docs",
+        "scaffold-calendar",
+        "scaffold-knowledge-graph",
+        "scaffold-notes",
+        "system-in-numbers",
+        "tree-grid"
+      ],
+      "examples": {
+        "data-grid": {
+          "created": [],
+          "updated": [
+            "Projection: computed columns and totals",
+            "Aggregation: a report that follows the grid"
+          ]
+        },
+        "data-tree": {
+          "created": [],
+          "updated": [
+            "Aggregated branches: 250,000 requests"
+          ]
+        },
+        "scaffold-api-docs": {
+          "created": [],
+          "updated": [
+            "API reference"
+          ]
+        },
+        "scaffold-calendar": {
+          "created": [],
+          "updated": [
+            "Calendar"
+          ]
+        },
+        "scaffold-knowledge-graph": {
+          "created": [],
+          "updated": [
+            "Knowledge graph"
+          ]
+        },
+        "scaffold-notes": {
+          "created": [],
+          "updated": [
+            "Notes and docs"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        },
+        "tree-grid": {
+          "created": [],
+          "updated": [
+            "Totals per branch: an aggregated tree"
+          ]
+        }
+      }
+    },
+    {
       "version": "0.9.17",
       "created": [
         "chat-components",

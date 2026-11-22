@@ -1,0 +1,35 @@
+{
+  "kind": "resource",
+  "route": "#/ref/members",
+  "id": "members",
+  "title": "Members",
+  "lead": "A member is a person in a workspace, with a role that sets what they may do.",
+  "object": "member",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "description": "Unique identifier, starting with m_."
+    },
+    {
+      "name": "email",
+      "type": "string",
+      "description": "The address the invitation went to."
+    },
+    {
+      "name": "role",
+      "type": "enum",
+      "description": "admin, member or guest."
+    },
+    {
+      "name": "status",
+      "type": "enum",
+      "description": "invited or active."
+    }
+  ],
+  "endpoints": [
+    "list",
+    "invite"
+  ],
+  "markdown": "members.md"
+}

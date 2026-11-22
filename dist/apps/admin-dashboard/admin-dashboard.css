@@ -5676,6 +5676,13 @@
     min-width: 100%;
   }
 
+  /* a cell adds no width of its own: a row is as wide as the grid (or its fixed columns), and a 1fr column takes what
+     is left in every row alike - sized by content, a long tree label widened its rows past the header (VERIFIED: the
+     Knowledge Graph's hierarchy, label 205px against the header's 143px, its count cut at the panel edge) */
+  .data-grid-row > * {
+    contain: inline-size;
+  }
+
   .data-grid-header,
   .data-grid-cell,
   .data-grid-filter-cell {

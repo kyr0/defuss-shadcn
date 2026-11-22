@@ -163,25 +163,31 @@ try {
       const p = document.getElementById('p-w')!;
       const header = p.querySelector('.panel-header')!;
       const region = document.getElementById('r-w')!.getBoundingClientRect();
-      const tools = p.querySelector('.panel-tools')!.getBoundingClientRect();
+      const chevron = p.querySelector('.panel-minimize')!.getBoundingClientRect();
       const title = p.querySelector('.panel-title')!.getBoundingClientRect();
       return {
         mode: getComputedStyle(header).writingMode,
         w: Math.round(region.width), h: Math.round(region.height),
         headerH: Math.round(header.getBoundingClientRect().height),
         titleVisible: title.height > 20 && title.width > 0,
-        toolsFirst: tools.top < title.top,
+        titleUnderChevron: title.top >= chevron.bottom - 1 && title.top - chevron.bottom < 12,
         max: getComputedStyle(p.querySelector('.panel-maximize')!).display,
         rotate: getComputedStyle(p.querySelector('.panel-minimize')!).rotate,
+        headerRotate: getComputedStyle(header).rotate,
+        chevronTop: p.querySelector('.panel-minimize')!.getBoundingClientRect().top - header.getBoundingClientRect().top,
       };
     });
     assert.equal(r.mode, 'vertical-rl');
     assert.ok(r.w >= 30 && r.w <= 48, `tab width ${r.w}`);
     assert.equal(r.headerH, r.h, 'the tab runs the full height');
     assert.ok(r.titleVisible);
-    assert.ok(r.toolsFirst, 'the restore tool leads');
+    // a west tab reads from the bottom up (the maintainer 2026-11-22): the header turned half round, the restore
+    // chevron at the top - turned 90deg inside it, it points east on screen, where the panel opens
+    assert.equal(r.headerRotate, '180deg');
+    assert.ok(r.titleUnderChevron, 'the title starts right under the chevron, at the top');
+    assert.ok(r.chevronTop <= 16, `the chevron at the top, inside the bar's padding (${r.chevronTop}px)`);
     assert.equal(r.max, 'none');
-    assert.equal(r.rotate, '-90deg');
+    assert.equal(r.rotate, '90deg');
     // restored from the tab: the authored width comes back
     await page.click('#p-w .panel-minimize');
     assert.equal((await rect('#r-w')).w, 200);

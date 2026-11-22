@@ -156,6 +156,25 @@
       & .panel-maximize {
         display: none;
       }
+      /* west: the tab reads from the bottom up, like a book's spine on the left (the header turned half round), and
+         starts at the top (the maintainer 2026-11-22): the restore chevron first (it points east, where the panel
+         opens), the title under it, its icon below the words, then the other tools - read upward, the bar's order */
+      &[data-region="west"] > .panel-header {
+        rotate: 180deg;
+        justify-content: flex-end;
+        & .panel-tools {
+          display: contents;
+        }
+        & .panel-icon,
+        & .panel-title {
+          order: 1;
+          flex: none;
+        }
+        & .panel-minimize {
+          order: 2;
+          rotate: 90deg;
+        }
+      }
     }
 
     /* the minimize chevron points where the panel folds to */

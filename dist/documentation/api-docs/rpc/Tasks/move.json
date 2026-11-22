@@ -1,0 +1,102 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Tasks/move",
+  "namespace": "Tasks",
+  "name": "move",
+  "signature": "async move(id: string, status: TaskStatus): Promise<Task>",
+  "async": true,
+  "generator": false,
+  "description": "Moves a task to another column.",
+  "params": [
+    {
+      "name": "id",
+      "type": "string",
+      "schema": {
+        "type": "string"
+      },
+      "description": "The task's id."
+    },
+    {
+      "name": "status",
+      "type": "TaskStatus",
+      "schema": {
+        "enum": [
+          "todo",
+          "doing",
+          "done"
+        ]
+      },
+      "description": "Where it goes."
+    }
+  ],
+  "returns": {
+    "type": "Task",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Its id, `t_` and a number."
+        },
+        "title": {
+          "type": "string",
+          "description": "What has to be done."
+        },
+        "status": {
+          "enum": [
+            "todo",
+            "doing",
+            "done"
+          ]
+        },
+        "assignee": {
+          "type": "string",
+          "description": "The member it is assigned to, by id."
+        },
+        "due": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date",
+          "description": "When it is due."
+        },
+        "labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-dson": "set",
+          "items": {
+            "type": "string"
+          },
+          "description": "Labels, each at most once."
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "status",
+        "labels",
+        "created"
+      ]
+    },
+    "description": "The task as it is now."
+  },
+  "throws": [
+    "RpcError when there is no task with that id"
+  ],
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Tasks",
+      "methodName": "move",
+      "args": [
+        "t_101",
+        "todo"
+      ]
+    }
+  },
+  "markdown": "move.md"
+}

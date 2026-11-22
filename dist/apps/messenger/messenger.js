@@ -3992,7 +3992,7 @@ function viewPersistence(el, kind, fallbackId, config = {}) {
   const key = config.key ?? el.dataset.persistKey ?? `${prefix}:${kind}:${el.id || fallbackId}`;
   return { area: area === "local" ? "local" : "session", key };
 }
-// node_modules/defuss-dataview/dist/query-CcmE25W0.mjs
+// node_modules/defuss-dataview/dist/query-B6HEkalB.mjs
 var forbidden = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
 function fieldParts(field) {
   if (typeof field !== "string" || !field)
@@ -4127,7 +4127,14 @@ function bytesOf(value) {
   return;
 }
 var invalidValue = (value) => value == null || typeof value === "number" && Number.isNaN(value) || value instanceof Date && Number.isNaN(value.getTime());
-var rank = (v) => v == null ? 8 : invalidValue(v) ? 7 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : 6;
+var rank = (v) => v == null ? 9 : invalidValue(v) ? 8 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : Array.isArray(v) ? 6 : 7;
+var CYCLE = "An array that contains itself cannot be compared or used as a key.";
+var open = [];
+function enter(a, b) {
+  if (open.includes(a) || open.includes(b))
+    throw new TypeError(CYCLE);
+  open.push(a, b);
+}
 function normalizeSemantics(options) {
   createValueOperations(options);
   const copy = {};
@@ -4152,7 +4159,7 @@ function createValueOperations(options = {}) {
     throw new TypeError("Locale options require strings: locale.");
   const collator = options.strings === "locale" ? new Intl.Collator(options.locale, options.collatorOptions) : undefined;
   const equality = options.equality ?? "value";
-  const comparisonId = `dataview-order-v1:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
+  const comparisonId = `dataview-order-v2:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
   function equal(a, b) {
     if (a === b || typeof a === "number" && typeof b === "number" && Number.isNaN(a) && Number.isNaN(b))
       return true;
@@ -4160,6 +4167,8 @@ function createValueOperations(options = {}) {
       return false;
     if (a instanceof Date && b instanceof Date)
       return Object.is(a.getTime(), b.getTime());
+    if (Array.isArray(a))
+      return Array.isArray(b) && a.length === b.length && equalLists(a, b);
     const ab = bytesOf(a), bb = bytesOf(b);
     if (!ab || !bb || ab.length !== bb.length)
       return false;
@@ -4180,8 +4189,10 @@ function createValueOperations(options = {}) {
     const ar = rank(a), br = rank(b);
     if (ar !== br)
       return ar - br;
-    if (ar >= 6)
+    if (ar >= 7)
       return 0;
+    if (ar === 6)
+      return compareLists(a, b);
     if (a instanceof Date && b instanceof Date)
       return a.getTime() < b.getTime() ? -1 : a.getTime() > b.getTime() ? 1 : 0;
     const ab = bytesOf(a), bb = bytesOf(b);
@@ -4193,9 +4204,50 @@ function createValueOperations(options = {}) {
     }
     return a < b ? -1 : 1;
   }
+  function equalLists(a, b) {
+    enter(a, b);
+    try {
+      for (let i = 0;i < a.length; i++)
+        if (!equal(a[i], b[i]))
+          return false;
+      return true;
+    } finally {
+      open.length -= 2;
+    }
+  }
+  function compareLists(a, b) {
+    enter(a, b);
+    try {
+      for (let i = 0, n = Math.min(a.length, b.length);i < n; i++) {
+        const c = compare(a[i], b[i]);
+        if (c)
+          return c;
+      }
+      return Math.sign(a.length - b.length);
+    } finally {
+      open.length -= 2;
+    }
+  }
   return { equal, compare, comparisonId, equality };
 }
 var compareValues = createValueOperations().compare;
+function snapshot(value, byValue, seen = []) {
+  if (!byValue || typeof value !== "object" || value === null)
+    return value;
+  if (value instanceof Date)
+    return new Date(value.getTime());
+  const bytes = bytesOf(value);
+  if (bytes)
+    return bytes.slice();
+  if (!Array.isArray(value))
+    return value;
+  if (seen.includes(value))
+    throw new TypeError(CYCLE);
+  seen.push(value);
+  const copy = value.map((v) => snapshot(v, true, seen));
+  seen.pop();
+  return copy;
+}
 var operators = ["eq", "neq", "gt", "gte", "lt", "lte", "in", "contains", "startsWith", "endsWith"];
 var array = (value, name) => {
   if (!Array.isArray(value))
@@ -4259,14 +4311,7 @@ function createDataview(request = {}) {
   fieldParts(idField);
   return { filters, sorters, page, pageSize, idField, meta: normalizeMeta(request.meta), tree, semantics: request.semantics === undefined ? undefined : normalizeSemantics(request.semantics) };
 }
-function operand(value, byValue) {
-  if (!byValue)
-    return value;
-  if (value instanceof Date)
-    return new Date(value.getTime());
-  const bytes = bytesOf(value);
-  return bytes ? bytes.slice() : value;
-}
+var operand = snapshot;
 function compileQuery(request = {}) {
   const view = createDataview({ filters: request.filters, sorters: request.sorters });
   const ops = createValueOperations(request.semantics);
@@ -7844,6 +7889,6 @@ var toastActions = {
 };
 df$9.toast = toastActions;
 
-//# debugId=BDC05BFE5D39CECA64756E2164756E21
+//# debugId=741BCCCECC1F9D1764756E2164756E21
 /* defuss-shadcn v0.9.17 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=messenger.js.map

@@ -42,8 +42,9 @@ function snapshot(page: Page): Promise<string[]> {
       // drawn content is left out like a canvas: the Graph Explorer's layers and its outlets fill with its worker's
       // messages, which arrive at their own time in each load (the explorer and the outlets themselves are compared);
       // toast.js mounts its empty container on every page that loads it - the whole system does, an app without
-      // toasts (the knowledge graph) rightly does not
-      .filter((el) => !el.closest('svg, canvas, script, style, .graph-explorer > [data-ce-chrome], [data-graph-explorer-for] > [data-ce-chrome], body > #toast-container:empty'))
+      // toasts (the knowledge graph) rightly does not; a log's entries (role="log": the Database Explorer's operations)
+      // record each load's own calls and timings, and its height follows them - the panel around it is compared
+      .filter((el) => !el.closest('svg, canvas, script, style, .graph-explorer > [data-ce-chrome], [data-graph-explorer-for] > [data-ce-chrome], body > #toast-container:empty, [role="log"]'))
       .map((el, i) => {
         const cs = getComputedStyle(el);
         const r = el.getBoundingClientRect();
@@ -92,8 +93,12 @@ async function open(href: string, full: boolean, extras: string[] = []): Promise
   await waitEditorsSettled(page, (ms) => page.clock.runFor(ms));
   await page.clock.runFor(2000);
   // an app that works on its own after load (the Workflow Studio runs its first workflow) settles first: each load
-  // reaches its end at its own pace, and aria-busy says when it is still on the way
-  for (let i = 0; i < 80 && (await page.evaluate(() => !!document.querySelector('[aria-busy="true"]'))); i++) await page.clock.runFor(500);
+  // reaches its end at its own pace, and aria-busy says when it is still on the way. Real time passes too: work that
+  // waits on no timer (the Database Explorer writes its sample data into OPFS in a worker) only advances with it
+  for (let i = 0; i < 300 && (await page.evaluate(() => !!document.querySelector('[aria-busy="true"]'))); i++) {
+    await page.clock.runFor(500);
+    await new Promise((r) => setTimeout(r, 100));
+  }
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   return { page, errors };
 }

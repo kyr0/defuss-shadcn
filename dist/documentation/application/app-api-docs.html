@@ -12,6 +12,19 @@
 <style>:root { --scaffold-height: 100dvh; } html, body { height: 100%; margin: 0; } body { overflow: hidden; background: var(--background); color: var(--foreground); }</style>
 </head>
 <body>
+<!-- the search model's modules import packages by name - this map names their pinned builds -->
+<script type="importmap">
+  {
+    "imports": {
+      "defuss-db": "https://cdn.jsdelivr.net/npm/defuss-db@2.0.2/dist/index.mjs",
+      "defuss-db/client.js": "https://cdn.jsdelivr.net/npm/defuss-db@2.0.2/dist/client.mjs",
+      "@huggingface/tokenizers": "https://cdn.jsdelivr.net/npm/@huggingface/tokenizers@0.2.0/dist/tokenizers.min.mjs",
+      "onnxruntime-web/webgpu": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.wasm.bundle.min.mjs",
+      "defuss-vectorsearch/turboquant.js": "https://cdn.jsdelivr.net/npm/defuss-vectorsearch@0.4.0/dist/turboquant.mjs",
+      "defuss-lexicalsearch": "https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/index.js"
+    }
+  }
+</script>
 <style>
   /* Acme API: the scaffold's own glue - a three-column reference (navigation, the page, its code) in the system
      tokens, so a theme or dark mode restyles it. Methods carry a hue each; the code panels stay dark in both modes. */
@@ -149,6 +162,8 @@
     --ad-h: 150;
     display: inline-flex;
     flex: none;
+    align-items: center;
+    align-self: center;
     justify-content: center;
     min-width: 3.25rem;
     padding: 0.0625rem 0.375rem;
@@ -187,11 +202,16 @@
   .ad-article > .mk-docs-content {
     max-width: none;
   }
+  /* sticky, and never taller than the app below its bar: a long answer scrolls inside the aside, not out of reach */
   .ad-aside {
     position: sticky;
     top: 0;
     display: grid;
+    align-content: start;
     gap: 1rem;
+    max-block-size: calc(var(--scaffold-height, 50rem) - 3.5rem - 2rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
   .ad-endpoint-line {
     display: flex;
@@ -372,6 +392,92 @@
     padding: 1rem;
     color: oklch(0.72 0 0);
     font-size: 0.8125rem;
+  }
+  /* defuss-rpc: every call is POST /rpc - the tag says RPC, or STREAM for a generator */
+  .ad-method[data-method='RPC'] {
+    --ad-h: 300;
+  }
+  .ad-method[data-method='STREAM'] {
+    --ad-h: 200;
+  }
+  /* each page as Markdown and JSON, for readers that do not run the app */
+  .ad-doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem 0.75rem;
+    margin: -0.5rem 0 1.25rem;
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    & a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      color: inherit;
+      text-underline-offset: 3px;
+    }
+    & svg {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+  }
+  .ad-signature {
+    margin: 0 0 1.25rem;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    background: var(--ad-code);
+    color: oklch(0.92 0 0);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    white-space: pre;
+  }
+  .ad-badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+    margin-block-end: 1rem;
+  }
+  .ad-rpc-wide {
+    grid-column: 1 / -1;
+  }
+  /* trees as high as their rows (rpcFit), one row a fixed height */
+  .ad-rpc-tree,
+  .ad-rpc-result .property-tree {
+    --property-tree-row-height: 1.75rem;
+  }
+  /* a listing Shiki has not painted (offline, or still loading) keeps the inset of a painted line */
+  .ad .mk-code-block code:not(:has(> span)) {
+    padding-inline: 1rem;
+    white-space: pre;
+  }
+  .ad-rpc-frames {
+    display: grid;
+    gap: 0.25rem;
+    max-block-size: 10rem;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    overflow: auto;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    & li {
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-sm);
+      background: var(--muted);
+      overflow-wrap: anywhere;
+    }
+  }
+  .ad-rpc-error {
+    margin: 0 0 0.75rem;
+    color: var(--destructive);
+    font-size: 0.8125rem;
+  }
+  .ad .mk-code-block:has(input[value='ts']:checked) [data-tab='ts'],
+  .ad .mk-code-block:has(input[value='fetch']:checked) [data-tab='fetch'],
+  .ad .mk-code-block:has(input[value='rcurl']:checked) [data-tab='rcurl'] {
+    display: block;
   }
   /* the resource and home pages */
   .ad-cards {
@@ -620,6 +726,7 @@
               </ol>
             </nav>
             <h1 class="mk-docs-content-title" id="ad-guide-title" data-ad-guide-title></h1>
+            <p class="ad-doc-links" data-ad-doc-links></p>
             <p class="mk-docs-content-lead" data-ad-guide-lead></p>
             <div class="mk-docs-content-prose" data-ad-guide-body></div>
             <div class="ad-cards" data-ad-home-cards></div>
@@ -644,6 +751,7 @@
                 </ol>
               </nav>
               <h1 class="mk-docs-content-title" id="ad-res-title" data-ad-res-title></h1>
+              <p class="ad-doc-links" data-ad-doc-links></p>
               <p class="mk-docs-content-lead" data-ad-res-lead></p>
               <h2 class="text-lg font-semibold mt-6 mb-3" data-i18n-target="h-endpoints">Endpoints</h2>
               <ul class="ad-ops" data-ad-res-ops></ul>
@@ -681,6 +789,7 @@
                 </ol>
               </nav>
               <h1 class="mk-docs-content-title" id="ad-ep-title" data-ad-ep-title></h1>
+              <p class="ad-doc-links" data-ad-doc-links></p>
               <div class="ad-endpoint-line">
                 <span class="ad-method" data-ad-ep-method></span><code data-ad-ep-path></code
                 ><button
@@ -758,6 +867,158 @@
                   Send the request to see the sandbox's answer.
                 </p>
                 <pre data-lang="json" data-ad-res-body hidden></pre>
+              </div>
+            </aside>
+          </div>
+        </section>
+        <!-- defuss-rpc: the overview and a namespace - written from rpc.docs.json, which defuss-rpc schema generated -->
+        <section data-ad-view="rpc-ns" hidden>
+          <article class="mk-docs-content" aria-labelledby="ad-rn-title">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+              <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                  <a class="breadcrumb-link" href="#/rpc" data-router-link data-i18n-target="crumb-rpc"
+                    >defuss-rpc API</a
+                  >
+                </li>
+                <li class="breadcrumb-separator" aria-hidden="true" data-ad-rn-sep>/</li>
+                <li class="breadcrumb-item">
+                  <span class="breadcrumb-page" aria-current="page" data-ad-rn-crumb></span>
+                </li>
+              </ol>
+            </nav>
+            <h1 class="mk-docs-content-title" id="ad-rn-title" data-ad-rn-title></h1>
+            <p class="ad-doc-links" data-ad-doc-links></p>
+            <p class="mk-docs-content-lead" data-ad-rn-lead></p>
+            <div class="mk-docs-content-prose" data-ad-rn-body></div>
+            <div class="ad-cards" data-ad-rn-cards></div>
+            <ul class="ad-ops" data-ad-rn-ops></ul>
+            <nav class="mk-docs-content-pager" aria-label="Pagination" data-ad-pager></nav>
+          </article>
+        </section>
+        <!-- defuss-rpc: a method - its signature, parameters, return value, a call from the form and its samples -->
+        <section data-ad-view="rpc-method" hidden>
+          <div class="ad-article">
+            <article class="mk-docs-content" aria-labelledby="ad-rm-title">
+              <nav class="breadcrumb" aria-label="Breadcrumb">
+                <ol class="breadcrumb-list">
+                  <li class="breadcrumb-item">
+                    <a class="breadcrumb-link" href="#/rpc" data-router-link data-i18n-target="crumb-rpc-2"
+                      >defuss-rpc API</a
+                    >
+                  </li>
+                  <li class="breadcrumb-separator" aria-hidden="true">/</li>
+                  <li class="breadcrumb-item">
+                    <a class="breadcrumb-link" href="#/rpc" data-router-link data-ad-rm-crumb></a>
+                  </li>
+                  <li class="breadcrumb-separator" aria-hidden="true">/</li>
+                  <li class="breadcrumb-item">
+                    <span class="breadcrumb-page" aria-current="page" data-ad-rm-crumb-page></span>
+                  </li>
+                </ol>
+              </nav>
+              <h1 class="mk-docs-content-title" id="ad-rm-title" data-ad-rm-title></h1>
+              <p class="ad-doc-links" data-ad-doc-links></p>
+              <div class="ad-badges" data-ad-rm-badges></div>
+              <pre class="ad-signature" data-lang="ts" data-ad-rm-signature></pre>
+              <p class="mk-docs-content-lead" data-ad-rm-lead></p>
+              <div data-ad-rm-docs></div>
+              <form class="card ad-try" data-ad-rpc-try novalidate>
+                <div class="card-header">
+                  <h2 class="card-title" data-i18n-target="h-call">Call it</h2>
+                  <p class="card-description" data-i18n-target="call-text">
+                    Change an argument - the samples follow. Send calls the example in this page, or a defuss-rpc
+                    server.
+                  </p>
+                </div>
+                <div class="card-content">
+                  <div class="ad-try-grid">
+                    <div class="ad-field">
+                      <label class="label" for="ad-rpc-target" data-i18n-target="target">Target</label>
+                      <select class="select" id="ad-rpc-target" data-size="sm" data-ad-rpc-target>
+                        <option value="page" data-i18n-target="target-page">The example in this page</option>
+                        <option value="server" data-i18n-target="target-server">A defuss-rpc server</option>
+                      </select>
+                    </div>
+                    <div class="ad-field" data-ad-rpc-server hidden>
+                      <label class="label" for="ad-rpc-url" data-i18n-target="server-url">Server URL</label>
+                      <input
+                        class="input"
+                        id="ad-rpc-url"
+                        type="url"
+                        data-size="sm"
+                        value="http://localhost:63920"
+                        autocomplete="off"
+                        spellcheck="false"
+                        data-ad-rpc-url
+                      />
+                    </div>
+                    <p class="ad-meta ad-rpc-wide" role="status" data-ad-rpc-conn></p>
+                  </div>
+                  <div class="ad-try-grid" data-ad-rpc-fields></div>
+                  <div class="ad-try-actions">
+                    <button class="btn" type="submit"
+                      ><i data-lucide="send"></i><span data-i18n-target="call">Send call</span></button
+                    >
+                    <button class="btn" type="reset" data-variant="outline" data-i18n-target="reset-call">Reset</button>
+                  </div>
+                </div>
+              </form>
+              <nav class="mk-docs-content-pager" aria-label="Pagination" data-ad-pager></nav>
+            </article>
+            <aside class="ad-aside">
+              <figure class="mk-code-block" data-ad-rpc-samples>
+                <div class="mk-code-block-head">
+                  <div
+                    class="mk-code-block-tabs"
+                    role="radiogroup"
+                    aria-label="Language"
+                    data-i18n-aria-label-en="Language"
+                    data-i18n-aria-label-de="Sprache"
+                  >
+                    <label><input type="radio" name="ad-rpc-lang" value="ts" checked />TypeScript</label
+                    ><label><input type="radio" name="ad-rpc-lang" value="rcurl" />curl</label
+                    ><label><input type="radio" name="ad-rpc-lang" value="fetch" />fetch</label>
+                  </div>
+                  <button
+                    class="mk-code-block-copy"
+                    type="button"
+                    data-ad-rpc-copy
+                    aria-label="Copy code"
+                    data-i18n-aria-label-en="Copy code"
+                    data-i18n-aria-label-de="Code kopieren"
+                  >
+                    <i data-lucide="copy"></i>
+                  </button>
+                </div>
+                <pre data-tab="ts" data-lang="ts"><code data-ad-rsample="ts"></code></pre>
+                <pre data-tab="rcurl" data-lang="bash"><code data-ad-rsample="curl"></code></pre>
+                <pre data-tab="fetch" data-lang="js"><code data-ad-rsample="js"></code></pre>
+                <span class="mk-code-block-status" role="status"></span>
+              </figure>
+              <div class="card ad-rpc-result" data-ad-rpc-response aria-live="polite">
+                <div class="card-header">
+                  <h2 class="card-title" data-i18n-target="h-answer">Answer</h2>
+                  <p class="card-description">
+                    <span class="ad-status" data-ad-rpc-status></span> <span class="ad-meta" data-ad-rpc-time></span>
+                  </p>
+                </div>
+                <div class="card-content">
+                  <p class="ad-empty" data-ad-rpc-empty data-i18n-target="answer-empty"
+                    >Send the call to see its answer.</p
+                  >
+                  <p class="ad-rpc-error" data-ad-rpc-error hidden></p>
+                  <ol class="ad-rpc-frames" data-ad-rpc-frames hidden></ol>
+                  <div
+                    class="property-tree"
+                    data-readonly
+                    data-ad-rpc-result
+                    aria-label="Answer"
+                    data-i18n-aria-label-en="Answer"
+                    data-i18n-aria-label-de="Antwort"
+                    hidden
+                  ></div>
+                </div>
               </div>
             </aside>
           </div>
@@ -851,6 +1112,44 @@
           "copied": "Copied to the clipboard",
           "copyHint": "Selected - press ⌘C to copy",
           "results": "%n results in %t ms - defuss-search, BM25",
+          "resultsMeaning": "%n results in %t ms - defuss-search, BM25 + ColBERT",
+          "meaning-loading": "Keywords now - search by meaning loads in the background (4.6 MB)",
+          "meaning-semantic": "Keywords and meaning - BM25 fused with the Winzling-reranker ColBERT model",
+          "meaning-failed": "Search by meaning did not load - keywords only",
+          "meaning-saver": "Data saver on - keywords only",
+          "rpcGroup": "defuss-rpc API",
+          "rpcOverview": "Overview",
+          "rpcTitle": "defuss-rpc API",
+          "rpcLead": "The same Acme workspace as a defuss-rpc API: namespaces of typed methods instead of URLs. Every call is one POST /rpc; arguments and results travel as DSON, so a Date, a Map or a Set arrives as itself, and an async generator streams its values.",
+          "rpcBody": [
+            "This reference is generated: defuss-rpc schema reads the API's TypeScript source, follows createRpcServer() to the classes and objects it registers and writes each method's JSDoc, parameters and types into rpc.docs.json - the pages here, their Markdown and JSON, and the samples are made from that file.",
+            "$ bunx defuss-rpc schema \"src/**/*.ts\" --out rpc.docs.json --endpoint http://localhost:63920",
+            "> Call it sends to the same API running in this page; pick A defuss-rpc server and start one with bun src/documentation/runtime/api-docs/server.ts to call it over the network."
+          ],
+          "rpcCard": "Namespaces of typed methods, generated from the source with defuss-rpc schema.",
+          "classNote": "A class: the server makes a fresh instance for every call.",
+          "moduleNote": "A module: one object, shared by every call.",
+          "methods": "%n methods",
+          "stream": "Streams NDJSON",
+          "once": "Answers once",
+          "deprecated": "Deprecated",
+          "params": "Parameters",
+          "noParams": "This method takes no parameters.",
+          "returns": "Returns",
+          "yields": "Yields",
+          "throws": "Throws",
+          "examples": "Examples",
+          "optional": "optional",
+          "asMarkdown": "Markdown",
+          "asJson": "JSON",
+          "pageAs": "This page as",
+          "connChecking": "Asking %s for its schema...",
+          "connOk": "%s serves %n namespaces",
+          "connMissing": "%s serves no %m",
+          "connFail": "%s does not answer (%e) - start it with bun src/documentation/runtime/api-docs/server.ts",
+          "inPage": "in this page",
+          "framesNote": "%n values streamed, then the return value",
+          "badJson": "Not valid JSON: %s",
           "loading": "Loading the search index...",
           "plain": "The search index is not loaded - matching names",
           "guidesGroup": "Guides",
@@ -882,6 +1181,44 @@
           "copied": "In die Zwischenablage kopiert",
           "copyHint": "Markiert - mit ⌘C kopieren",
           "results": "%n Treffer in %t ms - defuss-search, BM25",
+          "resultsMeaning": "%n Treffer in %t ms - defuss-search, BM25 + ColBERT",
+          "meaning-loading": "Stichwörter jetzt - die Suche nach Bedeutung lädt im Hintergrund (4,6 MB)",
+          "meaning-semantic": "Stichwörter und Bedeutung - BM25 verschmolzen mit dem ColBERT-Modell Winzling-reranker",
+          "meaning-failed": "Die Suche nach Bedeutung hat nicht geladen - nur Stichwörter",
+          "meaning-saver": "Datensparmodus an - nur Stichwörter",
+          "rpcGroup": "defuss-rpc-API",
+          "rpcOverview": "Überblick",
+          "rpcTitle": "defuss-rpc-API",
+          "rpcLead": "Derselbe Acme-Workspace als defuss-rpc-API: Namensräume typisierter Methoden statt URLs. Jeder Aufruf ist ein POST /rpc; Argumente und Ergebnisse reisen als DSON, also kommen Date, Map und Set als sie selbst an, und ein Async-Generator streamt seine Werte.",
+          "rpcBody": [
+            "Diese Referenz ist erzeugt: defuss-rpc schema liest den TypeScript-Quelltext der API, folgt createRpcServer() zu den Klassen und Objekten, die es registriert, und schreibt JSDoc, Parameter und Typen jeder Methode nach rpc.docs.json - die Seiten hier, ihr Markdown und JSON und die Beispiele entstehen aus dieser Datei.",
+            "$ bunx defuss-rpc schema \"src/**/*.ts\" --out rpc.docs.json --endpoint http://localhost:63920",
+            "> Aufrufen sendet an dieselbe API in dieser Seite; wähle Ein defuss-rpc-Server und starte einen mit bun src/documentation/runtime/api-docs/server.ts, um ihn über das Netz aufzurufen."
+          ],
+          "rpcCard": "Namensräume typisierter Methoden, mit defuss-rpc schema aus dem Quelltext erzeugt.",
+          "classNote": "Eine Klasse: der Server legt für jeden Aufruf eine neue Instanz an.",
+          "moduleNote": "Ein Modul: ein Objekt für alle Aufrufe.",
+          "methods": "%n Methoden",
+          "stream": "Streamt NDJSON",
+          "once": "Antwortet einmal",
+          "deprecated": "Veraltet",
+          "params": "Parameter",
+          "noParams": "Diese Methode nimmt keine Parameter.",
+          "returns": "Rückgabe",
+          "yields": "Liefert",
+          "throws": "Fehler",
+          "examples": "Beispiele",
+          "optional": "optional",
+          "asMarkdown": "Markdown",
+          "asJson": "JSON",
+          "pageAs": "Diese Seite als",
+          "connChecking": "Frage %s nach seinem Schema...",
+          "connOk": "%s bietet %n Namensräume",
+          "connMissing": "%s bietet kein %m",
+          "connFail": "%s antwortet nicht (%e) - starte ihn mit bun src/documentation/runtime/api-docs/server.ts",
+          "inPage": "in dieser Seite",
+          "framesNote": "%n Werte gestreamt, dann der Rückgabewert",
+          "badJson": "Kein gültiges JSON: %s",
           "loading": "Suchindex wird geladen...",
           "plain": "Der Suchindex ist nicht geladen - Namen werden verglichen",
           "guidesGroup": "Anleitungen",
@@ -1574,6 +1911,35 @@
   <template data-i18n-for="key-label" data-i18n-locale="de">API-Schlüssel</template>
   <template data-i18n-for="key-clear" data-i18n-locale="en">Remove key</template>
   <template data-i18n-for="key-clear" data-i18n-locale="de">Schlüssel entfernen</template>
+  <template data-i18n-for="crumb-rpc" data-i18n-locale="en">defuss-rpc API</template>
+  <template data-i18n-for="crumb-rpc" data-i18n-locale="de">defuss-rpc-API</template>
+  <template data-i18n-for="crumb-rpc-2" data-i18n-locale="en">defuss-rpc API</template>
+  <template data-i18n-for="crumb-rpc-2" data-i18n-locale="de">defuss-rpc-API</template>
+  <template data-i18n-for="h-call" data-i18n-locale="en">Call it</template>
+  <template data-i18n-for="h-call" data-i18n-locale="de">Aufrufen</template>
+  <template data-i18n-for="call-text" data-i18n-locale="en"
+    >Change an argument - the samples follow. Send calls the example in this page, or a defuss-rpc server.</template
+  >
+  <template data-i18n-for="call-text" data-i18n-locale="de"
+    >Ändere ein Argument - die Beispiele folgen. Senden ruft das Beispiel in dieser Seite auf oder einen
+    defuss-rpc-Server.</template
+  >
+  <template data-i18n-for="target" data-i18n-locale="en">Target</template>
+  <template data-i18n-for="target" data-i18n-locale="de">Ziel</template>
+  <template data-i18n-for="target-page" data-i18n-locale="en">The example in this page</template>
+  <template data-i18n-for="target-page" data-i18n-locale="de">Das Beispiel in dieser Seite</template>
+  <template data-i18n-for="target-server" data-i18n-locale="en">A defuss-rpc server</template>
+  <template data-i18n-for="target-server" data-i18n-locale="de">Ein defuss-rpc-Server</template>
+  <template data-i18n-for="server-url" data-i18n-locale="en">Server URL</template>
+  <template data-i18n-for="server-url" data-i18n-locale="de">Server-URL</template>
+  <template data-i18n-for="call" data-i18n-locale="en">Send call</template>
+  <template data-i18n-for="call" data-i18n-locale="de">Aufruf senden</template>
+  <template data-i18n-for="reset-call" data-i18n-locale="en">Reset</template>
+  <template data-i18n-for="reset-call" data-i18n-locale="de">Zurücksetzen</template>
+  <template data-i18n-for="h-answer" data-i18n-locale="en">Answer</template>
+  <template data-i18n-for="h-answer" data-i18n-locale="de">Antwort</template>
+  <template data-i18n-for="answer-empty" data-i18n-locale="en">Send the call to see its answer.</template>
+  <template data-i18n-for="answer-empty" data-i18n-locale="de">Sende den Aufruf, um die Antwort zu sehen.</template>
   <template data-i18n-for="key-save" data-i18n-locale="en">Save key</template>
   <template data-i18n-for="key-save" data-i18n-locale="de">Schlüssel speichern</template>
 </div>
@@ -1582,19 +1948,133 @@
   import { createRouter } from 'https://cdn.jsdelivr.net/npm/defuss-dom-router@0.1.1/dist/index.js';
   import { createDomI18n, createI18n } from 'https://cdn.jsdelivr.net/npm/defuss-i18n@0.2.0/dist/core.js';
 
-  // the search: defuss-search's lexical strategy (BM25 over defuss-lexicalsearch, prefix and fuzzy on the last word),
-  // loaded beside the page - until it is there, and if it never comes, the palette compares names
+  // the search: defuss-search over defuss-lexicalsearch - BM25 (prefix and fuzzy on the last word) answers as soon as
+  // its modules are there (until then, and if they never come, the palette compares names), and BM25 fused with a
+  // ColBERT scan (Winzling-reranker, 2.28 MB, on ONNX Runtime's 2.3 MB WASM build) once that model has loaded in the background
   const SEARCH = Promise.all([
     import('https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/index.js'),
     import('https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/en.js'),
     import('https://cdn.jsdelivr.net/npm/defuss-lexicalsearch@0.4.0/dist/de.js'),
     import('https://cdn.jsdelivr.net/npm/defuss-search@0.5.0/dist/strategies.js'),
   ]);
+  const MODEL = () =>
+    Promise.all([
+      import('https://cdn.jsdelivr.net/npm/defuss-vectorsearch@0.4.0/dist/onnx.mjs'),
+      import('https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/decompressor-slim.js'),
+    ]);
+  const BROTLI_WASM = 'https://cdn.jsdelivr.net/npm/defuss-brotli@0.3.0/dist/decompressor.wasm';
+
+  // defuss-search's createProgressiveSearch (defuss-search/strategies), copied until its release: the lexical-only
+  // search answers until semantic(index) has built another one, then that one; a failed build keeps BM25 answering
+  const progressiveSearch = (strategies, index, { semantic, lexical }) => {
+    const plain = strategies.createLexicalOnlySearch(index, { lexical });
+    const listeners = new Set();
+    let state = 'lexical';
+    let built = null;
+    let pending = null;
+    const move = (next) => {
+      state = next;
+      for (const listener of listeners) listener(next);
+    };
+    const load = () =>
+      (pending ??= (async () => {
+        move('loading');
+        try {
+          built = await semantic(index);
+          move('semantic');
+        } catch (e) {
+          pending = null;
+          move('failed');
+          throw e;
+        }
+      })());
+    const searchWithStats = async (input, options) => {
+      const current = built;
+      return {
+        ...(await (current ?? plain).searchWithStats(input, options)),
+        source: current ? 'semantic' : 'lexical',
+      };
+    };
+    return {
+      get state() {
+        return state;
+      },
+      load,
+      searchWithStats,
+      search: async (input, options) => (await searchWithStats(input, options)).hits,
+      subscribe: (listener) => (listeners.add(listener), () => listeners.delete(listener)),
+    };
+  };
+
+  // the model's pinned files, downloaded as <file>.br from Hugging Face, decoded with defuss-brotli, checked against
+  // their SHA-256 and kept decoded in the Cache API where the page has one (a docs card's sandbox has none)
+  const sha256 = async (bytes) =>
+    [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))]
+      .map((x) => x.toString(16).padStart(2, '0'))
+      .join('');
+  const modelCache = (async () => {
+    try {
+      return await caches.open('acme-api-search');
+    } catch {
+      return null;
+    }
+  })();
+  const modelFile = (brotli, id, revision, pins) => async (path) => {
+    const sha = pins[path];
+    if (!sha) throw new Error(path + ' is not pinned');
+    const cache = await modelCache;
+    const key = 'https://models.invalid/' + sha;
+    const kept = await cache?.match(key).catch(() => null);
+    if (kept) {
+      const bytes = new Uint8Array(await kept.arrayBuffer());
+      if ((await sha256(bytes)) === sha) return bytes;
+    }
+    const res = await fetch('https://huggingface.co/' + id + '/resolve/' + revision + '/' + path + '.br');
+    if (!res.ok) throw new Error(path + ': HTTP ' + res.status);
+    const raw = new Uint8Array(await res.arrayBuffer());
+    let bytes;
+    try {
+      bytes = brotli.decompress(raw);
+    } catch {
+      bytes = raw; // sent with Content-Encoding: br - the browser decoded it already
+    }
+    if ((await sha256(bytes)) !== sha) throw new Error(path + ': SHA-256 differs from the pinned release');
+    await cache?.put(key, new Response(bytes)).catch(() => {});
+    return bytes;
+  };
+  // one model for both languages, loaded and warmed up once
+  let colbert = null;
+  const loadColbert = () =>
+    (colbert ??= (async () => {
+      const [onnx, brotli] = await MODEL();
+      await brotli.init(BROTLI_WASM);
+      const pin = onnx.MOEDERNCOLBERT_MODELS['1.5m'];
+      const model = onnx.createColbertReranker({
+        model: '1.5m',
+        precision: 'q8',
+        device: 'wasm',
+        numThreads: 1,
+        truncate: true,
+        loadFile: modelFile(brotli, pin.id, pin.revision, pin.files),
+      });
+      await model.encodeQueries(['Acme']);
+      return model;
+    })().catch((e) => {
+      colbert = null;
+      throw e;
+    }));
 
   // df$ comes with the component bundle - a full-screen page loads it after this module
   addEventListener('DOMContentLoaded', async () => {
     const app = df$('[data-ad]').get(0);
     const DATA = JSON.parse(df$('#ad-data').text());
+    // the defuss-rpc reference: rpc.docs.json, the example API as the in-page mock and a wire client, one bundle
+    // (scripts/build-rpc.ts) at the docs root - without it the REST reference works alone
+    const RPC_MODULE = '../js/api-docs/client.js';
+    const RPC = await import(new URL(RPC_MODULE, document.baseURI).href).catch(() => null);
+    const RPC_NS = RPC ? RPC.schema.map((ns) => ({ name: RPC.namespaceName(ns), ns })) : [];
+    // each page as Markdown and JSON (scripts/build-docs.ts writes api-docs/ from the same data)
+    const DOC_FILES = '../api-docs/';
 
     // -- translation: the markup is the frame's catalog; the reference itself comes from the data block
     const locale = createI18n({ locale: 'en' }); // the demos start in English; the language switch offers German
@@ -1610,7 +2090,12 @@
       guide: (g) => (g.id === 'introduction' ? '#/' : '#/guides/' + g.id),
       resource: (r) => '#/ref/' + r.id,
       endpoint: (e) => '#/ref/' + e.resource + '/' + e.id,
+      rpc: () => '#/rpc',
+      namespace: (name) => '#/rpc/' + name,
+      method: (name, m) => '#/rpc/' + name + '/' + m,
     };
+    // an RPC page in ORDER: titles in both languages (the JSDoc is English), a tag and a path for the palette
+    const rpcItem = (title, lead, extra = {}) => ({ en: { title, lead }, ...extra });
     const ORDER = [
       ...DATA.guides.map((g) => ({ kind: 'guide', item: g, href: href.guide(g) })),
       ...DATA.resources.flatMap((r) => [
@@ -1619,6 +2104,30 @@
           .filter((e) => e.resource === r.id)
           .map((e) => ({ kind: 'endpoint', item: e, href: href.endpoint(e) })),
       ]),
+      ...(RPC
+        ? [
+            {
+              kind: 'rpc',
+              item: { en: { title: DATA.words.en.rpcTitle }, de: { title: DATA.words.de.rpcTitle } },
+              href: href.rpc(),
+            },
+            ...RPC_NS.flatMap(({ name, ns }) => [
+              { kind: 'namespace', item: rpcItem(name, ns.description ?? ''), name, ns, href: href.namespace(name) },
+              ...Object.entries(ns.methods).map(([m, doc]) => ({
+                kind: 'method',
+                item: rpcItem(name + '.' + m, doc.description ?? '', {
+                  method: doc.generator ? 'STREAM' : 'RPC',
+                  path: RPC.signature(m, doc),
+                }),
+                name,
+                ns,
+                m,
+                doc,
+                href: href.method(name, m),
+              })),
+            ]),
+          ]
+        : []),
     ];
     const resourceOf = (id) => DATA.resources.find((r) => r.id === id);
     const endpointOf = (resource, id) => DATA.endpoints.find((e) => e.resource === resource && e.id === id);
@@ -1659,6 +2168,24 @@
         for (const e of DATA.endpoints.filter((x) => x.resource === r.id)) {
           const link = el('a', { href: href.endpoint(e), 'data-router-link': '' });
           link.append(method(e.method)).append(el('span', {}, tr(e).title));
+          list.append(el('li').append(link));
+        }
+        group.append(list);
+        nav.append(group);
+      }
+      if (!RPC) return;
+      nav.append(el('p', { class: 'mk-docs-navigation-heading' }, words().rpcGroup));
+      const overview = el('ul');
+      overview.append(el('li').append(el('a', { href: href.rpc(), 'data-router-link': '' }, words().rpcOverview)));
+      nav.append(overview);
+      for (const { name, ns } of RPC_NS) {
+        const group = el('details', { open: '', 'data-ad-group': 'rpc-' + name });
+        group.append(el('summary', { class: 'mk-docs-navigation-heading' }, name));
+        const list = el('ul');
+        list.append(el('li').append(el('a', { href: href.namespace(name), 'data-router-link': '' }, name)));
+        for (const [m, doc] of Object.entries(ns.methods)) {
+          const link = el('a', { href: href.method(name, m), 'data-router-link': '' });
+          link.append(method(doc.generator ? 'STREAM' : 'RPC')).append(el('span', {}, m));
           list.append(el('li').append(link));
         }
         group.append(list);
@@ -2049,6 +2576,25 @@
             );
           cards.append(card);
         }
+      if (g.id === 'introduction' && RPC) {
+        const card = el('a', { class: 'card', href: href.rpc(), 'data-router-link': '' });
+        const head = el('div', { class: 'card-header' });
+        head
+          .append(el('h3', { class: 'card-title' }, words().rpcTitle))
+          .append(el('p', { class: 'card-description' }, words().rpcCard));
+        card
+          .append(head)
+          .append(
+            el('div', { class: 'card-footer' }).append(
+              el(
+                'span',
+                { class: 'badge', 'data-variant': 'secondary' },
+                fmt(words().methods, { n: ORDER.filter((o) => o.kind === 'method').length }),
+              ),
+            ),
+          );
+        cards.append(card);
+      }
       return box;
     };
     const resource = (r) => {
@@ -2188,6 +2734,434 @@
       return box;
     };
 
+    // -- defuss-rpc: the overview, a namespace, a method
+    const rpcNamespace = (entry) => {
+      const box = view('rpc-ns');
+      df$(box)
+        .find('[data-ad-rn-crumb]')
+        .text(entry ? entry.name : '');
+      df$(box).find('[data-ad-rn-sep]').prop('hidden', !entry);
+      df$(box)
+        .find('[data-ad-rn-title]')
+        .text(entry ? entry.name : words().rpcTitle);
+      df$(box)
+        .find('[data-ad-rn-lead]')
+        .text(
+          entry
+            ? (entry.ns.description ?? '') + ' ' + (entry.ns.kind === 'class' ? words().classNote : words().moduleNote)
+            : words().rpcLead,
+        );
+      prose(df$(box).find('[data-ad-rn-body]'), entry ? [] : words().rpcBody);
+      const cards = df$(box).find('[data-ad-rn-cards]');
+      cards.html('');
+      const ops = df$(box).find('[data-ad-rn-ops]');
+      ops.html('');
+      if (!entry)
+        for (const { name, ns } of RPC_NS) {
+          const card = el('a', { class: 'card', href: href.namespace(name), 'data-router-link': '' });
+          const head = el('div', { class: 'card-header' });
+          head
+            .append(el('h3', { class: 'card-title' }, name))
+            .append(el('p', { class: 'card-description' }, ns.description ?? ''));
+          card
+            .append(head)
+            .append(
+              el('div', { class: 'card-footer' }).append(
+                el(
+                  'span',
+                  { class: 'badge', 'data-variant': 'secondary' },
+                  fmt(words().methods, { n: Object.keys(ns.methods).length }),
+                ),
+              ),
+            );
+          cards.append(card);
+        }
+      else
+        for (const [m, doc] of Object.entries(entry.ns.methods)) {
+          const link = el('a', { href: href.method(entry.name, m), 'data-router-link': '' });
+          link
+            .append(method(doc.generator ? 'STREAM' : 'RPC'))
+            .append(el('span', {}, doc.description ?? m))
+            .append(el('code', {}, RPC.signature(m, doc)));
+          ops.append(el('li').append(link));
+        }
+      return box;
+    };
+
+    // a value in a line: JSON, with a Map as an object, a Set as a list and a BigInt as its digits
+    const line = (value) =>
+      JSON.stringify(value, (_k, v) =>
+        v instanceof Map ? Object.fromEntries(v) : v instanceof Set ? [...v] : typeof v === 'bigint' ? String(v) : v,
+      ) ?? 'undefined';
+    // a field's text, or a tree's value, as the argument the method declares: a date string becomes a Date, a list a
+    // Set where the schema says x-dson set - what the generated client would send
+    const revive = (value, schema) => {
+      if (!schema || value === null || value === undefined) return value;
+      if (Array.isArray(schema.anyOf))
+        return revive(value, schema.anyOf.find((x) => x.type !== 'null') ?? schema.anyOf[0]);
+      const kind = schema['x-dson'];
+      if (kind === 'date' && typeof value === 'string') return new Date(value);
+      if (kind === 'bigint' && (typeof value === 'string' || typeof value === 'number')) return BigInt(value);
+      if (kind === 'set' && Array.isArray(value)) return new Set(value.map((x) => revive(x, schema.items)));
+      if (kind === 'map' && value && typeof value === 'object' && !(value instanceof Map))
+        return new Map(Object.entries(value).map(([k, x]) => [k, revive(x, schema.additionalProperties)]));
+      if (Array.isArray(value)) return value.map((x) => revive(x, schema.items));
+      if (typeof value === 'object' && schema.properties)
+        return Object.fromEntries(Object.entries(value).map(([k, x]) => [k, revive(x, schema.properties[k])]));
+      return value;
+    };
+    // how a parameter is edited: a select for an enum or a boolean, a number field, a text field, else a Property Tree
+    const fieldKind = (schema = {}) => {
+      if (Array.isArray(schema.enum)) return 'enum';
+      const type = Array.isArray(schema.type) ? schema.type[0] : schema.type;
+      if (type === 'boolean') return 'boolean';
+      if (type === 'number' || type === 'integer') return schema['x-dson'] === 'bigint' ? 'text' : 'number';
+      if (type === 'string') return 'text';
+      return 'tree';
+    };
+    // a tree as high as the rows it shows open: the root and its entries (at least `min`, at most 14)
+    const openRows = (value, expanded) => {
+      let n = 1;
+      const walk = (v, ptr) => {
+        if (!v || typeof v !== 'object' || (ptr !== '' && !expanded.has(ptr))) return;
+        const entries = v instanceof Map ? [...v] : v instanceof Set ? [...v].map((x, i) => [i, x]) : Object.entries(v);
+        for (const [k, x] of entries) {
+          n++;
+          if (n > 14) return;
+          walk(x, ptr + '/' + String(k).replace(/~/g, '~0').replace(/\//g, '~1'));
+        }
+      };
+      walk(value, '');
+      return n;
+    };
+    const rpcFit = (tree, value, min = 1) => {
+      const size = () => {
+        const expanded = new Set(tree.api?.getState().config.expanded ?? []);
+        const rows = openRows(df$.shadcn.propertyTree.value(tree) ?? value, expanded);
+        tree.style.blockSize = 'calc(' + Math.min(Math.max(rows, min), 14) + ' * 1.75rem + 2px)';
+      };
+      size();
+      // opening a row grows the tree (VERIFIED: a 4-row answer held 35 rows in 140px after three rows opened)
+      if (tree.store && !tree.dataset.adFit) {
+        tree.dataset.adFit = '';
+        tree.store.subscribe(size);
+      }
+    };
+    let call = null; // the method shown: { name, m, doc }
+    const rpcValues = new Map(); // "Namespace.method" -> the form's values, one per parameter
+    const rpcValuesOf = (c) => {
+      const key = c.name + '.' + c.m;
+      if (!rpcValues.has(key)) {
+        const args = RPC.exampleArgs(c.doc);
+        rpcValues.set(
+          key,
+          (c.doc.params ?? []).map((p, i) => {
+            const v = i < args.length ? args[i] : p.optional ? undefined : RPC.exampleValue(p.schema, p.name);
+            return fieldKind(p.schema) === 'tree'
+              ? (v ?? RPC.exampleValue(p.schema, p.name))
+              : v === undefined
+                ? ''
+                : String(v);
+          }),
+        );
+      }
+      return rpcValues.get(key);
+    };
+    // the arguments as JSON values (the samples) and as the values the method takes (the call)
+    const rpcArgs = (c) => {
+      const params = c.doc.params ?? [];
+      const raw = rpcValuesOf(c);
+      const json = params.map((p, i) => {
+        const v = raw[i];
+        const kind = fieldKind(p.schema);
+        if (kind === 'tree') return v;
+        if (v === '') return undefined;
+        if (kind === 'number') return Number(v);
+        if (kind === 'boolean') return v === 'true';
+        return v;
+      });
+      while (json.length && json[json.length - 1] === undefined && params[json.length - 1]?.optional) json.pop();
+      return { json, values: json.map((v, i) => revive(v, params[i].schema)) };
+    };
+    const rpcTarget = () =>
+      df$('[data-ad-rpc-target]').val() === 'server'
+        ? { kind: 'server', url: df$('[data-ad-rpc-url]').val().trim() }
+        : { kind: 'page' };
+    let rpcShownSamples = {};
+    const writeRpcSamples = () => {
+      if (!call) return;
+      const t = rpcTarget();
+      const s = (rpcShownSamples = RPC.rpcSamples(
+        call.name,
+        call.m,
+        call.doc,
+        rpcArgs(call).json,
+        t.kind === 'server' ? t.url : RPC.RPC_SERVER,
+      ));
+      df$('[data-ad-rsample]').each((_i, code) => {
+        write(code, s[code.dataset.adRsample]);
+      });
+      paint();
+    };
+    const resetAnswer = () => {
+      df$('[data-ad-rpc-status]').text('').attr('data-class', '');
+      df$('[data-ad-rpc-time]').text('');
+      df$('[data-ad-rpc-empty]').prop('hidden', false);
+      df$('[data-ad-rpc-error]').prop('hidden', true).text('');
+      df$('[data-ad-rpc-frames]').prop('hidden', true).html('');
+      df$('[data-ad-rpc-result]').prop('hidden', true);
+    };
+    const rpcMethod = (entry, m) => {
+      const box = view('rpc-method');
+      const doc = entry.ns.methods[m];
+      const changed = !call || call.name !== entry.name || call.m !== m;
+      call = { name: entry.name, m, doc };
+      df$(box).find('[data-ad-rm-crumb]').attr('href', href.namespace(entry.name)).text(entry.name);
+      df$(box).find('[data-ad-rm-crumb-page]').text(m);
+      df$(box)
+        .find('[data-ad-rm-title]')
+        .text(entry.name + '.' + m);
+      const badges = df$(box).find('[data-ad-rm-badges]');
+      badges.html('');
+      badges.append(method(doc.generator ? 'STREAM' : 'RPC'));
+      badges.append(
+        el('span', { class: 'badge', 'data-variant': 'secondary' }, doc.generator ? words().stream : words().once),
+      );
+      if (doc.deprecated)
+        badges.append(el('span', { class: 'badge', 'data-variant': 'destructive' }, words().deprecated));
+      write(df$(box).find('[data-ad-rm-signature]').get(0), RPC.signature(m, doc));
+      df$(box)
+        .find('[data-ad-rm-lead]')
+        .text(doc.description ?? '');
+      // the documentation: parameters, the value (and a stream's values), errors, examples
+      const docs = df$(box).find('[data-ad-rm-docs]');
+      docs.html('');
+      if (typeof doc.deprecated === 'string')
+        docs.append(el('p', { class: 'ad-rpc-error' }, words().deprecated + ': ' + doc.deprecated));
+      docs.append(el('h2', { class: 'text-lg font-semibold mb-3' }, words().params));
+      const params = doc.params ?? [];
+      if (!params.length) docs.append(el('p', { class: 'mb-4' }, words().noParams));
+      else {
+        const ul = el('ul', { class: 'ad-params' });
+        for (const p of params) {
+          const head = el('div', { class: 'ad-param-head' })
+            .append(el('code', {}, (p.rest ? '...' : '') + p.name))
+            .append(el('span', { class: 'ad-type' }, p.type ?? ''));
+          head.append(
+            el(
+              'span',
+              { class: p.optional ? 'ad-type' : 'ad-required' },
+              p.optional ? words().optional : words().required,
+            ),
+          );
+          ul.append(
+            el('li', { 'data-param': p.name })
+              .append(head)
+              .append(el('p', {}, p.description ?? '')),
+          );
+        }
+        docs.append(ul);
+      }
+      for (const [label, value] of [
+        [doc.generator ? words().yields : words().returns, doc.generator ? doc.yields : doc.returns],
+        ...(doc.generator ? [[words().returns, doc.returns]] : []),
+      ]) {
+        if (!value) continue;
+        docs.append(el('h2', { class: 'text-lg font-semibold mb-3' }, label));
+        const ul = el('ul', { class: 'ad-params' });
+        ul.append(
+          el('li', { 'data-returns': label })
+            .append(el('div', { class: 'ad-param-head' }).append(el('span', { class: 'ad-type' }, value.type ?? '')))
+            .append(el('p', {}, value.description ?? '')),
+        );
+        docs.append(ul);
+      }
+      if (doc.throws?.length) {
+        docs.append(el('h2', { class: 'text-lg font-semibold mb-3' }, words().throws));
+        const ul = el('ul', { class: 'ad-params' });
+        for (const text of doc.throws) ul.append(el('li').append(el('p', {}, text)));
+        docs.append(ul);
+      }
+      if (doc.examples?.length) {
+        docs.append(el('h2', { class: 'text-lg font-semibold mb-3' }, words().examples));
+        for (const text of doc.examples)
+          docs.append(el('pre', { class: 'ad-signature', 'data-lang': 'ts', 'data-ad-rm-example': '' }, text));
+      }
+      // the form: one field per parameter, the values kept per method
+      const fields = df$(box).find('[data-ad-rpc-fields]');
+      fields.html('');
+      const v = rpcValuesOf(call);
+      params.forEach((p, i) => {
+        const id = 'ad-rpc-arg-' + p.name;
+        const kind = fieldKind(p.schema);
+        const field = el('div', {
+          class: 'ad-field' + (kind === 'tree' ? ' ad-rpc-wide' : ''),
+          'data-ad-rpc-arg': p.name,
+        });
+        field.append(el('label', { class: 'label', for: id }, p.name + (p.optional ? '' : ' *')));
+        if (kind === 'tree') {
+          const tree = el('div', {
+            class: 'property-tree ad-rpc-tree',
+            id,
+            'data-ad-rpc-index': String(i),
+            'aria-label': p.name,
+          });
+          field.append(tree);
+          fields.append(field);
+          df$.shadcn.propertyTree.configure(tree.get(0), { value: structuredClone(v[i]) });
+          rpcFit(tree.get(0), v[i], 4);
+          return;
+        }
+        let input;
+        if (kind === 'enum' || kind === 'boolean') {
+          input = el('select', { class: 'select', id, 'data-ad-rpc-index': String(i), 'data-size': 'sm' });
+          if (p.optional) input.append(el('option', { value: '' }, '-'));
+          for (const value of kind === 'enum' ? p.schema.enum : [true, false])
+            input.append(el('option', { value: String(value) }, String(value)));
+        } else
+          input = el('input', {
+            class: 'input',
+            id,
+            'data-ad-rpc-index': String(i),
+            type: kind === 'number' ? 'number' : 'text',
+            autocomplete: 'off',
+            spellcheck: 'false',
+            'data-size': 'sm',
+            placeholder: p.type ?? '',
+          });
+        input.val(v[i]);
+        fields.append(field.append(input));
+      });
+      if (changed) resetAnswer();
+      writeRpcSamples();
+      return box;
+    };
+    const rpcForm = df$('[data-ad-rpc-try]');
+    const takeField = (event) => {
+      const i = event.target.dataset?.adRpcIndex;
+      if (!call || i === undefined || event.target.classList.contains('property-tree')) return;
+      rpcValuesOf(call)[Number(i)] = event.target.value;
+      writeRpcSamples();
+    };
+    rpcForm.on('input', takeField);
+    rpcForm.on('change', takeField);
+    rpcForm.on('property-tree-change', (event) => {
+      const tree = event.target.closest('.property-tree');
+      if (!call || !tree?.dataset.adRpcIndex) return;
+      rpcValuesOf(call)[Number(tree.dataset.adRpcIndex)] = df$.shadcn.propertyTree.value(tree);
+      rpcFit(tree, df$.shadcn.propertyTree.value(tree), 4);
+      writeRpcSamples();
+    });
+    // the target: the example in the page, or a server - asked for its schema first, so a wrong URL says so at once
+    const conn = df$('[data-ad-rpc-conn]');
+    let checked = '';
+    const checkServer = async () => {
+      const t = rpcTarget();
+      if (t.kind !== 'server') {
+        conn.text('');
+        return true;
+      }
+      conn.text(fmt(words().connChecking, { s: t.url }));
+      try {
+        const served = await RPC.served(t.url);
+        const names = new Map(served.map((e) => [e.className ?? e.moduleName, e]));
+        const missing = call && !names.get(call.name)?.methods?.[call.m];
+        conn.text(
+          missing
+            ? fmt(words().connMissing, { s: t.url, m: call.name + '.' + call.m })
+            : fmt(words().connOk, { s: t.url, n: served.length }),
+        );
+        app.setAttribute('data-rpc-server', missing ? 'missing' : 'ok');
+        checked = t.url;
+        return !missing;
+      } catch (e) {
+        conn.text(fmt(words().connFail, { s: t.url, e: e?.message ?? String(e) }));
+        app.setAttribute('data-rpc-server', 'failed');
+        checked = '';
+        return false;
+      }
+    };
+    df$('[data-ad-rpc-target]').on('change', () => {
+      df$('[data-ad-rpc-server]').prop('hidden', rpcTarget().kind !== 'server');
+      writeRpcSamples();
+      checkServer();
+    });
+    df$('[data-ad-rpc-url]').on('change', () => {
+      writeRpcSamples();
+      checkServer();
+    });
+    rpcForm.on('reset', (event) => {
+      event.preventDefault();
+      if (!call) return;
+      rpcValues.delete(call.name + '.' + call.m);
+      // the example's data starts over too
+      RPC.reset();
+      const { name, m } = call;
+      call = null;
+      rpcMethod(
+        RPC_NS.find((x) => x.name === name),
+        m,
+      );
+    });
+    rpcForm.on('submit', async (event) => {
+      event.preventDefault();
+      if (!call) return;
+      const t = rpcTarget();
+      if (t.kind === 'server' && checked !== t.url && !(await checkServer())) return;
+      resetAnswer();
+      df$('[data-ad-rpc-empty]').prop('hidden', true);
+      const frames = df$('[data-ad-rpc-frames]');
+      const answer = await RPC.call(t, call.name, call.m, rpcArgs(call).values, (value) => {
+        frames.prop('hidden', false).append(el('li', {}, line(value)));
+      });
+      df$('[data-ad-rpc-status]')
+        .attr('data-class', String(answer.status || 5)[0])
+        .text(answer.status ? String(answer.status) : 'network');
+      df$('[data-ad-rpc-time]').text(
+        fmt(words().ms, { t: answer.ms }) + ' · ' + (t.kind === 'server' ? t.url : words().inPage),
+      );
+      if (answer.error) df$('[data-ad-rpc-error]').prop('hidden', false).text(answer.error);
+      if ('value' in answer) {
+        const tree = df$('[data-ad-rpc-result]').prop('hidden', false).get(0);
+        df$.shadcn.propertyTree.configure(tree, { value: answer.value });
+        rpcFit(tree, answer.value);
+      }
+      app.dispatchEvent(
+        new CustomEvent('ad-rpc-answer', {
+          detail: { status: answer.status, target: t.kind, frames: answer.frames?.length ?? 0 },
+        }),
+      );
+    });
+    df$('[data-ad-rpc-copy]').on('click', () => {
+      const tab = df$('[data-ad-rpc-samples] input:checked').val();
+      const key = tab === 'rcurl' ? 'curl' : tab === 'fetch' ? 'js' : 'ts';
+      copy(
+        rpcShownSamples[key],
+        df$('[data-ad-rsample="' + key + '"]').get(0),
+        df$('[data-ad-rpc-samples] .mk-code-block-status'),
+      );
+    });
+
+    // each page as Markdown and JSON: the route's file under api-docs/
+    const docPath = (route) =>
+      route === '#/' ? 'guides/introduction' : route === '#/rpc' ? 'rpc/index' : route.slice(2);
+    const docLinks = (box, route) => {
+      const links = df$(box).find('[data-ad-doc-links]');
+      links.html('');
+      const path = DOC_FILES + docPath(route);
+      links.append(el('span', {}, words().pageAs));
+      links.append(
+        el('a', { href: path + '.md', target: '_blank', rel: 'noopener', 'data-ad-doc-md': '' })
+          .append(el('i', { 'data-lucide': 'file-text' }))
+          .append(el('span', {}, words().asMarkdown)),
+      );
+      links.append(
+        el('a', { href: path + '.json', target: '_blank', rel: 'noopener', 'data-ad-doc-json': '' })
+          .append(el('i', { 'data-lucide': 'braces' }))
+          .append(el('span', {}, words().asJson)),
+      );
+    };
+
     // the try-it form: typing updates the samples, Send asks the sandbox, Reset brings the examples back
     const form = df$('[data-ad-try]');
     form.on('input', (event) => {
@@ -2305,6 +3279,31 @@
               body: t.lead + ' ' + o.item.fields.map((f) => f[0] + ' ' + (l === 'de' ? f[3] : f[2])).join(' '),
             },
           };
+        if (o.kind === 'rpc')
+          return { id: String(i), fields: { title: t.title, path: 'defuss-rpc', body: DATA.words[l].rpcLead } };
+        if (o.kind === 'namespace')
+          return {
+            id: String(i),
+            fields: {
+              title: t.title,
+              path: o.name,
+              body: (o.ns.description ?? '') + ' ' + Object.keys(o.ns.methods).join(' '),
+            },
+          };
+        if (o.kind === 'method')
+          return {
+            id: String(i),
+            fields: {
+              title: t.title + ' ' + o.m,
+              path: o.item.path,
+              body:
+                (o.doc.description ?? '') +
+                ' ' +
+                (o.doc.params ?? []).map((p) => p.name + ' ' + (p.description ?? '')).join(' ') +
+                ' ' +
+                (o.doc.returns?.description ?? ''),
+            },
+          };
         return {
           id: String(i),
           fields: {
@@ -2316,6 +3315,12 @@
       });
     };
     let searches = null;
+    // search by meaning: the state the palette's status line names, on the app root for the tests too
+    const meaning = () => {
+      if (!searches) return 'off';
+      const states = Object.values(searches).map((x) => x.state);
+      return states.includes('failed') ? 'failed' : states.every((x) => x === 'semantic') ? 'semantic' : 'loading';
+    };
     SEARCH.then(([lexical, en, de, strategies]) => {
       searches = {};
       for (const [l, analyzer] of [
@@ -2326,10 +3331,34 @@
           analyzer,
           fields: { title: { weight: 3 }, path: { weight: 2 }, body: {} },
         });
-        index.addAll(documents(l));
-        searches[l] = strategies.createLexicalOnlySearch(index, { lexical: { search: { prefix: true, fuzzy: true } } });
+        const docs = documents(l);
+        index.addAll(docs);
+        // the tiny strategy: ColBERT encodes this language's documents once and scans their tokens for each query
+        const texts = docs.map((d) => ({
+          id: d.id,
+          text: (d.fields.title + '. ' + d.fields.path + ' ' + d.fields.body).trim(),
+        }));
+        searches[l] = progressiveSearch(strategies, index, {
+          lexical: { search: { prefix: true, fuzzy: true } },
+          semantic: async (built) =>
+            strategies.createLexicalSemanticTinySearch(built, {
+              documents: texts,
+              colbert: await loadColbert(),
+              lexical: { search: { prefix: true, fuzzy: true } },
+            }),
+        });
+        searches[l].subscribe(() => {
+          app.setAttribute('data-semantic', meaning());
+          if (df$('#ad-find').get(0).open) find();
+        });
       }
       app.setAttribute('data-search', 'ready');
+      // the model loads in the background once the page is idle - not under the data saver
+      if (navigator.connection?.saveData) app.setAttribute('data-semantic', 'saver');
+      else
+        (globalThis.requestIdleCallback ?? ((fn) => setTimeout(fn, 200)))(() => {
+          for (const x of Object.values(searches)) x.load().catch(() => {});
+        });
       if (df$('#ad-find').get(0).open) find();
     }).catch(() => app.setAttribute('data-search', 'plain'));
 
@@ -2338,10 +3367,10 @@
     const status = df$('[data-ad-find-status]');
     const hit = (o) => {
       const item = el('a', { class: 'command-item', href: o.href, 'data-router-link': '' });
-      if (o.kind === 'endpoint') item.append(method(o.item.method));
-      else item.append(el('i', { 'data-lucide': o.kind === 'guide' ? 'book-open' : 'box' }));
+      if (o.item.method) item.append(method(o.item.method));
+      else item.append(el('i', { 'data-lucide': o.kind === 'guide' || o.kind === 'rpc' ? 'book-open' : 'box' }));
       item.append(el('span', {}, tr(o.item).title));
-      if (o.kind === 'endpoint') item.append(el('span', { class: 'ad-hit-path' }, o.item.path));
+      if (o.item.path) item.append(el('span', { class: 'ad-hit-path' }, o.item.path));
       return item;
     };
     const group = (heading, list) => {
@@ -2359,13 +3388,15 @@
       if (!text) {
         // no query: the guides and the resources, to browse
         list = ORDER.filter((o) => o.kind !== 'endpoint');
-        status.text(searches ? '' : words().loading);
+        const state = app.getAttribute('data-semantic');
+        status.text(!searches ? words().loading : (words()['meaning-' + state] ?? words()['meaning-loading']));
       } else if (searches) {
         const t0 = performance.now();
-        const found = await searches[lang()].search({ text }, { limit: 12 });
+        const found = await searches[lang()].searchWithStats({ text }, { limit: 12 });
         if (ask !== asked) return;
-        list = found.map((h) => ORDER[Number(h.id)]);
-        status.text(fmt(words().results, { n: list.length, t: (performance.now() - t0).toFixed(1) }));
+        list = found.hits.map((h) => ORDER[Number(h.id)]);
+        const line = found.source === 'semantic' ? words().resultsMeaning : words().results;
+        status.text(fmt(line, { n: list.length, t: (performance.now() - t0).toFixed(1) }));
       } else {
         const needle = text.toLowerCase();
         list = ORDER.filter((o) => (tr(o.item).title + ' ' + (o.item.path ?? '')).toLowerCase().includes(needle));
@@ -2398,6 +3429,9 @@
       { id: 'guide', path: '/guides/:guide' },
       { id: 'resource', path: '/ref/:resource' },
       { id: 'endpoint', path: '/ref/:resource/:op' },
+      { id: 'rpc', path: '/rpc' },
+      { id: 'namespace', path: '/rpc/:ns' },
+      { id: 'method', path: '/rpc/:ns/:method' },
       { id: 'missing', path: '*' },
     ];
     let shownPath = null;
@@ -2407,9 +3441,21 @@
       const g = to.routeId === 'guide' ? DATA.guides.find((x) => x.id === p.guide) : null;
       const r = to.routeId === 'resource' ? resourceOf(p.resource) : null;
       const e = to.routeId === 'endpoint' ? endpointOf(p.resource, p.op) : null;
+      const rns =
+        RPC && (to.routeId === 'namespace' || to.routeId === 'method') ? RPC_NS.find((x) => x.name === p.ns) : null;
+      const rm = rns && to.routeId === 'method' && rns.ns.methods[p.method] ? p.method : null;
       let box;
       let target;
-      if (e) {
+      if (rm) {
+        box = rpcMethod(rns, rm);
+        target = href.method(rns.name, rm);
+      } else if (rns) {
+        box = rpcNamespace(rns);
+        target = href.namespace(rns.name);
+      } else if (RPC && to.routeId === 'rpc') {
+        box = rpcNamespace(null);
+        target = href.rpc();
+      } else if (e) {
         box = endpoint(e);
         target = href.endpoint(e);
       } else if (r) {
@@ -2423,6 +3469,7 @@
       df$('[data-ad-view]').each((_i, section) => {
         section.hidden = section !== box;
       });
+      docLinks(box, target);
       pager(
         box,
         ORDER.findIndex((o) => o.href === target),

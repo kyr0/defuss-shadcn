@@ -1,0 +1,621 @@
+[
+  {
+    "kind": "class",
+    "className": "Tasks",
+    "description": "The tasks of the workspace. A class: the server makes a fresh instance for every call.",
+    "methods": {
+      "list": {
+        "async": true,
+        "generator": false,
+        "description": "Lists the tasks, newest first.",
+        "params": [
+          {
+            "name": "filter",
+            "type": "{ status?: TaskStatus; assignee?: string; limit?: number; }",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "enum": [
+                    "todo",
+                    "doing",
+                    "done"
+                  ]
+                },
+                "assignee": {
+                  "type": "string"
+                },
+                "limit": {
+                  "type": "number"
+                }
+              }
+            },
+            "optional": true,
+            "description": "Only the tasks that match every given field."
+          }
+        ],
+        "returns": {
+          "type": "Task[]",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Its id, `t_` and a number."
+                },
+                "title": {
+                  "type": "string",
+                  "description": "What has to be done."
+                },
+                "status": {
+                  "enum": [
+                    "todo",
+                    "doing",
+                    "done"
+                  ]
+                },
+                "assignee": {
+                  "type": "string",
+                  "description": "The member it is assigned to, by id."
+                },
+                "due": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-dson": "date",
+                  "description": "When it is due."
+                },
+                "labels": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "x-dson": "set",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Labels, each at most once."
+                },
+                "created": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-dson": "date"
+                }
+              },
+              "required": [
+                "id",
+                "title",
+                "status",
+                "labels",
+                "created"
+              ]
+            }
+          },
+          "description": "The matching tasks, at most `filter.limit` (default 20)."
+        },
+        "examples": [
+          "await rpc.Tasks.list({ status: \"todo\" })"
+        ]
+      },
+      "get": {
+        "async": true,
+        "generator": false,
+        "description": "Retrieves one task.",
+        "params": [
+          {
+            "name": "id",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The task's id."
+          }
+        ],
+        "returns": {
+          "type": "Task",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Its id, `t_` and a number."
+              },
+              "title": {
+                "type": "string",
+                "description": "What has to be done."
+              },
+              "status": {
+                "enum": [
+                  "todo",
+                  "doing",
+                  "done"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "description": "The member it is assigned to, by id."
+              },
+              "due": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date",
+                "description": "When it is due."
+              },
+              "labels": {
+                "type": "array",
+                "uniqueItems": true,
+                "x-dson": "set",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Labels, each at most once."
+              },
+              "created": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "status",
+              "labels",
+              "created"
+            ]
+          },
+          "description": "The task."
+        },
+        "throws": [
+          "RpcError when there is no task with that id"
+        ]
+      },
+      "create": {
+        "async": true,
+        "generator": false,
+        "description": "Creates a task in the To do column.",
+        "params": [
+          {
+            "name": "input",
+            "type": "NewTask",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "assignee": {
+                  "type": "string"
+                },
+                "due": {
+                  "type": "string",
+                  "format": "date-time",
+                  "x-dson": "date"
+                },
+                "labels": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "title"
+              ]
+            },
+            "description": "Its title and, optionally, who does it, when it is due and its labels."
+          }
+        ],
+        "returns": {
+          "type": "Task",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Its id, `t_` and a number."
+              },
+              "title": {
+                "type": "string",
+                "description": "What has to be done."
+              },
+              "status": {
+                "enum": [
+                  "todo",
+                  "doing",
+                  "done"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "description": "The member it is assigned to, by id."
+              },
+              "due": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date",
+                "description": "When it is due."
+              },
+              "labels": {
+                "type": "array",
+                "uniqueItems": true,
+                "x-dson": "set",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Labels, each at most once."
+              },
+              "created": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "status",
+              "labels",
+              "created"
+            ]
+          },
+          "description": "The new task, with its id."
+        },
+        "throws": [
+          "RpcError when the title is empty"
+        ],
+        "examples": [
+          "await rpc.Tasks.create({ title: \"Write the release notes\", labels: [\"release\"] })"
+        ]
+      },
+      "move": {
+        "async": true,
+        "generator": false,
+        "description": "Moves a task to another column.",
+        "params": [
+          {
+            "name": "id",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The task's id."
+          },
+          {
+            "name": "status",
+            "type": "TaskStatus",
+            "schema": {
+              "enum": [
+                "todo",
+                "doing",
+                "done"
+              ]
+            },
+            "description": "Where it goes."
+          }
+        ],
+        "returns": {
+          "type": "Task",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Its id, `t_` and a number."
+              },
+              "title": {
+                "type": "string",
+                "description": "What has to be done."
+              },
+              "status": {
+                "enum": [
+                  "todo",
+                  "doing",
+                  "done"
+                ]
+              },
+              "assignee": {
+                "type": "string",
+                "description": "The member it is assigned to, by id."
+              },
+              "due": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date",
+                "description": "When it is due."
+              },
+              "labels": {
+                "type": "array",
+                "uniqueItems": true,
+                "x-dson": "set",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Labels, each at most once."
+              },
+              "created": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date"
+              }
+            },
+            "required": [
+              "id",
+              "title",
+              "status",
+              "labels",
+              "created"
+            ]
+          },
+          "description": "The task as it is now."
+        },
+        "throws": [
+          "RpcError when there is no task with that id"
+        ]
+      },
+      "remove": {
+        "async": true,
+        "generator": false,
+        "description": "Deletes a task.",
+        "params": [
+          {
+            "name": "id",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            },
+            "description": "The task's id."
+          }
+        ],
+        "returns": {
+          "type": "boolean",
+          "schema": {
+            "type": "boolean"
+          },
+          "description": "True when a task was deleted, false when there was none."
+        }
+      }
+    },
+    "properties": {}
+  },
+  {
+    "kind": "module",
+    "moduleName": "Members",
+    "description": "The people in the workspace. A module: one shared object.",
+    "methods": {
+      "list": {
+        "async": true,
+        "generator": false,
+        "description": "Lists the members.",
+        "params": [
+          {
+            "name": "role",
+            "type": "Role | undefined",
+            "schema": {
+              "enum": [
+                "admin",
+                "member",
+                "guest"
+              ]
+            },
+            "optional": true,
+            "description": "Only the members with this role."
+          }
+        ],
+        "returns": {
+          "type": "Member[]",
+          "schema": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "role": {
+                  "enum": [
+                    "admin",
+                    "member",
+                    "guest"
+                  ]
+                },
+                "invited": {
+                  "type": "boolean",
+                  "description": "Invited members have not accepted yet."
+                }
+              },
+              "required": [
+                "id",
+                "email",
+                "role",
+                "invited"
+              ]
+            }
+          },
+          "description": "The members, in the order they joined."
+        }
+      },
+      "invite": {
+        "async": true,
+        "generator": false,
+        "description": "Invites someone by email; they stay invited until they accept.",
+        "params": [
+          {
+            "name": "email",
+            "type": "string",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Where the invitation goes."
+          },
+          {
+            "name": "role",
+            "type": "Role",
+            "schema": {
+              "enum": [
+                "admin",
+                "member",
+                "guest"
+              ]
+            },
+            "optional": true,
+            "description": "What they may do, member by default."
+          }
+        ],
+        "returns": {
+          "type": "Member",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "role": {
+                "enum": [
+                  "admin",
+                  "member",
+                  "guest"
+                ]
+              },
+              "invited": {
+                "type": "boolean",
+                "description": "Invited members have not accepted yet."
+              }
+            },
+            "required": [
+              "id",
+              "email",
+              "role",
+              "invited"
+            ]
+          },
+          "description": "The invited member."
+        },
+        "throws": [
+          "RpcError when the email is not an address or is already a member"
+        ]
+      }
+    }
+  },
+  {
+    "kind": "module",
+    "moduleName": "Activity",
+    "description": "What happens in the workspace, as a stream.",
+    "methods": {
+      "recent": {
+        "async": true,
+        "generator": true,
+        "description": "Streams the latest changes, oldest first - an async generator: the client receives each event as it is sent.",
+        "params": [
+          {
+            "name": "count",
+            "type": "number",
+            "schema": {
+              "type": "number"
+            },
+            "optional": true,
+            "description": "How many events to send."
+          }
+        ],
+        "yields": {
+          "type": "ActivityEvent",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "task": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "done",
+                  "created",
+                  "moved",
+                  "assigned"
+                ],
+                "description": "What happened: created, moved, assigned or done."
+              },
+              "at": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date"
+              },
+              "by": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "task",
+              "kind",
+              "at",
+              "by"
+            ]
+          },
+          "description": "One change to a task."
+        },
+        "returns": {
+          "type": "number",
+          "schema": {
+            "type": "number"
+          },
+          "description": "How many events were sent."
+        }
+      }
+    }
+  },
+  {
+    "kind": "module",
+    "moduleName": "Stats",
+    "description": "Figures about the workspace.",
+    "methods": {
+      "summary": {
+        "async": true,
+        "generator": false,
+        "description": "Counts the tasks per column and per assignee.",
+        "returns": {
+          "type": "{ byStatus: Record<TaskStatus, number>; byAssignee: Map<string, number>; at: Date; }",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "byStatus": {
+                "type": "object",
+                "properties": {
+                  "todo": {},
+                  "doing": {},
+                  "done": {}
+                },
+                "required": [
+                  "todo",
+                  "doing",
+                  "done"
+                ]
+              },
+              "byAssignee": {
+                "type": "object",
+                "x-dson": "map",
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "at": {
+                "type": "string",
+                "format": "date-time",
+                "x-dson": "date"
+              }
+            },
+            "required": [
+              "byStatus",
+              "byAssignee",
+              "at"
+            ]
+          },
+          "description": "A Map per assignee and the time of the count - DSON keeps both types on the way to the client."
+        }
+      }
+    }
+  }
+]

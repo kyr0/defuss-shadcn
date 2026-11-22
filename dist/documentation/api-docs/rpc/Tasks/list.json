@@ -1,0 +1,106 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Tasks/list",
+  "namespace": "Tasks",
+  "name": "list",
+  "signature": "async list(filter?: { status?: TaskStatus; assignee?: string; limit?: number; }): Promise<Task[]>",
+  "async": true,
+  "generator": false,
+  "description": "Lists the tasks, newest first.",
+  "params": [
+    {
+      "name": "filter",
+      "type": "{ status?: TaskStatus; assignee?: string; limit?: number; }",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "enum": [
+              "todo",
+              "doing",
+              "done"
+            ]
+          },
+          "assignee": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "number"
+          }
+        }
+      },
+      "optional": true,
+      "description": "Only the tasks that match every given field."
+    }
+  ],
+  "returns": {
+    "type": "Task[]",
+    "schema": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Its id, `t_` and a number."
+          },
+          "title": {
+            "type": "string",
+            "description": "What has to be done."
+          },
+          "status": {
+            "enum": [
+              "todo",
+              "doing",
+              "done"
+            ]
+          },
+          "assignee": {
+            "type": "string",
+            "description": "The member it is assigned to, by id."
+          },
+          "due": {
+            "type": "string",
+            "format": "date-time",
+            "x-dson": "date",
+            "description": "When it is due."
+          },
+          "labels": {
+            "type": "array",
+            "uniqueItems": true,
+            "x-dson": "set",
+            "items": {
+              "type": "string"
+            },
+            "description": "Labels, each at most once."
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "x-dson": "date"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "status",
+          "labels",
+          "created"
+        ]
+      }
+    },
+    "description": "The matching tasks, at most `filter.limit` (default 20)."
+  },
+  "examples": [
+    "await rpc.Tasks.list({ status: \"todo\" })"
+  ],
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Tasks",
+      "methodName": "list",
+      "args": []
+    }
+  },
+  "markdown": "list.md"
+}

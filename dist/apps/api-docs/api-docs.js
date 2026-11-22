@@ -3992,7 +3992,7 @@ function viewPersistence(el, kind, fallbackId, config = {}) {
   const key = config.key ?? el.dataset.persistKey ?? `${prefix}:${kind}:${el.id || fallbackId}`;
   return { area: area === "local" ? "local" : "session", key };
 }
-// node_modules/defuss-dataview/dist/query-CcmE25W0.mjs
+// node_modules/defuss-dataview/dist/query-B6HEkalB.mjs
 var forbidden = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
 function fieldParts(field) {
   if (typeof field !== "string" || !field)
@@ -4127,7 +4127,14 @@ function bytesOf(value) {
   return;
 }
 var invalidValue = (value) => value == null || typeof value === "number" && Number.isNaN(value) || value instanceof Date && Number.isNaN(value.getTime());
-var rank = (v) => v == null ? 8 : invalidValue(v) ? 7 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : 6;
+var rank = (v) => v == null ? 9 : invalidValue(v) ? 8 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : Array.isArray(v) ? 6 : 7;
+var CYCLE = "An array that contains itself cannot be compared or used as a key.";
+var open = [];
+function enter(a, b) {
+  if (open.includes(a) || open.includes(b))
+    throw new TypeError(CYCLE);
+  open.push(a, b);
+}
 function normalizeSemantics(options) {
   createValueOperations(options);
   const copy = {};
@@ -4152,7 +4159,7 @@ function createValueOperations(options = {}) {
     throw new TypeError("Locale options require strings: locale.");
   const collator = options.strings === "locale" ? new Intl.Collator(options.locale, options.collatorOptions) : undefined;
   const equality = options.equality ?? "value";
-  const comparisonId = `dataview-order-v1:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
+  const comparisonId = `dataview-order-v2:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
   function equal(a, b) {
     if (a === b || typeof a === "number" && typeof b === "number" && Number.isNaN(a) && Number.isNaN(b))
       return true;
@@ -4160,6 +4167,8 @@ function createValueOperations(options = {}) {
       return false;
     if (a instanceof Date && b instanceof Date)
       return Object.is(a.getTime(), b.getTime());
+    if (Array.isArray(a))
+      return Array.isArray(b) && a.length === b.length && equalLists(a, b);
     const ab = bytesOf(a), bb = bytesOf(b);
     if (!ab || !bb || ab.length !== bb.length)
       return false;
@@ -4180,8 +4189,10 @@ function createValueOperations(options = {}) {
     const ar = rank(a), br = rank(b);
     if (ar !== br)
       return ar - br;
-    if (ar >= 6)
+    if (ar >= 7)
       return 0;
+    if (ar === 6)
+      return compareLists(a, b);
     if (a instanceof Date && b instanceof Date)
       return a.getTime() < b.getTime() ? -1 : a.getTime() > b.getTime() ? 1 : 0;
     const ab = bytesOf(a), bb = bytesOf(b);
@@ -4193,9 +4204,50 @@ function createValueOperations(options = {}) {
     }
     return a < b ? -1 : 1;
   }
+  function equalLists(a, b) {
+    enter(a, b);
+    try {
+      for (let i = 0;i < a.length; i++)
+        if (!equal(a[i], b[i]))
+          return false;
+      return true;
+    } finally {
+      open.length -= 2;
+    }
+  }
+  function compareLists(a, b) {
+    enter(a, b);
+    try {
+      for (let i = 0, n = Math.min(a.length, b.length);i < n; i++) {
+        const c = compare(a[i], b[i]);
+        if (c)
+          return c;
+      }
+      return Math.sign(a.length - b.length);
+    } finally {
+      open.length -= 2;
+    }
+  }
   return { equal, compare, comparisonId, equality };
 }
 var compareValues = createValueOperations().compare;
+function snapshot(value, byValue, seen = []) {
+  if (!byValue || typeof value !== "object" || value === null)
+    return value;
+  if (value instanceof Date)
+    return new Date(value.getTime());
+  const bytes = bytesOf(value);
+  if (bytes)
+    return bytes.slice();
+  if (!Array.isArray(value))
+    return value;
+  if (seen.includes(value))
+    throw new TypeError(CYCLE);
+  seen.push(value);
+  const copy = value.map((v) => snapshot(v, true, seen));
+  seen.pop();
+  return copy;
+}
 var operators = ["eq", "neq", "gt", "gte", "lt", "lte", "in", "contains", "startsWith", "endsWith"];
 var array = (value, name) => {
   if (!Array.isArray(value))
@@ -4259,14 +4311,7 @@ function createDataview(request = {}) {
   fieldParts(idField);
   return { filters, sorters, page, pageSize, idField, meta: normalizeMeta(request.meta), tree, semantics: request.semantics === undefined ? undefined : normalizeSemantics(request.semantics) };
 }
-function operand(value, byValue) {
-  if (!byValue)
-    return value;
-  if (value instanceof Date)
-    return new Date(value.getTime());
-  const bytes = bytesOf(value);
-  return bytes ? bytes.slice() : value;
-}
+var operand = snapshot;
 function compileQuery(request = {}) {
   const view = createDataview({ filters: request.filters, sorters: request.sorters });
   const ops = createValueOperations(request.semantics);
@@ -6935,46 +6980,1412 @@ df$5.languageSwitcher = {
 init5();
 new MutationObserver(init5).observe(document, { childList: true, subtree: true });
 
-// src/components/feedback-status/toast/toast.ts
+// src/components/application/property-tree/property-tree.ts
 var df$6 = defussGlobals();
 var dfDollar6 = defussQuery();
+var propertyTreeStates = ["default", "editing"];
+var DSON_URL = "https://cdn.jsdelivr.net/npm/defuss-dson@1.1.2/dist/index.mjs";
+var dsonModule = null;
+function loadDson(url = DSON_URL) {
+  const vendorUrl = url;
+  dsonModule ??= Promise.resolve().then(() => import(/* @vite-ignore */ vendorUrl)).then((m) => m.DSON ?? m.default);
+  return dsonModule;
+}
+function kindOf(v) {
+  if (v === null)
+    return "null";
+  const t = typeof v;
+  if (t !== "object")
+    return t;
+  if (Array.isArray(v))
+    return "array";
+  if (v instanceof Map)
+    return "map";
+  if (v instanceof Set)
+    return "set";
+  if (v instanceof Date)
+    return "date";
+  if (v instanceof RegExp)
+    return "regexp";
+  if (v instanceof Error)
+    return "error";
+  if (ArrayBuffer.isView(v))
+    return "typed";
+  return "object";
+}
+var CONTAINERS = new Set(["object", "array", "map", "set"]);
+var isContainer2 = (v) => CONTAINERS.has(kindOf(v));
+function entries2(v) {
+  const kind = kindOf(v);
+  if (kind === "array")
+    return v.map((x, i) => [i, i, x]);
+  if (kind === "map")
+    return [...v].map(([k, x], i) => [i, k, x]);
+  if (kind === "set")
+    return [...v].map((x, i) => [i, i, x]);
+  if (kind === "object")
+    return Object.keys(v).map((k) => [k, k, v[k]]);
+  return [];
+}
+var sizeOf = (v) => {
+  const kind = kindOf(v);
+  return kind === "map" || kind === "set" ? v.size : kind === "array" ? v.length : Object.keys(v).length;
+};
+function childAt(c, token) {
+  const kind = kindOf(c);
+  if (kind === "map")
+    return [...c.values()][token];
+  if (kind === "set")
+    return [...c][token];
+  return c?.[token];
+}
+function keyAt(c, token) {
+  return kindOf(c) === "map" ? [...c.keys()][token] : token;
+}
+function refill(c, list) {
+  c.clear();
+  if (c instanceof Map)
+    for (const [k, v] of list)
+      c.set(k, v);
+  else
+    for (const v of list)
+      c.add(v);
+}
+function setChild(c, token, value) {
+  const kind = kindOf(c);
+  if (kind === "map") {
+    const list = [...c];
+    list[token] = [list[token][0], value];
+    refill(c, list);
+  } else if (kind === "set") {
+    const list = [...c];
+    list[token] = value;
+    refill(c, list);
+  } else
+    c[token] = value;
+}
+var pointerOf = (path) => path.map((t) => "/" + String(t).replace(/~/g, "~0").replace(/\//g, "~1")).join("");
+function toPath(p) {
+  if (Array.isArray(p))
+    return p;
+  if (!p)
+    return [];
+  return p.split("/").slice(1).map((t) => t.replace(/~1/g, "/").replace(/~0/g, "~")).map((t) => /^\d+$/.test(t) ? Number(t) : t);
+}
+function locate(tree, path) {
+  let parent = tree._holder;
+  let token = "value";
+  let node = tree._holder.value;
+  for (const t of path) {
+    if (!isContainer2(node))
+      return null;
+    const tok = kindOf(node) === "object" ? String(t) : Number(t);
+    parent = node;
+    token = tok;
+    node = childAt(node, tok);
+  }
+  return { parent, token, node };
+}
+function snapshot2(c) {
+  const kind = kindOf(c);
+  if (kind === "map")
+    return { kind, list: [...c] };
+  if (kind === "set")
+    return { kind, list: [...c] };
+  if (kind === "array")
+    return { kind, list: c.slice() };
+  return { kind, list: Object.keys(c).map((k) => [k, c[k]]) };
+}
+function restore(c, snap) {
+  if (snap.kind === "map" || snap.kind === "set")
+    refill(c, snap.list);
+  else if (snap.kind === "array")
+    c.splice(0, c.length, ...snap.list);
+  else {
+    for (const k of Object.keys(c))
+      delete c[k];
+    for (const [k, v] of snap.list)
+      c[k] = v;
+  }
+}
+function firstPaths(root) {
+  const first = new Map;
+  let level = [[root, []]];
+  while (level.length) {
+    const next = [];
+    for (const [v, path] of level) {
+      if (!isContainer2(v) || first.has(v))
+        continue;
+      first.set(v, pointerOf(path));
+      for (const [token, , child] of entries2(v))
+        if (isContainer2(child))
+          next.push([child, [...path, token]]);
+    }
+    level = next;
+  }
+  return first;
+}
+function summary(v, kind = kindOf(v)) {
+  switch (kind) {
+    case "string":
+      return JSON.stringify(v);
+    case "bigint":
+      return `${v}n`;
+    case "date":
+      return Number.isNaN(v.getTime()) ? "Invalid Date" : v.toISOString();
+    case "regexp":
+    case "symbol":
+      return String(v);
+    case "function":
+      return `ƒ ${v.name || "anonymous"}()`;
+    case "error":
+      return `${v.name}: ${v.message}`;
+    case "typed":
+      return `${v.constructor.name}(${v.length ?? v.byteLength}) [${Array.from(v.slice?.(0, 8) ?? []).join(", ")}${(v.length ?? 0) > 8 ? ", ..." : ""}]`;
+    case "array": {
+      const n = v.length;
+      return `[${n} ${n === 1 ? "item" : "items"}]`;
+    }
+    case "map":
+      return `Map(${v.size})`;
+    case "set":
+      return `Set(${v.size})`;
+    case "object": {
+      const n = Object.keys(v).length;
+      return `{${n} ${n === 1 ? "key" : "keys"}}`;
+    }
+    default:
+      return String(v);
+  }
+}
+var keyLabel = (key, parentKind) => parentKind === "map" ? typeof key === "string" ? JSON.stringify(key) : summary(key) : String(key);
+function buildRows(tree) {
+  const root = tree._holder.value;
+  const open = new Set(configOf(tree).expanded ?? []);
+  const first = tree._first;
+  const rows = [];
+  const walk = (v, path, depth, key, parentKind) => {
+    const pointer = pointerOf(path);
+    const kind = kindOf(v);
+    const row = { path, pointer, depth, key, parentKind, value: v, kind };
+    if (CONTAINERS.has(kind)) {
+      const at = first.get(v);
+      if (at !== pointer) {
+        row.isRef = true;
+        row.ref = at;
+        row.cycle = pointer.startsWith(at + "/") || at === "";
+      } else {
+        row.container = true;
+        row.count = sizeOf(v);
+        row.open = open.has(pointer);
+      }
+    }
+    rows.push(row);
+    if (row.container && row.open)
+      for (const [token, k, child] of entries2(v))
+        walk(child, [...path, token], depth + 1, k, kind);
+  };
+  walk(root, [], 0, null, null);
+  if (tree.hasAttribute("data-hide-root") && rows[0]?.container) {
+    rows.shift();
+    for (const r of rows)
+      r.depth--;
+  }
+  tree._rows = rows;
+}
+var configOf = (tree) => tree._config ?? tree.store?.value.config ?? {};
+var optionsOf = (tree) => tree._options ?? {};
+var contextOf = (tree, row) => {
+  const at = locate(tree, row.path);
+  return {
+    path: [...row.path],
+    pointer: row.pointer,
+    key: row.key,
+    kind: row.kind,
+    parent: row.path.length ? at?.parent : null,
+    root: tree._holder.value,
+    tree
+  };
+};
+function fillRow(tree, el, row, index) {
+  el._row = row;
+  el._index = index;
+  el.dataset.kind = row.kind;
+  el.style.setProperty("--depth", String(row.depth));
+  el.setAttribute("aria-level", String(row.depth + 1));
+  if (row.container)
+    el.setAttribute("aria-expanded", String(row.open));
+  else
+    el.removeAttribute("aria-expanded");
+  el.toggleAttribute("data-ref", !!row.isRef);
+  delete el.dataset.editing;
+  const [toggle, key, value, type, actions] = el.children;
+  toggle.toggleAttribute("data-leaf", !row.container);
+  key.textContent = row.key === null ? tree.dataset.rootLabel ?? "root" : keyLabel(row.key, row.parentKind);
+  key.dataset.keyKind = row.key === null ? "root" : row.parentKind === "object" ? "key" : row.parentKind === "map" ? "map" : "index";
+  value.textContent = "";
+  value.dataset.kind = row.kind;
+  const custom = !row.isRef && optionsOf(tree).renderValue?.(value, row.value, contextOf(tree, row));
+  if (!custom) {
+    if (row.isRef) {
+      const link = document.createElement("button");
+      link.type = "button";
+      link.className = "property-tree-ref";
+      link.tabIndex = -1;
+      link.dataset.pointer = row.ref;
+      link.textContent = `${row.cycle ? "cycle" : "ref"} ${row.ref || "/"}`;
+      value.append(link);
+    } else if (row.kind === "string" && /^#[0-9a-f]{6}$/i.test(row.value)) {
+      const swatch = document.createElement("i");
+      swatch.className = "property-tree-swatch";
+      swatch.style.background = row.value;
+      swatch.setAttribute("aria-hidden", "true");
+      value.append(swatch, document.createTextNode(summary(row.value)));
+    } else
+      value.textContent = summary(row.value, row.kind);
+  }
+  type.textContent = row.isRef ? "ref" : row.kind === "typed" ? row.value.constructor.name : row.kind;
+  actions.setAttribute("aria-label", `Actions for ${key.textContent}`);
+  const label = key.textContent + ": " + (row.isRef ? `reference to ${row.ref || "the root"}` : summary(row.value, row.kind));
+  el.setAttribute("aria-label", label);
+}
+function renderRows(tree) {
+  const pool = tree._pool;
+  if (!pool || !tree._rows)
+    return;
+  const rows = tree._rows;
+  const h = tree._rowHeight;
+  const win = virtualWindow(tree._viewport.scrollTop, tree._viewport.clientHeight, h, rows.length);
+  tree._sizer.style.height = `${sizerHeight(rows.length, h)}px`;
+  while (pool.children.length < win.count) {
+    const el = document.createElement("div");
+    el.className = "property-tree-row";
+    el.setAttribute("role", "treeitem");
+    el.id = `${tree._uid}-row-${pool.children.length}`;
+    for (const part of ["toggle", "key", "value", "type"]) {
+      const span = document.createElement("span");
+      span.className = `property-tree-${part}`;
+      if (part === "toggle" || part === "type")
+        span.setAttribute("aria-hidden", "true");
+      el.append(span);
+    }
+    const actions = document.createElement("button");
+    actions.type = "button";
+    actions.className = "property-tree-actions";
+    actions.tabIndex = -1;
+    actions.setAttribute("aria-haspopup", "menu");
+    el.append(actions);
+    pool.append(el);
+  }
+  while (pool.children.length > win.count)
+    pool.lastElementChild.remove();
+  pool.style.translate = `0 ${win.shift}px`;
+  const selected = configOf(tree).selected ?? null;
+  let active = null;
+  let edShown = false;
+  for (let i = 0;i < pool.children.length; i++) {
+    const el = pool.children[i];
+    const index = win.first + i;
+    const row = rows[index];
+    const key = `${tree._gen}:${index}`;
+    if (el._key !== key) {
+      el._key = key;
+      fillRow(tree, el, row, index);
+    }
+    const ed = tree._editor;
+    if (ed && ed.pointer === row.pointer) {
+      edShown = true;
+      if (!el.contains(ed.wrap)) {
+        const focused = ed.wrap.contains(document.activeElement) || document.activeElement === document.body;
+        placeEditor(el, ed);
+        if (focused)
+          editorControl(ed.editor).focus({ preventScroll: true });
+      }
+    }
+    el.setAttribute("aria-selected", String(row.pointer === selected));
+    el.toggleAttribute("data-active", index === tree._active);
+    if (index === tree._active)
+      active = el;
+  }
+  if (active)
+    tree._viewport.setAttribute("aria-activedescendant", active.id);
+  else
+    tree._viewport.removeAttribute("aria-activedescendant");
+  if (tree._editor && !edShown && !tree._writing)
+    queueMicrotask(() => {
+      if (tree._editor && !commit(tree, false))
+        cancel(tree, false);
+    });
+}
+function refresh(tree, structural = true) {
+  if (structural)
+    tree._first = firstPaths(tree._holder.value);
+  buildRows(tree);
+  tree._gen = (tree._gen || 0) + 1;
+  tree._active = Math.max(0, Math.min(tree._rows.length - 1, tree._active ?? 0));
+  renderRows(tree);
+}
+function activate2(tree, index) {
+  const total = tree._rows?.length ?? 0;
+  if (!total)
+    return;
+  tree._active = Math.max(0, Math.min(total - 1, index));
+  const vp = tree._viewport;
+  vp.scrollTop = scrollIntoViewTop(tree._active, vp.scrollTop, vp.clientHeight, tree._rowHeight, total);
+  renderRows(tree);
+}
+var indexOf = (tree, pointer) => tree._rows.findIndex((r) => r.pointer === pointer);
+function change(tree, detail, containers, apply) {
+  if (tree.hasAttribute("data-readonly"))
+    return false;
+  const before = new CustomEvent("property-tree-beforechange", {
+    bubbles: true,
+    cancelable: true,
+    detail
+  });
+  if (!tree.dispatchEvent(before)) {
+    tree._viewPatch = null;
+    return false;
+  }
+  const unique = [...new Set(containers)];
+  const was = unique.map((c) => [c, snapshot2(c)]);
+  apply();
+  const now = unique.map((c) => [c, snapshot2(c)]);
+  tree._undo.push({ was, now, detail });
+  tree._redo = [];
+  done(tree, detail);
+  return true;
+}
+function done(tree, detail) {
+  tree._writing = true;
+  const view = tree._viewPatch ?? {};
+  tree._viewPatch = null;
+  propertyTreeApi.setState(tree, "default", {
+    ...view,
+    version: (configOf(tree).version ?? 0) + 1,
+    editing: null,
+    editingKey: false
+  });
+  refresh(tree);
+  tree._writing = false;
+  tree.dispatchEvent(new CustomEvent("property-tree-change", { bubbles: true, detail }));
+}
+function undoStep(tree, back) {
+  const from = back ? tree._undo : tree._redo;
+  const step = from.pop();
+  if (!step)
+    return false;
+  for (const [c, snap] of back ? step.was : step.now)
+    restore(c, snap);
+  (back ? tree._redo : tree._undo).push(step);
+  done(tree, { ...step.detail, op: back ? "undo" : "redo" });
+  return true;
+}
+function convert(value, kind) {
+  const from = kindOf(value);
+  const text = from === "string" ? value : CONTAINERS.has(from) ? "" : summary(value, from);
+  switch (kind) {
+    case "string":
+      return from === "string" ? value : text;
+    case "number": {
+      const n = Number(from === "bigint" ? Number(value) : value);
+      return Number.isFinite(n) ? n : 0;
+    }
+    case "boolean":
+      return from === "string" ? value === "true" : !!value;
+    case "null":
+      return null;
+    case "object":
+      return from === "array" ? Object.assign({}, value) : from === "map" ? Object.fromEntries(value) : {};
+    case "array":
+      return from === "object" ? Object.values(value) : from === "set" || from === "map" ? [...value.values()] : [];
+    case "map":
+      return from === "object" ? new Map(Object.entries(value)) : new Map;
+    case "set":
+      return from === "array" ? new Set(value) : new Set;
+    case "date":
+      return new Date(from === "string" || from === "number" ? value : Date.now());
+    case "bigint":
+      try {
+        return BigInt(from === "number" ? Math.trunc(value) : from === "string" ? value : 0);
+      } catch {
+        return 0n;
+      }
+    default:
+      return value;
+  }
+}
+function freeKey(c, name) {
+  const has = (k) => c instanceof Map ? c.has(k) : Object.prototype.hasOwnProperty.call(c, k);
+  if (!has(name))
+    return name;
+  let n = 2;
+  while (has(`${name} ${n}`))
+    n++;
+  return `${name} ${n}`;
+}
+var ops = {
+  set(tree, path, value) {
+    const at = locate(tree, path);
+    if (!at)
+      return false;
+    return change(tree, { op: "set", path, pointer: pointerOf(path), value, oldValue: at.node }, [at.parent], () => setChild(at.parent, at.token, value));
+  },
+  type(tree, path, kind) {
+    const at = locate(tree, path);
+    if (!at || kindOf(at.node) === kind)
+      return false;
+    const value = convert(at.node, kind);
+    return change(tree, { op: "type", path, pointer: pointerOf(path), value, oldValue: at.node }, [at.parent], () => setChild(at.parent, at.token, value));
+  },
+  rename(tree, path, key) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return false;
+    const c = at.parent;
+    const kind = kindOf(c);
+    const old = keyAt(c, at.token);
+    if (old === key || kind !== "object" && kind !== "map")
+      return false;
+    const newPath = kind === "object" ? [...path.slice(0, -1), String(key)] : path;
+    return change(tree, { op: "rename", path: newPath, pointer: pointerOf(newPath), value: key, oldValue: old }, [c], () => {
+      if (kind === "map")
+        refill(c, [...c].map(([k, v]) => [k === old ? key : k, v]));
+      else {
+        const list = Object.keys(c).map((k) => [k === old ? String(key) : k, c[k]]);
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+      }
+      const before = pointerOf(path);
+      const after = pointerOf(newPath);
+      if (before !== after)
+        tree._viewPatch = {
+          expanded: (configOf(tree).expanded ?? []).map((p) => p === before || p.startsWith(before + "/") ? after + p.slice(before.length) : p)
+        };
+    });
+  },
+  add(tree, path, key, value = "", index) {
+    const at = locate(tree, path);
+    if (!at || !isContainer2(at.node))
+      return null;
+    const c = at.node;
+    const kind = kindOf(c);
+    let token;
+    if (kind === "array")
+      token = index ?? c.length;
+    else if (kind === "set")
+      token = c.size;
+    else if (kind === "map")
+      token = c.size;
+    else
+      token = freeKey(c, key == null ? "key" : String(key));
+    const newPath = [...path, token];
+    const ok = change(tree, { op: "add", path: newPath, pointer: pointerOf(newPath), value, oldValue: undefined }, [c], () => {
+      if (kind === "array")
+        c.splice(token, 0, value);
+      else if (kind === "set")
+        c.add(value);
+      else if (kind === "map")
+        c.set(freeKey(c, key == null ? "key" : key), value);
+      else
+        c[token] = value;
+      const open = new Set(configOf(tree).expanded ?? []);
+      open.add(pointerOf(path));
+      tree._viewPatch = { expanded: [...open] };
+    });
+    return ok ? newPath : null;
+  },
+  remove(tree, path) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return false;
+    const c = at.parent;
+    const kind = kindOf(c);
+    return change(tree, { op: "remove", path, pointer: pointerOf(path), value: undefined, oldValue: at.node }, [c], () => {
+      if (kind === "array")
+        c.splice(at.token, 1);
+      else if (kind === "map" || kind === "set")
+        refill(c, [...c].filter((_, i) => i !== at.token));
+      else
+        delete c[at.token];
+    });
+  },
+  duplicate(tree, path) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return null;
+    const c = at.parent;
+    const kind = kindOf(c);
+    let copy;
+    try {
+      copy = structuredClone(at.node);
+    } catch {
+      copy = at.node;
+    }
+    let newPath = path;
+    const ok = change(tree, { op: "add", path, pointer: pointerOf(path), value: copy, oldValue: undefined }, [c], () => {
+      if (kind === "array") {
+        c.splice(at.token + 1, 0, copy);
+        newPath = [...path.slice(0, -1), at.token + 1];
+      } else if (kind === "set") {
+        const list = [...c];
+        list.splice(at.token + 1, 0, copy);
+        refill(c, list);
+      } else if (kind === "map") {
+        const list = [...c];
+        const k = keyAt(c, at.token);
+        list.splice(at.token + 1, 0, [
+          freeKey(c, typeof k === "string" ? `${k} copy` : `${String(k)} copy`),
+          copy
+        ]);
+        refill(c, list);
+        newPath = [...path.slice(0, -1), at.token + 1];
+      } else {
+        const name = freeKey(c, `${at.token} copy`);
+        const list = Object.keys(c).flatMap((k) => k === at.token ? [
+          [k, c[k]],
+          [name, copy]
+        ] : [[k, c[k]]]);
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+        newPath = [...path.slice(0, -1), name];
+      }
+    });
+    return ok ? newPath : null;
+  },
+  move(tree, path, by) {
+    const at = locate(tree, path);
+    if (!at || !path.length)
+      return null;
+    const c = at.parent;
+    const kind = kindOf(c);
+    const keys = kind === "object" ? Object.keys(c) : null;
+    const from = keys ? keys.indexOf(at.token) : at.token;
+    const to = from + by;
+    const size = keys ? keys.length : sizeOf(c);
+    if (to < 0 || to >= size)
+      return null;
+    const newPath = [...path.slice(0, -1), keys ? at.token : to];
+    const ok = change(tree, { op: "move", path: newPath, pointer: pointerOf(newPath), value: to, oldValue: from }, [c], () => {
+      const list = keys ? keys.map((k) => [k, c[k]]) : kind === "array" ? c.slice() : [...c];
+      const [item] = list.splice(from, 1);
+      list.splice(to, 0, item);
+      if (kind === "array")
+        c.splice(0, c.length, ...list);
+      else if (kind === "map" || kind === "set")
+        refill(c, list);
+      else {
+        for (const k of Object.keys(c))
+          delete c[k];
+        for (const [k, v] of list)
+          c[k] = v;
+      }
+    });
+    return ok ? newPath : null;
+  }
+};
+function jsonSafe(v, seen = new Set) {
+  const kind = kindOf(v);
+  if (kind === "object" || kind === "array") {
+    if (seen.has(v))
+      return false;
+    seen.add(v);
+    return entries2(v).every(([, , x]) => jsonSafe(x, seen));
+  }
+  return kind === "string" || kind === "boolean" || kind === "null" || kind === "number" && Number.isFinite(v);
+}
+function defaultEditor(row) {
+  const v = row.value;
+  const input = (text, read, check) => {
+    const el = document.createElement("input");
+    el.className = "input";
+    el.dataset.size = "xs";
+    el.value = text;
+    return { el, getValue: () => read(el.value), validate: () => check(el.value) };
+  };
+  switch (row.kind) {
+    case "string":
+    case "number":
+    case "boolean":
+      return builtinEditor(valueType(v), v, null, { colorClass: "property-tree-color-input" });
+    case "null":
+    case "undefined":
+      return input("", (s) => {
+        if (s.trim() === "")
+          return row.kind === "null" ? null : undefined;
+        try {
+          return JSON.parse(s);
+        } catch {
+          return s;
+        }
+      }, () => "");
+    case "bigint":
+      return input(String(v), (s) => BigInt(s.trim()), (s) => /^\s*-?\d+\s*$/.test(s) ? "" : "A whole number");
+    case "date": {
+      const local = Number.isNaN(v.getTime()) ? "" : new Date(v.getTime() - v.getTimezoneOffset() * 60000).toISOString().slice(0, 23);
+      const el = document.createElement("input");
+      el.type = "datetime-local";
+      el.step = "0.001";
+      el.className = "input";
+      el.dataset.size = "xs";
+      el.value = local;
+      return { el, getValue: () => new Date(el.value), validate: () => el.value ? "" : "A date and time" };
+    }
+    case "regexp":
+      return input(String(v), (s) => {
+        const m = /^\/(.*)\/([dgimsuvy]*)$/s.exec(s.trim());
+        return m ? new RegExp(m[1], m[2]) : new RegExp(s);
+      }, (s) => {
+        try {
+          const m = /^\/(.*)\/([dgimsuvy]*)$/s.exec(s.trim());
+          if (m)
+            new RegExp(m[1], m[2]);
+          else
+            new RegExp(s);
+          return "";
+        } catch (e) {
+          return String(e.message);
+        }
+      });
+    case "object":
+    case "array":
+      return jsonSafe(v) ? builtinEditor("json", v) : null;
+    default:
+      return null;
+  }
+}
+function placeEditor(el, ed) {
+  ed.el = el;
+  el.dataset.editing = ed.key ? "key" : "value";
+  const cell = el.children[ed.key ? 1 : 2];
+  cell.textContent = "";
+  cell.append(ed.wrap);
+}
+function openEditor(tree, pointer, key = false) {
+  if (tree.hasAttribute("data-readonly"))
+    return false;
+  if (tree._editor && !commit(tree, false))
+    return false;
+  const path = toPath(pointer);
+  if (indexOf(tree, pointer) < 0)
+    reveal(tree, path);
+  const index = indexOf(tree, pointer);
+  const row = tree._rows[index];
+  if (!row || row.isRef)
+    return false;
+  const ctx = contextOf(tree, row);
+  let editor;
+  if (key) {
+    if (row.key === null || row.parentKind !== "object" && !(row.parentKind === "map" && typeof row.key === "string"))
+      return false;
+    const el = document.createElement("input");
+    el.className = "input";
+    el.dataset.size = "xs";
+    el.value = String(row.key);
+    editor = { el, getValue: () => el.value, validate: () => el.value === "" ? "A key" : "" };
+  } else {
+    const custom = optionsOf(tree).getEditorFn?.([...row.path], row.value, ctx);
+    if (custom === false)
+      return false;
+    editor = asEditor(custom) ?? defaultEditor(row);
+  }
+  if (!editor)
+    return false;
+  activate2(tree, index);
+  const wrap = document.createElement("span");
+  wrap.className = "property-tree-editor";
+  wrap.append(editor.el);
+  const ed = { pointer, path: row.path, row, key, editor, wrap, el: null };
+  tree._editor = ed;
+  const el = dfDollar6(tree._pool).children(".property-tree-row").toArray().find((r) => r._index === index);
+  if (el)
+    placeEditor(el, ed);
+  wrap.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    const act = editorKey(e, editor);
+    if (!act)
+      return;
+    e.preventDefault();
+    if (act === "cancel")
+      cancel(tree);
+    else if (commit(tree) && (act === "next" || act === "prev"))
+      activate2(tree, (tree._active ?? 0) + (act === "next" ? 1 : -1));
+  });
+  for (const type of ["click", "dblclick", "pointerdown"])
+    wrap.addEventListener(type, (e) => e.stopPropagation());
+  wrap.addEventListener("change", () => {
+    if (editor.immediate)
+      commit(tree);
+  });
+  wrap.addEventListener("focusout", (e) => {
+    if (wrap.contains(e.relatedTarget))
+      return;
+    setTimeout(() => {
+      if (tree._editor === ed && !wrap.contains(document.activeElement))
+        commit(tree, false);
+    }, 0);
+  });
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "editing", { editing: pointer, editingKey: key });
+  tree._writing = false;
+  focusEditor(editor);
+  return true;
+}
+function cancel(tree, focus = true) {
+  if (!tree._editor)
+    return;
+  tree._editor = null;
+  closeEditor(tree, focus);
+}
+function closeEditor(tree, focus) {
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false });
+  tree._writing = false;
+  tree._gen++;
+  renderRows(tree);
+  if (focus)
+    tree._viewport.focus({ preventScroll: true });
+}
+function commit(tree, focus = true) {
+  const ed = tree._editor;
+  if (!ed)
+    return true;
+  let problem = ed.editor.validate?.() ?? "";
+  let value;
+  if (!problem) {
+    try {
+      value = ed.editor.getValue();
+    } catch (error) {
+      problem = String(error.message ?? error);
+    }
+  }
+  const ctx = { ...contextOf(tree, ed.row), kind: ed.key ? "key" : ed.row.kind };
+  if (!problem && ed.key) {
+    const at = locate(tree, ed.path);
+    const c = at?.parent;
+    const taken = c instanceof Map ? c.has(value) : Object.prototype.hasOwnProperty.call(c ?? {}, value);
+    if (value !== ed.row.key && taken)
+      problem = `"${value}" is already a key here`;
+  }
+  if (!problem) {
+    const answer = optionsOf(tree).validateFn?.([...ed.path], value, ctx);
+    if (typeof answer === "string" && answer)
+      problem = answer;
+    else if (answer === false)
+      problem = "Invalid value";
+  }
+  if (problem) {
+    const control = editorControl(ed.editor);
+    control.setAttribute("aria-invalid", "true");
+    let note = dfDollar6(ed.wrap).children(".property-tree-error").get(0);
+    if (!note) {
+      note = document.createElement("span");
+      note.className = "property-tree-error";
+      note.setAttribute("role", "alert");
+      note.id = `pt-error-${Math.random().toString(36).slice(2, 8)}`;
+      ed.wrap.append(note);
+      control.setAttribute("aria-describedby", note.id);
+    }
+    dfDollar6(note).text(problem);
+    return false;
+  }
+  tree._editor = null;
+  let changed;
+  if (ed.key)
+    changed = value !== ed.row.key && ops.rename(tree, ed.path, value);
+  else {
+    const same = value === ed.row.value || typeof value !== "object" && Object.is(value, ed.row.value);
+    changed = !same && ops.set(tree, ed.path, value);
+  }
+  if (!changed)
+    closeEditor(tree, false);
+  else if (ed.key) {
+    const at = indexOf(tree, pointerOf(ed.row.parentKind === "object" ? [...ed.path.slice(0, -1), String(value)] : ed.path));
+    if (at >= 0)
+      activate2(tree, at);
+  }
+  if (focus)
+    tree._viewport.focus({ preventScroll: true });
+  return true;
+}
+var TYPES = ["string", "number", "boolean", "null", "object", "array", "map", "set", "date", "bigint"];
+function menuFor(tree, row) {
+  const readonly = tree.hasAttribute("data-readonly");
+  const items = [];
+  const isRoot = row.key === null;
+  if (row.container)
+    items.push({
+      action: "add",
+      label: row.kind === "object" || row.kind === "map" ? "Add property" : "Add item",
+      disabled: readonly
+    });
+  if (row.container)
+    items.push({ action: "toggle", label: row.open ? "Collapse" : "Expand" });
+  if (row.isRef)
+    items.push({ action: "follow", label: "Go to the first appearance" });
+  if (!row.isRef)
+    items.push({ action: "edit", label: "Edit value", disabled: readonly || !defaultEditor(row) });
+  if (!isRoot && (row.parentKind === "object" || row.parentKind === "map"))
+    items.push({
+      action: "rename",
+      label: "Rename key",
+      disabled: readonly || row.parentKind === "map" && typeof row.key !== "string"
+    });
+  if (!isRoot) {
+    items.push({ action: "duplicate", label: "Duplicate", disabled: readonly, sep: true });
+    items.push({ action: "up", label: "Move up", disabled: readonly });
+    items.push({ action: "down", label: "Move down", disabled: readonly });
+  }
+  if (!row.isRef)
+    TYPES.forEach((t, i) => items.push({ action: `type:${t}`, label: `As ${t}`, checked: row.kind === t, disabled: readonly, sep: i === 0 }));
+  items.push({ action: "copy-path", label: "Copy path", sep: true });
+  items.push({ action: "copy-json", label: "Copy as JSON" });
+  if (!isRoot)
+    items.push({ action: "remove", label: "Delete", disabled: readonly, sep: true });
+  return items;
+}
+function openMenu(tree, index, anchor) {
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  activate2(tree, index);
+  const menu = tree._menu;
+  menu.textContent = "";
+  for (const item of menuFor(tree, row)) {
+    if (item.sep && menu.children.length) {
+      const sep = document.createElement("div");
+      sep.className = "property-tree-menu-separator";
+      sep.setAttribute("role", "separator");
+      menu.append(sep);
+    }
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "property-tree-menu-item";
+    b.dataset.action = item.action;
+    b.setAttribute("role", item.checked !== undefined ? "menuitemradio" : "menuitem");
+    if (item.checked !== undefined)
+      b.setAttribute("aria-checked", String(item.checked));
+    b.disabled = !!item.disabled;
+    b.tabIndex = -1;
+    b.textContent = item.label;
+    menu.append(b);
+  }
+  menu._pointer = row.pointer;
+  const el = anchor ?? dfDollar6(tree._pool).children(".property-tree-row").toArray().find((r) => r._index === index)?.lastElementChild;
+  if (el) {
+    for (const r of dfDollar6(tree._pool).find(".property-tree-actions").toArray())
+      r.style.removeProperty("anchor-name");
+    el.style.setProperty("anchor-name", `--${tree._uid}-menu`);
+    el.setAttribute("aria-expanded", "true");
+    menu._anchor = el;
+  }
+  menu.style.setProperty("position-anchor", `--${tree._uid}-menu`);
+  if (!menu.matches(":popover-open"))
+    menu.showPopover();
+  dfDollar6(menu).children("button:not(:disabled)").get(0)?.focus();
+}
+async function runAction(tree, pointer, action) {
+  const index = indexOf(tree, pointer);
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  const path = row.path;
+  if (action === "add") {
+    const added = ops.add(tree, path, row.kind === "map" ? "key" : "key", "");
+    if (added) {
+      const p = pointerOf(added);
+      openEditor(tree, p, row.kind === "object" || row.kind === "map");
+    }
+  } else if (action === "toggle")
+    toggle(tree, pointer);
+  else if (action === "follow")
+    reveal(tree, toPath(row.ref), true);
+  else if (action === "edit")
+    openEditor(tree, pointer);
+  else if (action === "rename")
+    openEditor(tree, pointer, true);
+  else if (action === "duplicate") {
+    const p = ops.duplicate(tree, path);
+    if (p)
+      activate2(tree, indexOf(tree, pointerOf(p)));
+  } else if (action === "up" || action === "down") {
+    const p = ops.move(tree, path, action === "up" ? -1 : 1);
+    if (p)
+      activate2(tree, indexOf(tree, pointerOf(p)));
+  } else if (action.startsWith("type:"))
+    ops.type(tree, path, action.slice(5));
+  else if (action === "remove")
+    ops.remove(tree, path);
+  else if (action === "copy-path")
+    await navigator.clipboard?.writeText(pointer || "/").catch(() => {});
+  else if (action === "copy-json")
+    await navigator.clipboard?.writeText(toJson(row.value, 2)).catch(() => {});
+  if (!tree._editor)
+    tree._viewport.focus({ preventScroll: true });
+}
+function toJson(value, space) {
+  const first = firstPaths(value);
+  const seen = new Set;
+  const plain = (v, pointer) => {
+    const kind = kindOf(v);
+    if (CONTAINERS.has(kind)) {
+      if (seen.has(v) || first.get(v) !== pointer)
+        return { $ref: first.get(v) || "#" };
+      seen.add(v);
+    }
+    switch (kind) {
+      case "array":
+        return v.map((x, i) => plain(x, `${pointer}/${i}`));
+      case "set":
+        return [...v].map((x, i) => plain(x, `${pointer}/${i}`));
+      case "map":
+        return Object.fromEntries([...v].map(([k, x], i) => [String(k), plain(x, `${pointer}/${i}`)]));
+      case "object":
+        return Object.fromEntries(Object.keys(v).map((k) => [k, plain(v[k], `${pointer}/${k.replace(/~/g, "~0").replace(/\//g, "~1")}`)]));
+      case "bigint":
+        return String(v);
+      case "date":
+        return Number.isNaN(v.getTime()) ? null : v.toISOString();
+      case "regexp":
+        return String(v);
+      case "typed":
+        return Array.from(v);
+      case "undefined":
+      case "function":
+      case "symbol":
+        return null;
+      case "error":
+        return { name: v.name, message: v.message };
+      default:
+        return v;
+    }
+  };
+  return JSON.stringify(plain(value, ""), null, space);
+}
+function setOpen(tree, pointers) {
+  tree._writing = true;
+  propertyTreeApi.setState(tree, tree.store.value.name, { expanded: pointers });
+  tree._writing = false;
+  refresh(tree, false);
+}
+function toggle(tree, pointer, open) {
+  const set = new Set(configOf(tree).expanded ?? []);
+  const now = open ?? !set.has(pointer);
+  if (now)
+    set.add(pointer);
+  else
+    for (const p of [...set])
+      if (p === pointer || p.startsWith(pointer + "/"))
+        set.delete(p);
+  setOpen(tree, [...set]);
+}
+function reveal(tree, path, select = false) {
+  const set = new Set(configOf(tree).expanded ?? []);
+  for (let i = 0;i < path.length; i++)
+    set.add(pointerOf(path.slice(0, i)));
+  setOpen(tree, [...set]);
+  const index = indexOf(tree, pointerOf(path));
+  if (index < 0)
+    return false;
+  activate2(tree, index);
+  if (select)
+    selectRow(tree, index);
+  return true;
+}
+function selectRow(tree, index) {
+  const row = tree._rows[index];
+  if (!row)
+    return;
+  tree._writing = true;
+  propertyTreeApi.setState(tree, tree.store.value.name, { selected: row.pointer });
+  tree._writing = false;
+  renderRows(tree);
+}
+function applyMarkup6(el, state) {
+  dfDollar6(el).attr("data-editing", state.name === "editing" && state.config?.editing != null ? String(state.config.editing) : null);
+}
+function triggerStateChange6(tree, state, incoming) {
+  tree._config = state.config ?? {};
+  applyMarkup6(tree, state);
+  if (tree._writing || !tree._holder)
+    return;
+  if ("expanded" in (incoming ?? {}) || "version" in (incoming ?? {}))
+    refresh(tree, "version" in (incoming ?? {}));
+  else
+    renderRows(tree);
+  if (state.name === "editing" && state.config?.editing != null) {
+    if (tree._editor?.pointer !== state.config.editing || tree._editor?.key !== !!state.config.editingKey) {
+      if (!openEditor(tree, state.config.editing, !!state.config.editingKey))
+        queueMicrotask(() => propertyTreeApi.setState(tree, "default", { editing: null, editingKey: false }));
+    }
+  } else if (tree._editor)
+    cancel(tree, false);
+}
+var propertyTreeApi = componentState({
+  component: "property-tree",
+  states: propertyTreeStates,
+  mergeConfig: true,
+  apply: (tree, state, _previous, incoming) => triggerStateChange6(tree, state, incoming),
+  markup: (el, state) => applyMarkup6(el, state)
+});
+df$6.propertyTreeApi = propertyTreeApi;
+df$6.propertyTreeStates = propertyTreeStates;
+var resolve2 = (target) => typeof target === "string" ? dfDollar6(target).get(0) : target;
+function setValue(tree, value) {
+  tree._holder = { value };
+  tree._undo = [];
+  tree._redo = [];
+  tree._active = 0;
+  tree._editor = null;
+  const open = isContainer2(value) ? [""] : [];
+  tree._writing = true;
+  propertyTreeApi.setState(tree, "default", {
+    expanded: open,
+    selected: null,
+    editing: null,
+    editingKey: false,
+    version: 0
+  });
+  tree._writing = false;
+  refresh(tree);
+}
+df$6.propertyTree = {
+  configure(target, options = {}) {
+    const tree = resolve2(target);
+    if (!tree)
+      return null;
+    const { value, ...rest } = options;
+    tree._options = { ...tree._options, ...rest };
+    if ("value" in options) {
+      if (!tree.store)
+        tree._pendingValue = { value };
+      else
+        setValue(tree, value);
+    } else if (tree._holder)
+      refresh(tree);
+    return tree;
+  },
+  setValue(target, value) {
+    const tree = resolve2(target);
+    if (!tree.store)
+      tree._pendingValue = { value };
+    else
+      setValue(tree, value);
+  },
+  value: (target) => resolve2(target)._holder?.value,
+  json: (target, space) => toJson(resolve2(target)._holder?.value, space),
+  async dson(target) {
+    const tree = resolve2(target);
+    const DSON = await loadDson(optionsOf(tree).urls?.dson);
+    return DSON.stringify(tree._holder?.value);
+  },
+  get: (target, path) => locate(resolve2(target), toPath(path))?.node,
+  set: (target, path, value) => ops.set(resolve2(target), toPath(path), value),
+  add: (target, path, key, value, index) => ops.add(resolve2(target), toPath(path), key, value === undefined ? "" : value, index),
+  remove: (target, path) => ops.remove(resolve2(target), toPath(path)),
+  rename: (target, path, key) => ops.rename(resolve2(target), toPath(path), key),
+  setType: (target, path, kind) => ops.type(resolve2(target), toPath(path), kind),
+  undo: (target) => undoStep(resolve2(target), true),
+  redo: (target) => undoStep(resolve2(target), false),
+  edit: (target, path, key = false) => openEditor(resolve2(target), pointerOf(toPath(path)), key),
+  commit: (target) => commit(resolve2(target)),
+  cancel: (target) => cancel(resolve2(target)),
+  reveal: (target, path) => reveal(resolve2(target), toPath(path), true),
+  expandAll(target, depth = Infinity) {
+    const tree = resolve2(target);
+    const out = [];
+    const first = tree._first;
+    const walk = (v, path) => {
+      const pointer = pointerOf(path);
+      if (!isContainer2(v) || first.get(v) !== pointer || path.length > depth - 1)
+        return;
+      out.push(pointer);
+      for (const [t, , x] of entries2(v))
+        walk(x, [...path, t]);
+    };
+    walk(tree._holder.value, []);
+    setOpen(tree, out);
+  },
+  collapseAll(target) {
+    setOpen(resolve2(target), [""]);
+  }
+};
+var uid = 0;
+function onKeydown2(tree, e) {
+  if (e.target.closest?.(".property-tree-editor, .property-tree-menu"))
+    return;
+  const index = tree._active ?? 0;
+  const row = tree._rows?.[index];
+  if (!row)
+    return;
+  const page = Math.max(1, Math.floor(tree._viewport.clientHeight / tree._rowHeight) - 1);
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && (e.key === "z" || e.key === "Z")) {
+    e.preventDefault();
+    undoStep(tree, !e.shiftKey);
+    return;
+  }
+  if (mod && (e.key === "y" || e.key === "Y")) {
+    e.preventDefault();
+    undoStep(tree, false);
+    return;
+  }
+  switch (e.key) {
+    case "ArrowDown":
+      if (e.altKey) {
+        const p = ops.move(tree, row.path, 1);
+        if (p)
+          activate2(tree, indexOf(tree, pointerOf(p)));
+      } else
+        activate2(tree, index + 1);
+      break;
+    case "ArrowUp":
+      if (e.altKey) {
+        const p = ops.move(tree, row.path, -1);
+        if (p)
+          activate2(tree, indexOf(tree, pointerOf(p)));
+      } else
+        activate2(tree, index - 1);
+      break;
+    case "ArrowRight":
+      if (row.container && !row.open)
+        toggle(tree, row.pointer, true);
+      else if (row.container)
+        activate2(tree, index + 1);
+      break;
+    case "ArrowLeft":
+      if (row.container && row.open)
+        toggle(tree, row.pointer, false);
+      else if (row.path.length) {
+        const parent = indexOf(tree, pointerOf(row.path.slice(0, -1)));
+        if (parent >= 0)
+          activate2(tree, parent);
+      }
+      break;
+    case "Home":
+      activate2(tree, 0);
+      break;
+    case "End":
+      activate2(tree, tree._rows.length - 1);
+      break;
+    case "PageDown":
+      activate2(tree, index + page);
+      break;
+    case "PageUp":
+      activate2(tree, index - page);
+      break;
+    case " ":
+      selectRow(tree, index);
+      break;
+    case "Enter":
+      if (row.isRef)
+        reveal(tree, toPath(row.ref), true);
+      else if (row.container && !mod && !e.shiftKey)
+        toggle(tree, row.pointer);
+      else if (mod && row.container)
+        runAction(tree, row.pointer, "add");
+      else
+        openEditor(tree, row.pointer, e.shiftKey);
+      break;
+    case "F2":
+      if (!openEditor(tree, row.pointer, e.shiftKey))
+        return;
+      break;
+    case "Insert":
+      runAction(tree, row.container ? row.pointer : pointerOf(row.path.slice(0, -1)), "add");
+      break;
+    case "Delete":
+      ops.remove(tree, row.path);
+      break;
+    case "Backspace":
+      if (!mod)
+        return;
+      ops.remove(tree, row.path);
+      break;
+    case "d":
+    case "D":
+      if (!mod)
+        return;
+      runAction(tree, row.pointer, "duplicate");
+      break;
+    case "ContextMenu":
+      openMenu(tree, index);
+      break;
+    case "F10":
+      if (!e.shiftKey)
+        return;
+      openMenu(tree, index);
+      break;
+    default:
+      return;
+  }
+  e.preventDefault();
+}
+function onMenuKey(tree, e) {
+  const items = dfDollar6(tree._menu).children("button:not(:disabled)").toArray();
+  const at = items.indexOf(document.activeElement);
+  const go = { ArrowDown: at + 1, ArrowUp: at - 1, Home: 0, End: items.length - 1 }[e.key];
+  if (go !== undefined) {
+    e.preventDefault();
+    items[(go + items.length) % items.length]?.focus();
+  } else if (e.key === "Escape" || e.key === "Tab") {
+    e.preventDefault();
+    tree._menu.hidePopover();
+    tree._viewport.focus({ preventScroll: true });
+  }
+}
+function init6() {
+  dfDollar6(".property-tree:not([data-init])").toArray().forEach((tree) => {
+    tree.dataset.init = "";
+    tree._uid = tree.id || `property-tree-${++uid}`;
+    const viewport = document.createElement("div");
+    viewport.className = "property-tree-viewport";
+    viewport.setAttribute("role", "tree");
+    viewport.tabIndex = 0;
+    viewport.setAttribute("aria-label", tree.getAttribute("aria-label") || "Value");
+    if (tree.hasAttribute("data-readonly"))
+      viewport.setAttribute("aria-readonly", "true");
+    const sizer = document.createElement("div");
+    sizer.className = "property-tree-sizer";
+    const pool = document.createElement("div");
+    pool.className = "property-tree-rows";
+    pool.setAttribute("role", "presentation");
+    sizer.append(pool);
+    viewport.append(sizer);
+    const menu = document.createElement("div");
+    menu.className = "property-tree-menu";
+    menu.setAttribute("popover", "");
+    menu.setAttribute("role", "menu");
+    menu.setAttribute("aria-label", "Node actions");
+    dfDollar6(tree).append(viewport).append(menu);
+    tree._viewport = viewport;
+    tree._sizer = sizer;
+    tree._pool = pool;
+    tree._menu = menu;
+    tree._rowHeight = parseFloat(getComputedStyle(tree).getPropertyValue("--property-tree-row-height")) || 28;
+    tree._undo = [];
+    tree._redo = [];
+    let queued = false;
+    viewport.addEventListener("scroll", () => {
+      if (queued)
+        return;
+      queued = true;
+      requestAnimationFrame(() => {
+        queued = false;
+        renderRows(tree);
+      });
+    }, { passive: true });
+    new ResizeObserver(() => renderRows(tree)).observe(viewport);
+    viewport.addEventListener("keydown", (e) => onKeydown2(tree, e));
+    viewport.addEventListener("click", (e) => {
+      const t = e.target;
+      const el = t.closest?.(".property-tree-row");
+      if (!el || !pool.contains(el))
+        return;
+      tree._active = el._index;
+      if (t.closest(".property-tree-actions"))
+        return openMenu(tree, el._index, t.closest(".property-tree-actions"));
+      if (t.closest(".property-tree-ref"))
+        return reveal(tree, toPath(el._row.ref), true);
+      if (t.closest(".property-tree-toggle") && el._row.container)
+        return toggle(tree, el._row.pointer);
+      selectRow(tree, el._index);
+    });
+    viewport.addEventListener("dblclick", (e) => {
+      const t = e.target;
+      const el = t.closest?.(".property-tree-row");
+      if (!el || !pool.contains(el) || t.closest(".property-tree-toggle, .property-tree-actions"))
+        return;
+      const onKey = !!t.closest(".property-tree-key");
+      if (openEditor(tree, el._row.pointer, onKey && el._row.key !== null))
+        e.preventDefault();
+      else if (el._row.container)
+        toggle(tree, el._row.pointer);
+    });
+    menu.addEventListener("click", (e) => {
+      const b = e.target.closest?.(".property-tree-menu-item");
+      if (!b || b.disabled)
+        return;
+      menu.hidePopover();
+      runAction(tree, menu._pointer, b.dataset.action);
+    });
+    menu.addEventListener("keydown", (e) => onMenuKey(tree, e));
+    menu.addEventListener("toggle", (e) => {
+      if (e.newState === "closed")
+        menu._anchor?.setAttribute("aria-expanded", "false");
+    });
+    const script = dfDollar6(tree).children("script.property-tree-source").get(0);
+    const config = { expanded: [], selected: null, editing: null, editingKey: false, version: 0 };
+    bindComponent(tree, propertyTreeApi, { name: "default", config });
+    if (tree._pendingValue) {
+      setValue(tree, tree._pendingValue.value);
+      delete tree._pendingValue;
+    } else if (script && script.type === "application/dson") {
+      tree.dataset.loading = "";
+      setValue(tree, undefined);
+      loadDson(optionsOf(tree).urls?.dson).then((DSON) => {
+        if (tree._holder.value === undefined)
+          setValue(tree, DSON.parse(script.textContent || "null"));
+      }).catch((error) => console.error("[property-tree] DSON source", error)).finally(() => delete tree.dataset.loading);
+    } else {
+      let value = {};
+      try {
+        if (script)
+          value = JSON.parse(script.textContent || "null");
+      } catch (error) {
+        console.error("[property-tree] invalid source JSON", error);
+      }
+      setValue(tree, value);
+    }
+  });
+}
+init6();
+new MutationObserver(init6).observe(document, { childList: true, subtree: true });
+
+// src/components/feedback-status/toast/toast.ts
+var df$7 = defussGlobals();
+var dfDollar7 = defussQuery();
 var toastStates = ["default"];
-function applyMarkup6(_el, _stateName) {}
-function triggerStateChange6(container, stateName, _config) {
+function applyMarkup7(_el, _stateName) {}
+function triggerStateChange7(container, stateName, _config) {
   if (stateName !== "default")
     return;
-  dfDollar6(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
+  dfDollar7(container).find(".toast").toArray().forEach((el) => toastDismiss(el));
 }
 var toastApi = componentState({
   component: "toast",
   states: toastStates,
   apply: (container, state) => {
-    triggerStateChange6(container, state.name, state.config);
+    triggerStateChange7(container, state.name, state.config);
   },
   read: (container, state) => {
     return {
       name: container.dataset.stateName || "default",
-      config: { ...state.config, count: dfDollar6(container).find(".toast").toArray().length }
+      config: { ...state.config, count: dfDollar7(container).find(".toast").toArray().length }
     };
   },
-  markup: (el, state) => applyMarkup6(el, state.name)
+  markup: (el, state) => applyMarkup7(el, state.name)
 });
-df$6.toastApi = toastApi;
-df$6.toastStates = toastStates;
+df$7.toastApi = toastApi;
+df$7.toastStates = toastStates;
 var DURATION = 4000;
 var MAX_VISIBLE = 3;
 var toastCallbacks = new WeakMap;
-var toastContainer = dfDollar6("#toast-container").get(0);
+var toastContainer = dfDollar7("#toast-container").get(0);
 if (!toastContainer) {
   toastContainer = document.createElement("div");
   toastContainer.id = "toast-container";
   toastContainer.className = "toast-container";
   toastContainer.setAttribute("aria-label", "Notifications");
   toastContainer.setAttribute("data-position", "bottom-right");
-  dfDollar6(document.body).append(toastContainer);
+  dfDollar7(document.body).append(toastContainer);
 }
 var stackToasts = (container) => {
-  const toasts = [...dfDollar6(container).find(".toast:not([data-leaving])").toArray()];
+  const toasts = [...dfDollar7(container).find(".toast:not([data-leaving])").toArray()];
   const piled = container.dataset.stack === "pile" && !container.hasAttribute("data-expanded") && toasts.length > 1;
   const top = (container.dataset.position || "").startsWith("top");
   const sheets = top ? "stack-bottom" : "stack-top";
@@ -7005,7 +8416,7 @@ var toastDismiss = (el, callback) => {
       try {
         el.hidePopover();
       } catch {}
-      dfDollar6(el).remove();
+      dfDollar7(el).remove();
       stackToasts(container);
       if (callback)
         callback();
@@ -7019,7 +8430,7 @@ var toastDismiss = (el, callback) => {
     try {
       el.hidePopover();
     } catch {}
-    dfDollar6(el).remove();
+    dfDollar7(el).remove();
     stackToasts(container);
     if (callback)
       callback();
@@ -7050,29 +8461,29 @@ var toastCreate = (options) => {
   const contentEl = document.createElement("div");
   contentEl.className = "toast-content";
   if (variant && icons[variant]) {
-    dfDollar6(contentEl).append(dfDollar6(icons[variant]));
+    dfDollar7(contentEl).append(dfDollar7(icons[variant]));
   }
   const textDiv = document.createElement("div");
   textDiv.className = "toast-text";
   if (title) {
     const p = document.createElement("p");
     p.className = "toast-title";
-    dfDollar6(p).text(title);
-    dfDollar6(textDiv).append(p);
+    dfDollar7(p).text(title);
+    dfDollar7(textDiv).append(p);
   }
   if (description) {
     const p = document.createElement("p");
     p.className = "toast-description";
-    dfDollar6(p).text(description);
-    dfDollar6(textDiv).append(p);
+    dfDollar7(p).text(description);
+    dfDollar7(textDiv).append(p);
   }
-  dfDollar6(contentEl).append(textDiv);
+  dfDollar7(contentEl).append(textDiv);
   const closeBtn = document.createElement("button");
   closeBtn.className = "toast-close";
   closeBtn.setAttribute("aria-label", "Dismiss");
   closeBtn.dataset.toastClose = "";
-  dfDollar6(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
-  dfDollar6(contentEl).append(closeBtn);
+  dfDollar7(closeBtn).html('<svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>');
+  dfDollar7(contentEl).append(closeBtn);
   let host = el;
   if (aura) {
     const style = aura === true ? "" : String(aura);
@@ -7082,9 +8493,9 @@ var toastCreate = (options) => {
     el.dataset.aura = style || "default";
     host = document.createElement("div");
     host.className = "toast-surface";
-    dfDollar6(el).append(host);
+    dfDollar7(el).append(host);
   }
-  dfDollar6(host).append(contentEl);
+  dfDollar7(host).append(contentEl);
   if (action) {
     const actionsDiv = document.createElement("div");
     actionsDiv.className = "toast-actions";
@@ -7093,15 +8504,15 @@ var toastCreate = (options) => {
     actionBtn.setAttribute("data-variant", "outline");
     actionBtn.setAttribute("data-size", "sm");
     actionBtn.dataset.toastAction = "";
-    dfDollar6(actionBtn).text(action.label);
-    dfDollar6(actionsDiv).append(actionBtn);
-    dfDollar6(host).append(actionsDiv);
+    dfDollar7(actionBtn).text(action.label);
+    dfDollar7(actionsDiv).append(actionBtn);
+    dfDollar7(host).append(actionsDiv);
   }
   if (animation) {
     el._animation = typeof animation === "string" ? { in: animation } : animation;
     el.dataset.anim = "";
   }
-  dfDollar6(toastContainer).append(el);
+  dfDollar7(toastContainer).append(el);
   el.showPopover();
   stackToasts(toastContainer);
   const inName = el._animation?.in;
@@ -7112,13 +8523,13 @@ var toastCreate = (options) => {
     setTimeout(() => {
       toastDismiss(el, onDismiss);
     }, duration);
-  const toasts = dfDollar6(toastContainer).find(".toast").toArray();
+  const toasts = dfDollar7(toastContainer).find(".toast").toArray();
   if (toasts.length > (toastContainer.dataset.stack === "pile" ? 6 : MAX_VISIBLE))
     toastDismiss(toasts[0]);
   return el;
 };
-function init6() {
-  dfDollar6("#toast-container:not([data-init])").toArray().forEach((container) => {
+function init7() {
+  dfDollar7("#toast-container:not([data-init])").toArray().forEach((container) => {
     container.dataset.init = "";
     bindComponent(container, toastApi);
     const expand = (on) => {
@@ -7167,8 +8578,8 @@ function init6() {
     });
   });
 }
-init6();
-new MutationObserver(init6).observe(document.body, { childList: true, subtree: true });
+init7();
+new MutationObserver(init7).observe(document.body, { childList: true, subtree: true });
 var toastConfigure = (opts = {}) => {
   if (opts.stack)
     toastContainer.dataset.stack = opts.stack;
@@ -7188,13 +8599,13 @@ var toastActions = {
   info: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "info" })),
   error: (options) => toastCreate(Object.assign(typeof options === "string" ? { title: options } : options, { variant: "destructive" })),
   dismiss: () => {
-    dfDollar6(toastContainer).find(".toast").toArray().forEach((el) => {
+    dfDollar7(toastContainer).find(".toast").toArray().forEach((el) => {
       toastDismiss(el);
     });
   }
 };
-df$6.toast = toastActions;
+df$7.toast = toastActions;
 
-//# debugId=4104C7602AEEEDC064756E2164756E21
+//# debugId=8161E8982C7F182E64756E2164756E21
 /* defuss-shadcn v0.9.17 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=api-docs.js.map

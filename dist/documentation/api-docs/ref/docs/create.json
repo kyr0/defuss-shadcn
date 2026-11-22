@@ -1,0 +1,51 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/docs/create",
+  "id": "create",
+  "resource": "docs",
+  "title": "Create a doc",
+  "lead": "Creates a doc from a title and a Markdown body.",
+  "method": "POST",
+  "url": "https://api.acme.example/v4/docs",
+  "params": [
+    {
+      "name": "workspace",
+      "in": "body",
+      "type": "string",
+      "required": true,
+      "example": "ws_acme",
+      "description": "The workspace the doc belongs to."
+    },
+    {
+      "name": "title",
+      "in": "body",
+      "type": "string",
+      "required": true,
+      "example": "Release checklist",
+      "description": "The doc's title."
+    },
+    {
+      "name": "body",
+      "in": "body",
+      "type": "string",
+      "required": false,
+      "example": "- [ ] Changelog",
+      "description": "The text, in Markdown."
+    }
+  ],
+  "responses": [
+    {
+      "status": 201,
+      "description": "Created - the new object"
+    },
+    {
+      "status": 400,
+      "description": "A parameter is missing or wrong"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    }
+  ],
+  "markdown": "create.md"
+}

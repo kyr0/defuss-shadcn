@@ -1,0 +1,43 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/webhooks/create",
+  "id": "create",
+  "resource": "webhooks",
+  "title": "Create a webhook",
+  "lead": "Registers a URL for events. The answer carries the signing secret - the only time it is shown.",
+  "method": "POST",
+  "url": "https://api.acme.example/v4/webhooks",
+  "params": [
+    {
+      "name": "url",
+      "in": "body",
+      "type": "string",
+      "required": true,
+      "example": "https://hooks.acme.example/tasks",
+      "description": "An HTTPS URL that answers 2xx."
+    },
+    {
+      "name": "events",
+      "in": "body",
+      "type": "string[]",
+      "required": true,
+      "example": "task.created, task.updated",
+      "description": "The events, separated by commas."
+    }
+  ],
+  "responses": [
+    {
+      "status": 201,
+      "description": "Created - the new object"
+    },
+    {
+      "status": 400,
+      "description": "A parameter is missing or wrong"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    }
+  ],
+  "markdown": "create.md"
+}

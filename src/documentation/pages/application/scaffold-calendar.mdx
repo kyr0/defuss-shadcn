@@ -351,8 +351,12 @@ import { DocPage, PageHeader, DocText, DocLink } from "../../lib/components/inde
     gap: 0.375rem;
     padding-block: 0;
   }
+  /* one line: the title keeps its room, the time gives way first (a stand-up read "D... 9:30 AM - 9:45 AM") */
   .ag-ev[data-short] b {
     flex: 0 1 auto;
+  }
+  .ag-ev[data-short] span {
+    flex: 0 1000 auto;
   }
   /* overflow: hidden lets a flex item shrink to nothing - the title must keep its line */
   .ag-ev > * {

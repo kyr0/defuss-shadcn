@@ -1,0 +1,79 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Members/invite",
+  "namespace": "Members",
+  "name": "invite",
+  "signature": "async invite(email: string, role?: Role): Promise<Member>",
+  "async": true,
+  "generator": false,
+  "description": "Invites someone by email; they stay invited until they accept.",
+  "params": [
+    {
+      "name": "email",
+      "type": "string",
+      "schema": {
+        "type": "string"
+      },
+      "description": "Where the invitation goes."
+    },
+    {
+      "name": "role",
+      "type": "Role",
+      "schema": {
+        "enum": [
+          "admin",
+          "member",
+          "guest"
+        ]
+      },
+      "optional": true,
+      "description": "What they may do, member by default."
+    }
+  ],
+  "returns": {
+    "type": "Member",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "admin",
+            "member",
+            "guest"
+          ]
+        },
+        "invited": {
+          "type": "boolean",
+          "description": "Invited members have not accepted yet."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "role",
+        "invited"
+      ]
+    },
+    "description": "The invited member."
+  },
+  "throws": [
+    "RpcError when the email is not an address or is already a member"
+  ],
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Members",
+      "methodName": "invite",
+      "args": [
+        "lin@acme.example"
+      ]
+    }
+  },
+  "markdown": "invite.md"
+}

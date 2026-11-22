@@ -3992,7 +3992,7 @@ function viewPersistence(el, kind, fallbackId, config = {}) {
   const key = config.key ?? el.dataset.persistKey ?? `${prefix}:${kind}:${el.id || fallbackId}`;
   return { area: area === "local" ? "local" : "session", key };
 }
-// node_modules/defuss-dataview/dist/query-CcmE25W0.mjs
+// node_modules/defuss-dataview/dist/query-B6HEkalB.mjs
 var forbidden = /* @__PURE__ */ new Set(["__proto__", "prototype", "constructor"]);
 function fieldParts(field) {
   if (typeof field !== "string" || !field)
@@ -4127,7 +4127,14 @@ function bytesOf(value) {
   return;
 }
 var invalidValue = (value) => value == null || typeof value === "number" && Number.isNaN(value) || value instanceof Date && Number.isNaN(value.getTime());
-var rank = (v) => v == null ? 8 : invalidValue(v) ? 7 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : 6;
+var rank = (v) => v == null ? 9 : invalidValue(v) ? 8 : typeof v === "boolean" ? 0 : typeof v === "number" ? 1 : typeof v === "bigint" ? 2 : typeof v === "string" ? 3 : v instanceof Date ? 4 : v instanceof ArrayBuffer || ArrayBuffer.isView(v) ? 5 : Array.isArray(v) ? 6 : 7;
+var CYCLE = "An array that contains itself cannot be compared or used as a key.";
+var open = [];
+function enter(a, b) {
+  if (open.includes(a) || open.includes(b))
+    throw new TypeError(CYCLE);
+  open.push(a, b);
+}
 function normalizeSemantics(options) {
   createValueOperations(options);
   const copy = {};
@@ -4152,7 +4159,7 @@ function createValueOperations(options = {}) {
     throw new TypeError("Locale options require strings: locale.");
   const collator = options.strings === "locale" ? new Intl.Collator(options.locale, options.collatorOptions) : undefined;
   const equality = options.equality ?? "value";
-  const comparisonId = `dataview-order-v1:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
+  const comparisonId = `dataview-order-v2:${collator ? JSON.stringify(collator.resolvedOptions()) : "code-unit"}`;
   function equal(a, b) {
     if (a === b || typeof a === "number" && typeof b === "number" && Number.isNaN(a) && Number.isNaN(b))
       return true;
@@ -4160,6 +4167,8 @@ function createValueOperations(options = {}) {
       return false;
     if (a instanceof Date && b instanceof Date)
       return Object.is(a.getTime(), b.getTime());
+    if (Array.isArray(a))
+      return Array.isArray(b) && a.length === b.length && equalLists(a, b);
     const ab = bytesOf(a), bb = bytesOf(b);
     if (!ab || !bb || ab.length !== bb.length)
       return false;
@@ -4180,8 +4189,10 @@ function createValueOperations(options = {}) {
     const ar = rank(a), br = rank(b);
     if (ar !== br)
       return ar - br;
-    if (ar >= 6)
+    if (ar >= 7)
       return 0;
+    if (ar === 6)
+      return compareLists(a, b);
     if (a instanceof Date && b instanceof Date)
       return a.getTime() < b.getTime() ? -1 : a.getTime() > b.getTime() ? 1 : 0;
     const ab = bytesOf(a), bb = bytesOf(b);
@@ -4193,9 +4204,50 @@ function createValueOperations(options = {}) {
     }
     return a < b ? -1 : 1;
   }
+  function equalLists(a, b) {
+    enter(a, b);
+    try {
+      for (let i = 0;i < a.length; i++)
+        if (!equal(a[i], b[i]))
+          return false;
+      return true;
+    } finally {
+      open.length -= 2;
+    }
+  }
+  function compareLists(a, b) {
+    enter(a, b);
+    try {
+      for (let i = 0, n = Math.min(a.length, b.length);i < n; i++) {
+        const c = compare(a[i], b[i]);
+        if (c)
+          return c;
+      }
+      return Math.sign(a.length - b.length);
+    } finally {
+      open.length -= 2;
+    }
+  }
   return { equal, compare, comparisonId, equality };
 }
 var compareValues = createValueOperations().compare;
+function snapshot(value, byValue, seen = []) {
+  if (!byValue || typeof value !== "object" || value === null)
+    return value;
+  if (value instanceof Date)
+    return new Date(value.getTime());
+  const bytes = bytesOf(value);
+  if (bytes)
+    return bytes.slice();
+  if (!Array.isArray(value))
+    return value;
+  if (seen.includes(value))
+    throw new TypeError(CYCLE);
+  seen.push(value);
+  const copy = value.map((v) => snapshot(v, true, seen));
+  seen.pop();
+  return copy;
+}
 var operators = ["eq", "neq", "gt", "gte", "lt", "lte", "in", "contains", "startsWith", "endsWith"];
 var array = (value, name) => {
   if (!Array.isArray(value))
@@ -4259,14 +4311,7 @@ function createDataview(request = {}) {
   fieldParts(idField);
   return { filters, sorters, page, pageSize, idField, meta: normalizeMeta(request.meta), tree, semantics: request.semantics === undefined ? undefined : normalizeSemantics(request.semantics) };
 }
-function operand(value, byValue) {
-  if (!byValue)
-    return value;
-  if (value instanceof Date)
-    return new Date(value.getTime());
-  const bytes = bytesOf(value);
-  return bytes ? bytes.slice() : value;
-}
+var operand = snapshot;
 function compileQuery(request = {}) {
   const view = createDataview({ filters: request.filters, sorters: request.sorters });
   const ops = createValueOperations(request.semantics);
@@ -7283,14 +7328,14 @@ var minOf = (panel) => {
   const bar = dfDollar8(panel).children(".panel-header").get(0)?.getBoundingClientRect().height ?? 40;
   return num3(panel.dataset.min, Math.round(bar + 32));
 };
-var open = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
+var open2 = (panel) => !panel.hidden && !panel.hasAttribute("data-minimized");
 var titleOf = (panel) => dfDollar8(panel).find(":scope > .panel-header .panel-title").text().trim() || panel.getAttribute("aria-label") || "";
 var keepOf = (stack) => stack.hasAttribute("data-exclusive") ? 1 : Math.max(0, Math.floor(num3(stack.dataset.keep, 0)));
 function keepOpen(stack, again) {
   const n = keepOf(stack);
   if (!n)
     return;
-  const opened = panelsOf(stack).filter(open);
+  const opened = panelsOf(stack).filter(open2);
   const order = (stack._order ?? []).filter((p) => opened.includes(p));
   for (const p of opened)
     if (!order.includes(p))
@@ -7309,10 +7354,10 @@ function keepOpen(stack, again) {
 var levelsOf = (stack) => stack.hasAttribute("data-levels");
 function drill(stack, panels) {
   const was = stack._wasOpen;
-  stack._wasOpen = new Set(panels.filter(open));
+  stack._wasOpen = new Set(panels.filter(open2));
   if (!was || !stack.hasAttribute("data-drill"))
     return;
-  const reopened = panels.find((p) => open(p) && !was.has(p) && stack._seen?.has(p));
+  const reopened = panels.find((p) => open2(p) && !was.has(p) && stack._seen?.has(p));
   stack._seen = new Set(panels);
   if (reopened)
     dropAfter(stack, reopened);
@@ -7327,7 +7372,7 @@ function dropAfter(stack, panel) {
   }
 }
 function report(stack, panels) {
-  const detail = { panels, open: panels.filter(open) };
+  const detail = { panels, open: panels.filter(open2) };
   const was = stack._reported;
   stack._reported = detail;
   const same = (a, b) => a.length === b.length && a.every((p, i) => p === b[i]);
@@ -7376,7 +7421,7 @@ function syncStack(layout, side, region, stack) {
       d.remove();
   const levels = levelsOf(stack);
   for (const d of dfDollar8(stack).children(".border-layout-stack-divider").toArray()) {
-    const live = !d.hidden && open(d._prev) && (levels || open(d._next));
+    const live = !d.hidden && open2(d._prev) && (levels || open2(d._next));
     d.setAttribute("aria-disabled", String(!live));
     d.tabIndex = live ? 0 : -1;
     if (!d._prev)
@@ -7426,15 +7471,15 @@ function moveDivider(layout, side, divider, delta) {
   const { _prev: a, _next: b } = divider;
   const stack = divider.parentElement;
   if (a && levelsOf(stack)) {
-    if (!open(a))
+    if (!open2(a))
       return;
     const px = extent(a, true) + (side === "east" ? -delta : delta);
     a.style.setProperty("--panel-size", `${Math.round(Math.min(Math.max(px, minOf(a)), maxLevel(a)))}px`);
     return;
   }
-  if (!a || !b || !open(a) || !open(b))
+  if (!a || !b || !open2(a) || !open2(b))
     return;
-  const sizes = new Map(panelsOf(stack).filter(open).map((p) => [p, extent(p, isRow(stack, side))]));
+  const sizes = new Map(panelsOf(stack).filter(open2).map((p) => [p, extent(p, isRow(stack, side))]));
   const both = sizes.get(a) + sizes.get(b);
   const next = Math.min(Math.max(sizes.get(a) + delta, minOf(a)), both - minOf(b));
   sizes.set(a, next);
@@ -7763,7 +7808,7 @@ df$8.borderLayout = {
   levels: (stack) => {
     const st = resolveStack(stack);
     const panels = st ? panelsOf(st) : [];
-    return { panels, open: panels.filter(open) };
+    return { panels, open: panels.filter(open2) };
   },
   sizes: (target) => {
     const l = resolve4(target);
@@ -26048,7 +26093,7 @@ function locate(tree, path) {
   }
   return { parent, token, node };
 }
-function snapshot(c) {
+function snapshot2(c) {
   const kind = kindOf2(c);
   if (kind === "map")
     return { kind, list: [...c] };
@@ -26310,9 +26355,9 @@ function change(tree, detail, containers, apply) {
     return false;
   }
   const unique = [...new Set(containers)];
-  const was = unique.map((c) => [c, snapshot(c)]);
+  const was = unique.map((c) => [c, snapshot2(c)]);
   apply();
-  const now = unique.map((c) => [c, snapshot(c)]);
+  const now = unique.map((c) => [c, snapshot2(c)]);
   tree._undo.push({ was, now, detail });
   tree._redo = [];
   done(tree, detail);
@@ -34571,6 +34616,6 @@ df$74.win = windowActions;
 init74();
 new MutationObserver(init74).observe(document, { childList: true, subtree: true });
 
-//# debugId=6E52669BBA51B7FB64756E2164756E21
+//# debugId=9248711511C8DFCC64756E2164756E21
 /* defuss-shadcn v0.9.17 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=all.js.map

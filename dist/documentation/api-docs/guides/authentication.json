@@ -1,0 +1,14 @@
+{
+  "kind": "guide",
+  "route": "#/guides/authentication",
+  "id": "authentication",
+  "title": "Authentication",
+  "lead": "Send your API key as a bearer token in the Authorization header of every request.",
+  "body": [
+    "Keys belong to a workspace and carry its permissions. Create and revoke them under Settings - API keys.",
+    "$ curl https://api.acme.example/v4/docs -H \"Authorization: Bearer $ACME_KEY\"",
+    "A request without a key, or with a revoked one, answers 401 with an authentication_error.",
+    "> Keep live keys on the server. A key in a browser bundle is a key anyone can read."
+  ],
+  "markdown": "authentication.md"
+}

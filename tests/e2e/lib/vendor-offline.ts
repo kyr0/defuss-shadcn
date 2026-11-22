@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { brotliCompressSync, constants } from 'node:zlib';
 import type { Page } from 'playwright';
@@ -35,43 +35,78 @@ const TYPES: Record<string, string> = {
 const FLAG_URL = /^https:\/\/cdn\.jsdelivr\.net\/npm\/flag-icons@7\.2\.3\/flags\/(4x3|1x1)\/([a-z-]+)\.svg$/;
 export async function offlineFlags(page: Page): Promise<string[]> {
   const requests: string[] = [];
-  await page.context().route((u) => FLAG_URL.test(u.href), async (route) => {
-    const url = route.request().url();
-    requests.push(url);
-    const [, shape, region] = FLAG_URL.exec(url)!;
-    const hue = [...region].reduce((h, c) => h + c.charCodeAt(0) * 37, 0) % 360;
-    const [w, h] = shape === '1x1' ? [3, 3] : [4, 3];
-    await route.fulfill({
-      status: 200,
-      contentType: 'image/svg+xml',
-      headers: { 'Access-Control-Allow-Origin': '*' },
-      body: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="hsl(${hue} 70% 45%)"/><rect width="${w}" height="1" fill="#fff"/></svg>`,
-    });
-  });
+  await page.context().route(
+    (u) => FLAG_URL.test(u.href),
+    async (route) => {
+      const url = route.request().url();
+      requests.push(url);
+      const [, shape, region] = FLAG_URL.exec(url)!;
+      const hue = [...region].reduce((h, c) => h + c.charCodeAt(0) * 37, 0) % 360;
+      const [w, h] = shape === '1x1' ? [3, 3] : [4, 3];
+      await route.fulfill({
+        status: 200,
+        contentType: 'image/svg+xml',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}"><rect width="${w}" height="${h}" fill="hsl(${hue} 70% 45%)"/><rect width="${w}" height="1" fill="#fff"/></svg>`,
+      });
+    },
+  );
   return requests;
+}
+
+/** the folder of package `name` at exactly `version`: node_modules/<name>, else node_modules/<dependent>/node_modules/<name> */
+function installedAt(name: string, version: string): string | null {
+  const at = (dir: string) => {
+    const pkg = resolve(dir, 'package.json');
+    return existsSync(pkg) && (JSON.parse(readFileSync(pkg, 'utf8')) as { version: string }).version === version;
+  };
+  const top = resolve(MODULES, name);
+  if (at(top)) return top;
+  for (const dependent of readdirSync(MODULES)) {
+    const nested = resolve(MODULES, dependent, 'node_modules', name);
+    if (at(nested)) return nested;
+  }
+  return null;
 }
 
 export async function offlineJsdelivr(page: Page): Promise<string[]> {
   const requests: string[] = await offlineFlags(page);
   // only the packages this repo pins as devDependencies - other jsDelivr files (echarts) stay the page's own business.
   // On the context: the Compute Engine is imported inside a worker, which page routes do not see
-  await page.context().route((u) => /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@|defuss-search@|defuss-lexicalsearch@|defuss-vectorsearch@|defuss-db@|defuss-storage@|defuss-dataview@|@huggingface\/tokenizers@|three@)/.test(u.href), async (route) => {
-    const url = route.request().url();
-    requests.push(url);
-    // @scope/name@version/path → node_modules/@scope/name/path
-    const m = /^https:\/\/cdn\.jsdelivr\.net\/npm\/((?:@[^/]+\/)?[^@/]+)@([^/]+)\/(.+?)(?:\?.*)?$/.exec(url);
-    const pkg = m ? resolve(MODULES, m[1]!, 'package.json') : '';
-    const file = m ? resolve(MODULES, m[1]!, m[3]!) : '';
-    const installed = pkg && existsSync(pkg) ? (JSON.parse(readFileSync(pkg, 'utf8')) as { version: string }).version : '';
-    if (!m || m[2] !== installed || !existsSync(file)) return route.fulfill({ status: 404, body: 'not pinned' });
-    await route.fulfill({ status: 200, contentType: TYPES[extname(file)] ?? 'text/javascript', headers: { 'Access-Control-Allow-Origin': '*' }, body: readFileSync(file) });
-  });
+  await page.context().route(
+    (u) =>
+      /^https:\/\/cdn\.jsdelivr\.net\/npm\/(@editorjs\/|marked@|katex@|mathlive@|@cortex-js\/|grapesjs@|defuss-i18n@|defuss-dom-router@|d3-array@|d3-geo@|geographiclib-geodesic@|defuss-dson@|@xterm\/|onnxruntime-web@|defuss-brotli@|defuss-lid@|defuss-search@|defuss-lexicalsearch@|defuss-vectorsearch@|defuss-db@|defuss-storage@|defuss-dataview@|@huggingface\/tokenizers@|three@)/.test(
+        u.href,
+      ),
+    async (route) => {
+      const url = route.request().url();
+      requests.push(url);
+      // @scope/name@version/path → node_modules/@scope/name/path - or, where two versions are installed, the copy nested
+      // under a package that depends on the other one (defuss-db 3.0.0 for the Database Explorer, 2.0.2 under
+      // defuss-vectorsearch for the Notes scaffold's search)
+      const m = /^https:\/\/cdn\.jsdelivr\.net\/npm\/((?:@[^/]+\/)?[^@/]+)@([^/]+)\/(.+?)(?:\?.*)?$/.exec(url);
+      const dir = m ? installedAt(m[1]!, m[2]!) : null;
+      const file = m && dir ? resolve(dir, m[3]!) : '';
+      if (!m || !dir || !existsSync(file)) return route.fulfill({ status: 404, body: 'not pinned' });
+      await route.fulfill({
+        status: 200,
+        contentType: TYPES[extname(file)] ?? 'text/javascript',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: readFileSync(file),
+      });
+    },
+  );
   return requests;
 }
 
 /** poll (Node-side, so a page under a fake clock still progresses) until every .editorjs on the page is ready or failed */
 export async function waitEditorsSettled(page: Page, runClock?: (ms: number) => Promise<void>): Promise<void> {
-  const settled = () => page.evaluate(() => [...document.querySelectorAll('.editorjs')].every((e) => e.hasAttribute('data-ready') || e.hasAttribute('data-error')));
+  const settled = () =>
+    page.evaluate(() =>
+      [...document.querySelectorAll('.editorjs')].every(
+        (e) => e.hasAttribute('data-ready') || e.hasAttribute('data-error'),
+      ),
+    );
   for (let i = 0; i < 120; i++) {
     if (await settled()) {
       // Editor.js fades its blocks in on the REAL clock (its own .ce-block animation, 300 ms) - let it end
@@ -97,18 +132,34 @@ const HF_URL = /^https:\/\/huggingface\.co\/([^/]+\/[^/]+)\/resolve\/([0-9a-f]+)
 const COMPRESSED = new Map<string, Buffer>();
 const compressed = (path: string): Buffer => {
   let body = COMPRESSED.get(path);
-  if (!body) COMPRESSED.set(path, (body = brotliCompressSync(readFileSync(path), { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })));
+  if (!body)
+    COMPRESSED.set(
+      path,
+      (body = brotliCompressSync(readFileSync(path), { params: { [constants.BROTLI_PARAM_QUALITY]: 5 } })),
+    );
   return body;
 };
 export async function offlineModels(page: Page): Promise<string[]> {
   const requests: string[] = [];
-  await page.context().route((u) => HF_URL.test(u.href), async (route) => {
-    const url = route.request().url();
-    requests.push(url);
-    const [, id, revision, file] = HF_URL.exec(url)!;
-    const path = resolve(MODELS, id!, revision!, file!);
-    if (!existsSync(path)) return route.fulfill({ status: 404, body: `not in .cache/models - run a docs build with an empty .cache/search/` });
-    await route.fulfill({ status: 200, contentType: 'application/octet-stream', headers: { 'Access-Control-Allow-Origin': '*' }, body: compressed(path) });
-  });
+  await page.context().route(
+    (u) => HF_URL.test(u.href),
+    async (route) => {
+      const url = route.request().url();
+      requests.push(url);
+      const [, id, revision, file] = HF_URL.exec(url)!;
+      const path = resolve(MODELS, id!, revision!, file!);
+      if (!existsSync(path))
+        return route.fulfill({
+          status: 404,
+          body: `not in .cache/models - run a docs build with an empty .cache/search/`,
+        });
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/octet-stream',
+        headers: { 'Access-Control-Allow-Origin': '*' },
+        body: compressed(path),
+      });
+    },
+  );
   return requests;
 }

@@ -66,4 +66,6 @@
   <url><loc>https://shadcn.defuss.org/data-display/carousel.html</loc><priority>0.7</priority></url>
   <url><loc>https://shadcn.defuss.org/application/sidebar.html</loc><priority>0.7</priority></url>
   <url><loc>https://shadcn.defuss.org/data-display/sortable.html</loc><priority>0.7</priority></url>
+  <url><loc>https://shadcn.defuss.org/api-docs/index.md</loc><priority>0.5</priority></url>
+  <url><loc>https://shadcn.defuss.org/api-docs/llms.txt</loc><priority>0.5</priority></url>
 </urlset>

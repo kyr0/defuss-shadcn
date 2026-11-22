@@ -1,0 +1,116 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Tasks/create",
+  "namespace": "Tasks",
+  "name": "create",
+  "signature": "async create(input: NewTask): Promise<Task>",
+  "async": true,
+  "generator": false,
+  "description": "Creates a task in the To do column.",
+  "params": [
+    {
+      "name": "input",
+      "type": "NewTask",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "assignee": {
+            "type": "string"
+          },
+          "due": {
+            "type": "string",
+            "format": "date-time",
+            "x-dson": "date"
+          },
+          "labels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "description": "Its title and, optionally, who does it, when it is due and its labels."
+    }
+  ],
+  "returns": {
+    "type": "Task",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Its id, `t_` and a number."
+        },
+        "title": {
+          "type": "string",
+          "description": "What has to be done."
+        },
+        "status": {
+          "enum": [
+            "todo",
+            "doing",
+            "done"
+          ]
+        },
+        "assignee": {
+          "type": "string",
+          "description": "The member it is assigned to, by id."
+        },
+        "due": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date",
+          "description": "When it is due."
+        },
+        "labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-dson": "set",
+          "items": {
+            "type": "string"
+          },
+          "description": "Labels, each at most once."
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "status",
+        "labels",
+        "created"
+      ]
+    },
+    "description": "The new task, with its id."
+  },
+  "throws": [
+    "RpcError when the title is empty"
+  ],
+  "examples": [
+    "await rpc.Tasks.create({ title: \"Write the release notes\", labels: [\"release\"] })"
+  ],
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Tasks",
+      "methodName": "create",
+      "args": [
+        {
+          "title": "Write the release notes"
+        }
+      ]
+    }
+  },
+  "markdown": "create.md"
+}

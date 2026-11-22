@@ -1237,6 +1237,27 @@
       display: none;
     }
   }
+  /* west: the tab reads from the bottom up and starts at the top - the chevron, the title, the tools (as the Panel's
+     own west tab) */
+  .border-layout-west > .border-layout-stack[data-direction="row"] > .panel[data-minimized] > .panel-header,
+  .border-layout-stack[data-direction="row"].border-layout-west > .panel[data-minimized] > .panel-header,
+  .border-layout > .border-layout-west[data-panel-minimized] > .border-layout-stack > .panel > .panel-header,
+  .border-layout > .border-layout-stack.border-layout-west[data-panel-minimized] > .panel > .panel-header {
+    rotate: 180deg;
+    justify-content: flex-end;
+    & .panel-tools {
+      display: contents;
+    }
+    & .panel-icon,
+    & .panel-title {
+      order: 1;
+      flex: none;
+    }
+    & .panel-minimize {
+      order: 2;
+      rotate: 90deg;
+    }
+  }
 
   /* deep navigation (data-levels on a row stack): each open level keeps its own width (--panel-size), a folded one is
      its bar, and the region is their sum - what a level gives up goes to the center. On the east side the levels run
@@ -1526,6 +1547,25 @@
       }
       & .panel-maximize {
         display: none;
+      }
+      /* west: the tab reads from the bottom up, like a book's spine on the left (the header turned half round), and
+         starts at the top (the maintainer 2026-11-22): the restore chevron first (it points east, where the panel
+         opens), the title under it, its icon below the words, then the other tools - read upward, the bar's order */
+      &[data-region="west"] > .panel-header {
+        rotate: 180deg;
+        justify-content: flex-end;
+        & .panel-tools {
+          display: contents;
+        }
+        & .panel-icon,
+        & .panel-title {
+          order: 1;
+          flex: none;
+        }
+        & .panel-minimize {
+          order: 2;
+          rotate: 90deg;
+        }
       }
     }
 

@@ -133,6 +133,14 @@ describe('paths and links', () => {
     );
     // a page at the docs root needs no prefix
     expect(resolveStandaloneAssets(`img.src = 'images/x.webp'`, 'index.html')).toBe(`img.src = 'images/x.webp'`);
+    // the Database Explorer's defuss-db runtime lives at the docs root too; other js/ paths are the page's own
+    expect(
+      resolveStandaloneAssets(`const M = 'js/db/db.js'; const o = 'js/other.js';`, 'application/app-db-explorer.html'),
+    ).toBe(`const M = '../js/db/db.js'; const o = 'js/other.js';`);
+    // so are the API Documentation scaffold's defuss-rpc runtime and its pages as Markdown and JSON
+    expect(
+      resolveStandaloneAssets(`const R = 'js/api-docs/client.js'; const P = 'api-docs/rpc/Tasks.md'; const s = 'scaffold-api-docs/x';`, 'application/app-api-docs.html'),
+    ).toBe(`const R = '../js/api-docs/client.js'; const P = '../api-docs/rpc/Tasks.md'; const s = 'scaffold-api-docs/x';`);
   });
 
   it("pageLinks: an example's page ids map to their paths from the docs root; other links and escaped samples stay out", () => {

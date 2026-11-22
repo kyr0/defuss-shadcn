@@ -1,0 +1,35 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/docs/retrieve",
+  "id": "retrieve",
+  "resource": "docs",
+  "title": "Retrieve a doc",
+  "lead": "Returns one doc with its whole body.",
+  "method": "GET",
+  "url": "https://api.acme.example/v4/docs/{id}",
+  "params": [
+    {
+      "name": "id",
+      "in": "path",
+      "type": "string",
+      "required": true,
+      "example": "d_201",
+      "description": "The doc's id."
+    }
+  ],
+  "responses": [
+    {
+      "status": 200,
+      "description": "The object, or a page of the list"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    },
+    {
+      "status": 404,
+      "description": "No object with that id"
+    }
+  ],
+  "markdown": "retrieve.md"
+}

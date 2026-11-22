@@ -1,0 +1,41 @@
+{
+  "kind": "resource",
+  "route": "#/ref/docs",
+  "id": "docs",
+  "title": "Docs",
+  "lead": "A doc is a page of text in a workspace, written in Markdown.",
+  "object": "doc",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string",
+      "description": "Unique identifier, starting with d_."
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "description": "The doc's title."
+    },
+    {
+      "name": "body",
+      "type": "string",
+      "description": "The text, in Markdown."
+    },
+    {
+      "name": "workspace",
+      "type": "string",
+      "description": "The workspace it belongs to."
+    },
+    {
+      "name": "updated_at",
+      "type": "timestamp",
+      "description": "When it last changed, in UTC."
+    }
+  ],
+  "endpoints": [
+    "list",
+    "create",
+    "retrieve"
+  ],
+  "markdown": "docs.md"
+}

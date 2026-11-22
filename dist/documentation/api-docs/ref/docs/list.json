@@ -1,0 +1,42 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/docs/list",
+  "id": "list",
+  "resource": "docs",
+  "title": "List docs",
+  "lead": "Returns the docs of a workspace, the most recently changed first.",
+  "method": "GET",
+  "url": "https://api.acme.example/v4/docs",
+  "params": [
+    {
+      "name": "workspace",
+      "in": "query",
+      "type": "string",
+      "required": true,
+      "example": "ws_acme",
+      "description": "The workspace to list."
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "type": "integer",
+      "required": false,
+      "description": "Objects per page, 1 to 100."
+    }
+  ],
+  "responses": [
+    {
+      "status": 200,
+      "description": "The object, or a page of the list"
+    },
+    {
+      "status": 400,
+      "description": "A parameter is missing or wrong"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    }
+  ],
+  "markdown": "list.md"
+}

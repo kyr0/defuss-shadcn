@@ -1,0 +1,72 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Activity/recent",
+  "namespace": "Activity",
+  "name": "recent",
+  "signature": "async *recent(count?: number): AsyncGenerator<ActivityEvent, number>",
+  "async": true,
+  "generator": true,
+  "description": "Streams the latest changes, oldest first - an async generator: the client receives each event as it is sent.",
+  "params": [
+    {
+      "name": "count",
+      "type": "number",
+      "schema": {
+        "type": "number"
+      },
+      "optional": true,
+      "description": "How many events to send."
+    }
+  ],
+  "yields": {
+    "type": "ActivityEvent",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "done",
+            "created",
+            "moved",
+            "assigned"
+          ],
+          "description": "What happened: created, moved, assigned or done."
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date"
+        },
+        "by": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "task",
+        "kind",
+        "at",
+        "by"
+      ]
+    },
+    "description": "One change to a task."
+  },
+  "returns": {
+    "type": "number",
+    "schema": {
+      "type": "number"
+    },
+    "description": "How many events were sent."
+  },
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Activity",
+      "methodName": "recent",
+      "args": []
+    }
+  },
+  "markdown": "recent.md"
+}

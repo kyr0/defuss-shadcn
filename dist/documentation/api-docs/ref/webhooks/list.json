@@ -1,0 +1,22 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/webhooks/list",
+  "id": "list",
+  "resource": "webhooks",
+  "title": "List webhooks",
+  "lead": "Returns every webhook endpoint of the key's workspace.",
+  "method": "GET",
+  "url": "https://api.acme.example/v4/webhooks",
+  "params": [],
+  "responses": [
+    {
+      "status": 200,
+      "description": "The object, or a page of the list"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    }
+  ],
+  "markdown": "list.md"
+}

@@ -323,3 +323,9 @@
 ```html example part label="Button (destructive, sm)"
 <button class="btn" data-variant="destructive" data-size="sm" type="button">Delete all</button>
 ```
+
+```html example part label="Button (destructive, xs)"
+<button class="btn" data-variant="destructive" data-size="xs" type="button">
+  <i data-lucide="trash-2"></i>Drop database
+</button>
+```

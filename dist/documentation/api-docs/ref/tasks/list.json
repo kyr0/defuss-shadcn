@@ -1,0 +1,62 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/tasks/list",
+  "id": "list",
+  "resource": "tasks",
+  "title": "List tasks",
+  "lead": "Returns the tasks of a workspace, newest first, a page at a time.",
+  "method": "GET",
+  "url": "https://api.acme.example/v4/tasks",
+  "params": [
+    {
+      "name": "workspace",
+      "in": "query",
+      "type": "string",
+      "required": true,
+      "example": "ws_acme",
+      "description": "The workspace to list."
+    },
+    {
+      "name": "status",
+      "in": "query",
+      "type": "enum",
+      "required": false,
+      "values": [
+        "todo",
+        "doing",
+        "done"
+      ],
+      "description": "Only tasks with this status."
+    },
+    {
+      "name": "limit",
+      "in": "query",
+      "type": "integer",
+      "required": false,
+      "example": "3",
+      "description": "Objects per page, 1 to 100."
+    },
+    {
+      "name": "cursor",
+      "in": "query",
+      "type": "string",
+      "required": false,
+      "description": "The next_cursor of the previous page."
+    }
+  ],
+  "responses": [
+    {
+      "status": 200,
+      "description": "The object, or a page of the list"
+    },
+    {
+      "status": 400,
+      "description": "A parameter is missing or wrong"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    }
+  ],
+  "markdown": "list.md"
+}
