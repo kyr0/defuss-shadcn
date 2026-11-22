@@ -2753,7 +2753,7 @@ class Explorer {
     this.closeResults();
     // the outline's filter was for the old graph's names: the new top shows whole
     for (const outlet of this.outlets('outline'))
-      for (const filter of outlet.querySelectorAll<HTMLInputElement>('.graph-explorer-outline-filter'))
+      for (const filter of dfDollar(outlet).find('.graph-explorer-outline-filter').toArray() as HTMLInputElement[])
         filter.value = '';
     // Live mode belongs to a generated graph: its switch goes
     this.simulating = false;
