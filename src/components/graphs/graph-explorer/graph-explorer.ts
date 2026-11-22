@@ -820,10 +820,12 @@ export interface GraphExplorerErrorDetail {
 }
 
 /**
- * A graph of the page's for load(): every array indexed by number, the typed ones transferred to the worker.
- * Cluster 0 is the root; the clusters come in BFS order with each one's children contiguous (clusters.parent never
- * decreases), the nodes sorted by cluster, the edges an out-CSR over the nodes. A cluster holds clusters or nodes,
- * never both and never none; the depth is free. Ids follow the indices: c<cluster>, n<node>.
+ * A graph of the page's for load(): every array indexed by number, the typed ones transferred to the worker (each
+ * backed by an ArrayBuffer of its own: a view's whole buffer moves; a SharedArrayBuffer is refused, since the page
+ * could change it after the check). Cluster 0 is the root; the clusters come in BFS order with each one's children
+ * contiguous (clusters.parent never decreases), the nodes sorted by cluster, the edges an out-CSR over the nodes. A
+ * cluster holds clusters or nodes, never both and never none, and at most 1,024 of them; at most 256 cluster levels
+ * (the root's included). Ids follow the indices: c<cluster>, n<node>.
  */
 export interface GraphExplorerData {
   /** the hierarchy: parent (-1 for the root, else an earlier cluster), type (an index into types.cluster), label and
@@ -6793,7 +6795,10 @@ function graphExplorerWorker(self: any): void {
 
   // ------------------------------------------------------- a graph of the page's (load)
   // GraphExplorerData as it arrives: checked whole before anything changes, so a rejected graph leaves the shown one
-  // as it was. The answer is the first thing wrong, or null.
+  // as it was. The answer is the first thing wrong, or null. The bounds: a view lays out its children in O(n^2)
+  // (1,024 take ~0.1 s, 8,000 ~9 s), and the hierarchy's walks recurse per level.
+  const MAX_CHILDREN = 1024,
+    MAX_LEVELS = 256;
   function invalid(d) {
     if (!d || typeof d !== 'object') return 'the data must be an object';
     const { clusters: c, nodes: n, edges: e, types: t } = d;
@@ -6806,9 +6811,19 @@ function graphExplorerWorker(self: any): void {
       ['edges.start', e.start, Int32Array],
       ['edges.target', e.target, Int32Array],
       ['edges.type', e.type, Uint8Array],
-    ] as [string, unknown, any][];
-    for (const [name, v, T] of typed) if (!(v instanceof T)) return `${name} must be an ${T.name}`;
-    const names = (v) => Array.isArray(v) && v.every((s) => typeof s === 'string');
+    ] as [string, ArrayBufferView, any][];
+    for (const [name, v, T] of typed) {
+      if (!(v instanceof T)) return `${name} must be an ${T.name}`;
+      // a shared buffer stays the page's: it could change after the check
+      if (!(v.buffer instanceof ArrayBuffer))
+        return `${name} must not be backed by a SharedArrayBuffer: the page could change it after the check`;
+    }
+    // each index, holes too (every() skips them, and new Array(n) with an entry missing has one)
+    const names = (v) => {
+      if (!Array.isArray(v)) return false;
+      for (let i = 0; i < v.length; i++) if (typeof v[i] !== 'string') return false;
+      return true;
+    };
     for (const k of ['cluster', 'node', 'edge']) if (!names(t[k])) return `types.${k} must be a list of names`;
     const nc = c.parent.length,
       nn = n.cluster.length,
@@ -6829,14 +6844,18 @@ function graphExplorerWorker(self: any): void {
       if (got !== want)
         return got < 0 ? `${name} must be a list of strings` : `${name} has ${got} entries, ${want} expected`;
     if (c.parent[0] !== -1) return 'clusters.parent[0] must be -1: cluster 0 is the root';
-    const kids = new Uint8Array(nc),
-      held = new Uint8Array(nc);
+    // children per cluster (clusters or nodes) and levels: within what a view lays out and the hierarchy's walks hold
+    const kids = new Int32Array(nc),
+      held = new Int32Array(nc),
+      level = new Uint16Array(nc);
     for (let i = 1; i < nc; i++) {
       const p = c.parent[i];
       if (p < 0 || p >= i) return `cluster ${i} has parent ${p}: a parent comes before its children (BFS order)`;
       if (p < c.parent[i - 1])
         return `cluster ${i} has parent ${p} after a child of ${c.parent[i - 1]}: the children of a cluster must be contiguous, the clusters in BFS order`;
-      kids[p] = 1;
+      kids[p]++;
+      if ((level[i] = level[p] + 1) >= MAX_LEVELS)
+        return `cluster ${i} is at level ${level[i]}: at most ${MAX_LEVELS} cluster levels`;
     }
     for (let i = 0; i < nc; i++)
       if (c.type[i] >= t.cluster.length) return `cluster ${i} has type ${c.type[i]}, beyond types.cluster`;
@@ -6847,9 +6866,13 @@ function graphExplorerWorker(self: any): void {
         return `node ${i} is in cluster ${k} after a node of ${n.cluster[i - 1]}: nodes are sorted by cluster`;
       if (kids[k]) return `cluster ${k} holds clusters and nodes: a cluster holds only one of them`;
       if (n.type[i] >= t.node.length) return `node ${i} has type ${n.type[i]}, beyond types.node`;
-      held[k] = 1;
+      held[k]++;
     }
-    for (let i = 0; i < nc; i++) if (!kids[i] && !held[i]) return `cluster ${i} is empty: it needs clusters or nodes`;
+    for (let i = 0; i < nc; i++) {
+      if (!kids[i] && !held[i]) return `cluster ${i} is empty: it needs clusters or nodes`;
+      if (kids[i] + held[i] > MAX_CHILDREN)
+        return `cluster ${i} has ${kids[i] + held[i]} children, at most ${MAX_CHILDREN}`;
+    }
     if (e.start[0] !== 0) return 'edges.start[0] must be 0';
     for (let i = 0; i < nn; i++)
       if (e.start[i + 1] < e.start[i]) return `edges.start falls at node ${i}: it must not decrease`;
