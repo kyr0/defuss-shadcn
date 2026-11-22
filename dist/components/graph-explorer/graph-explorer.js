@@ -783,7 +783,7 @@ function linksTable(c, d) {
     if (!d.samples.length)
         return c.html `<p class="graph-explorer-muted graph-explorer-pad">No single links.</p>`;
     return c.html `<div class="table-container"><table class="table graph-explorer-rel-table"><thead><tr class="table-row">
-      <th class="table-head" scope="col">From</th><th class="table-head" scope="col">Relation</th><th class="table-head" scope="col">To</th><th class="table-head" scope="col">Systems</th></tr></thead>
+      <th class="table-head" scope="col">From</th><th class="table-head" scope="col">Relation</th><th class="table-head" scope="col">To</th><th class="table-head" scope="col">${c.synthetic ? 'Systems' : 'Clusters'}</th></tr></thead>
     <tbody>${d.samples.map((x) => c.html `<tr class="table-row"><td class="table-cell"><button type="button" class="graph-explorer-link" data-graph-explorer-goto="${x.from.id}">${x.from.label}</button></td>
       <td class="table-cell"><span class="graph-explorer-rel-type">${c.icon(EDGE_ICON[x.type] || 'link', { size: 'xs' })}${x.type}${x.back ? c.html ` <span class="graph-explorer-muted">back</span>` : ''}</span></td>
       <td class="table-cell"><button type="button" class="graph-explorer-link" data-graph-explorer-goto="${x.to.id}">${x.to.label}</button></td>
@@ -812,6 +812,15 @@ const ENTITY_COLUMNS = [
     { field: 'rows', label: 'Rows (k)', width: '6.5rem', number: true, filter: 'number' },
     { field: 'freshness', label: 'Age (h)', width: '6rem', number: true, filter: 'number' },
 ];
+// a loaded graph's entity: what the page gave (no owner, rows or freshness), its system a cluster
+const LOADED_ENTITY_COLUMNS = [
+    { field: 'label', label: 'Name', width: '14rem', filter: 'text' },
+    { field: 'type', label: 'Type', width: '8rem', filter: 'select' },
+    { field: 'system', label: 'Cluster', width: '11rem', filter: 'text' },
+    { field: 'out', label: 'Out', width: '5rem', number: true, filter: 'number' },
+    { field: 'in', label: 'In', width: '5rem', number: true, filter: 'number' },
+    { field: 'ref', label: 'Ref', width: '12rem', filter: 'text' },
+];
 const LINK_COLUMNS = [
     { field: 'fromLabel', label: 'From', width: '13rem', filter: 'text' },
     { field: 'relation', label: 'Relation', width: '7rem', filter: 'select' },
@@ -824,6 +833,10 @@ const ENTITY_SHARES = [
     { title: 'By type', field: 'type' },
     { title: 'By owner', field: 'owner' },
     { title: 'Largest systems', field: 'system', limit: 5 },
+];
+const LOADED_ENTITY_SHARES = [
+    { title: 'By type', field: 'type' },
+    { title: 'Largest clusters', field: 'system', limit: 5 },
 ];
 const LINK_SHARES = [
     { title: 'By relation', field: 'relation' },
@@ -848,8 +861,12 @@ function rowsView(c, id, kind, label, fallback) {
     const grids = df$.dataGrid;
     if (!grids?.source)
         return fallback();
-    const cols = kind === 'entities' ? ENTITY_COLUMNS : LINK_COLUMNS;
-    const shares = kind === 'entities' ? ENTITY_SHARES : LINK_SHARES;
+    const cols = kind !== 'entities'
+        ? LINK_COLUMNS.map((col) => (c.synthetic ? col : { ...col, label: col.label.replace('system', 'cluster') }))
+        : c.synthetic
+            ? ENTITY_COLUMNS
+            : LOADED_ENTITY_COLUMNS;
+    const shares = kind !== 'entities' ? LINK_SHARES : c.synthetic ? ENTITY_SHARES : LOADED_ENTITY_SHARES;
     const noun = kind === 'entities' ? 'entities' : 'links';
     const markup = c.html `<div class="graph-explorer-records">
     <p class="graph-explorer-records-count" aria-live="polite">Loading every row...</p>
@@ -949,24 +966,26 @@ register('global', {
           <section class="graph-explorer-kpis">
             ${kpi(c, 'Nodes below', fmt(d.members ?? 0), `${fmt(d.children ?? 0)} children`)}
             ${kpi(c, 'Relations', fmt(relations.length), 'at this level')}
-            ${kpi(c, 'Links not closed', fmt(h.bad), `of ${fmt(h.total)} bundled`, h.bad ? h.tone : 'ok')}
+            ${c.synthetic ? kpi(c, 'Links not closed', fmt(h.bad), `of ${fmt(h.total)} bundled`, h.bad ? h.tone : 'ok') : ''}
             ${kpi(c, 'Cycle', item.scc > 1 ? `${item.scc} nodes` : 'none', item.scc > 1 ? 'reach each other' : 'acyclic here')}
           </section>
           <div class="graph-explorer-page-grid">
-            ${pageCard(c, leaves ? 'Entity types' : 'System kinds', kids
+            ${pageCard(c, c.synthetic ? (leaves ? 'Entity types' : 'System kinds') : leaves ? 'Node types' : 'Cluster types', kids
                     ? composition(c, children, (k) => k.typeName, (k) => (leaves ? 1 : k.members))
                     : c.html `<p class="graph-explorer-muted">Loading...</p>`, { icon: 'layers', note: leaves ? 'entities by type' : 'nodes below each kind' })}
-            ${leaves && kids
-                    ? pageCard(c, 'Owners', composition(c, children, (k) => k.attrs?.owner ?? '-', () => 1), { icon: 'users', note: 'who owns the entities' })
-                    : pageCard(c, 'Link health', c.html `${healthBlock(c, h)}${worst.length
-                        ? rows(c, worst.slice(0, 6).map((r) => row(c, {
-                            id: r.id,
-                            label: r.label,
-                            meta: `${fmt(r.out + r.in)} links`,
-                            badge: stateBadge(c, r.breaker.state),
-                            edge: item.id + '>' + r.id,
-                        })))
-                        : c.html `<p class="graph-explorer-muted">Every breaker is closed.</p>`}`, { icon: 'shield-check', note: 'the breakers its links bundle' })}
+            ${!c.synthetic
+                    ? ''
+                    : leaves && kids
+                        ? pageCard(c, 'Owners', composition(c, children, (k) => k.attrs?.owner ?? '-', () => 1), { icon: 'users', note: 'who owns the entities' })
+                        : pageCard(c, 'Link health', c.html `${healthBlock(c, h)}${worst.length
+                            ? rows(c, worst.slice(0, 6).map((r) => row(c, {
+                                id: r.id,
+                                label: r.label,
+                                meta: `${fmt(r.out + r.in)} links`,
+                                badge: stateBadge(c, r.breaker.state),
+                                edge: item.id + '>' + r.id,
+                            })))
+                            : c.html `<p class="graph-explorer-muted">Every breaker is closed.</p>`}`, { icon: 'shield-check', note: 'the breakers its links bundle' })}
             ${leaves
                     ? ''
                     : pageCard(c, 'Children', kids ? childrenTable(c, children) : c.html `<p class="graph-explorer-muted">Loading...</p>`, { wide: true, icon: 'boxes', note: 'pick one for its page' })}
@@ -984,17 +1003,24 @@ register('global', {
         <section class="graph-explorer-kpis">
           ${kpi(c, 'Outgoing', fmt(d.outDeg ?? 0), 'links it starts')}
           ${kpi(c, 'Incoming', fmt(d.inDeg ?? 0), 'links to it')}
-          ${kpi(c, 'Rows', fmt(a?.rows ?? 0) + 'k')}
-          ${kpi(c, 'Freshness', `${a?.freshness ?? 0} h`, stale ? 'stale' : 'fresh', stale ? 'warn' : 'ok')}
+          ${c.synthetic ? kpi(c, 'Rows', fmt(a?.rows ?? 0) + 'k') : ''}
+          ${c.synthetic ? kpi(c, 'Freshness', `${a?.freshness ?? 0} h`, stale ? 'stale' : 'fresh', stale ? 'warn' : 'ok') : ''}
         </section>
         <div class="graph-explorer-page-grid">
-          ${pageCard(c, 'Attributes', stats(c, [
-                ['Type', item.typeName],
-                ['Owner', a?.owner ?? '-'],
-                ['System', d.path.at(-2)?.label ?? '-'],
-                ['Domain', d.path.at(-3)?.label ?? '-'],
-                ['Id', item.id],
-            ]), { icon: 'info' })}
+          ${pageCard(c, 'Attributes', stats(c, c.synthetic
+                ? [
+                    ['Type', item.typeName],
+                    ['Owner', a?.owner ?? '-'],
+                    ['System', d.path.at(-2)?.label ?? '-'],
+                    ['Domain', d.path.at(-3)?.label ?? '-'],
+                    ['Id', item.id],
+                ]
+                : [
+                    ['Type', item.typeName],
+                    ['Cluster', d.path.at(-2)?.label ?? '-'],
+                    ['Ref', item.ref ?? '-'],
+                    ['Id', item.id],
+                ]), { icon: 'info' })}
           ${pageCard(c, 'Incoming', (d.in ?? []).length
                 ? rows(c, (d.in ?? []).map((r) => row(c, {
                     id: r.id,
@@ -1015,7 +1041,15 @@ register('global', {
                 ['Nodes below', fmt(d.members ?? 0)],
                 ['Children', fmt(d.children ?? 0)],
                 ['Relations', fmt(relations.length)],
-                ['Not closed', h.bad ? `${fmt(h.bad)} of ${fmt(h.total)}` : 'none', h.bad ? h.tone : 'ok'],
+                ...(c.synthetic
+                    ? [
+                        [
+                            'Not closed',
+                            h.bad ? `${fmt(h.bad)} of ${fmt(h.total)}` : 'none',
+                            h.bad ? h.tone : 'ok',
+                        ],
+                    ]
+                    : []),
             ])}
         ${item.breakers && h.total > 1 ? section(c, 'Link health', healthBlock(c, h)) : ''}
         ${section(c, 'Relations', relations.length
@@ -1037,12 +1071,18 @@ register('global', {
             edge: r.same ? (incoming ? r.id + '>' + item.id : item.id + '>' + r.id) : null,
         })), list.length - 8);
         return c.html `${head}${nodeActions(c, item)}
-      ${stats(c, [
-            ['Owner', a?.owner ?? '-'],
-            ['Rows', fmt(a?.rows ?? 0) + 'k'],
-            ['Freshness', `${a?.freshness ?? 0} h`, stale ? 'warn' : 'ok'],
-            ['Links', `${fmt(d.outDeg ?? 0)} out · ${fmt(d.inDeg ?? 0)} in`],
-        ])}
+      ${stats(c, c.synthetic
+            ? [
+                ['Owner', a?.owner ?? '-'],
+                ['Rows', fmt(a?.rows ?? 0) + 'k'],
+                ['Freshness', `${a?.freshness ?? 0} h`, stale ? 'warn' : 'ok'],
+                ['Links', `${fmt(d.outDeg ?? 0)} out · ${fmt(d.inDeg ?? 0)} in`],
+            ]
+            : [
+                ['Type', item.typeName],
+                ['Links', `${fmt(d.outDeg ?? 0)} out · ${fmt(d.inDeg ?? 0)} in`],
+                ...(item.ref ? [['Ref', item.ref]] : []),
+            ])}
       ${section(c, 'Outgoing', (d.out ?? []).length ? linkRows(d.out ?? [], false) : c.html `<p class="graph-explorer-muted">None.</p>`, d.outDeg)}
       ${section(c, 'Incoming', (d.in ?? []).length ? linkRows(d.in ?? [], true) : c.html `<p class="graph-explorer-muted">None.</p>`, d.inDeg)}`;
     },
@@ -1090,8 +1130,8 @@ register('global', {
           <section class="graph-explorer-kpis">
             ${kpi(c, 'Forward', fmt(d.forward), `${item.source.label} → ${item.target.label}`)}
             ${kpi(c, 'Back', fmt(d.backward), `${item.target.label} → ${item.source.label}`)}
-            ${e.kind === 'agg' ? kpi(c, 'Breakers', fmt(d.pairs.length), `${fmt(bad.length)} not closed`, bad.length ? 'warn' : 'ok') : kpi(c, 'Relation', e.type)}
-            ${e.kind === 'agg' ? kpi(c, 'Trips', fmt(d.pairs.reduce((n, p) => n + p.trips, 0)), 'since the last deploy') : ''}
+            ${e.kind !== 'agg' ? kpi(c, 'Relation', e.type) : c.synthetic ? kpi(c, 'Breakers', fmt(d.pairs.length), `${fmt(bad.length)} not closed`, bad.length ? 'warn' : 'ok') : ''}
+            ${e.kind === 'agg' && c.synthetic ? kpi(c, 'Trips', fmt(d.pairs.reduce((n, p) => n + p.trips, 0)), 'since the last deploy') : ''}
           </section>
           <div class="graph-explorer-page-grid">
             ${pageCard(c, 'By relation', byType, { icon: 'workflow', note: 'both directions' })}
@@ -1110,12 +1150,18 @@ register('global', {
         ${stats(c, [
                 ['Forward', fmt(d.forward)],
                 ['Back', fmt(d.backward)],
-                ['Breaker', e.breaker ? stateBadge(c, e.breaker.state) : 'none'],
-                [
-                    e.kind === 'agg' ? 'Pairs' : 'Relation',
-                    e.kind === 'agg' ? `${fmt(d.pairs.length)} · ${fmt(bad.length)} not closed` : e.type,
-                    bad.length ? 'warn' : undefined,
-                ],
+                ...(c.synthetic
+                    ? [
+                        ['Breaker', e.breaker ? stateBadge(c, e.breaker.state) : 'none'],
+                        [
+                            e.kind === 'agg' ? 'Pairs' : 'Relation',
+                            e.kind === 'agg' ? `${fmt(d.pairs.length)} · ${fmt(bad.length)} not closed` : e.type,
+                            bad.length ? 'warn' : undefined,
+                        ],
+                    ]
+                    : e.kind === 'agg'
+                        ? []
+                        : [['Relation', e.type]]),
             ])}
         ${section(c, 'By relation', byType)}
         ${bad.length ? section(c, 'Breakers not closed', rows(c, bad.slice(0, 5).map(pairRow), bad.length - 5), bad.length) : ''}
@@ -1310,8 +1356,15 @@ class Explorer {
     constructor(el) {
         this.el = el;
         this.registry = { node: [], edge: [], detail: [], update: [] };
-        this.n = clamp(parseInt(el.dataset.nodes || '1000000', 10) || 1000000, 2000, 4000000);
+        // data-source="external": the graph comes from load(), nothing is generated
+        this.waitsForData = el.getAttribute('data-source') === 'external';
+        this.n = this.waitsForData ? 0 : clamp(parseInt(el.dataset.nodes || '1000000', 10) || 1000000, 2000, 4000000);
         this.seed = parseInt(el.dataset.seed || '7', 10) || 7;
+        this.loaded = false; // the graph shown came from load()
+        this.gen = 0; // the graph's generation: a load() that lands moves it on (a navigation of the graph before stops)
+        this.loads = new Map(); // load() calls the worker has not answered: request -> resolve
+        this.loadSeq = 0;
+        this.swap = false; // a loaded graph is installed: its top view replaces the one shown
         this.uid = el.id || 'graph-explorer-' + Math.random().toString(36).slice(2, 8);
         this.views = new Map(); // view id -> payload
         this.view = null;
@@ -1358,7 +1411,7 @@ class Explorer {
         this.activeResult = -1;
         this.waiters = new Map();
         this.syncChain = Promise.resolve();
-        this.ready = new Promise((resolve) => (this.resolveReady = resolve));
+        this.armReady();
         this.mount();
         this.startWorker();
         this.bindEvents();
@@ -1392,7 +1445,9 @@ class Explorer {
       <div class="graph-explorer-ring" hidden data-ce-chrome></div>
       <div class="graph-explorer-focus-ring" hidden aria-hidden="true" data-ce-chrome></div>
       <div class="graph-explorer-loading" data-ce-chrome>
-        <span class="graph-explorer-loading-text">Generating ${fmt(this.n)} nodes...</span><progress></progress>
+        <span class="graph-explorer-loading-text"
+          >${this.waitsForData ? 'Waiting for the graph...' : `Generating ${fmt(this.n)} nodes...`}</span
+        ><progress></progress>
       </div>
       <pre class="graph-explorer-hud" aria-hidden="true" hidden data-ce-chrome></pre>
       <output class="graph-explorer-live" data-ce-chrome></output>
@@ -1438,20 +1493,135 @@ class Explorer {
         this.worker.onerror = (ev) => this.fail(ev.message || 'worker error');
         this.postRules();
         this.postLayers();
-        this.post({ t: 'init', n: this.n, seed: this.seed });
+        if (!this.waitsForData)
+            this.post({ t: 'init', n: this.n, seed: this.seed });
         this.t0 = performance.now();
+    }
+    /** a new ready promise: the first graph's view, or the next loaded one's while a load() is under way */
+    armReady() {
+        this.isReady = false;
+        this.ready = new Promise((resolve) => (this.resolveReady = () => {
+            this.isReady = true;
+            resolve();
+        }));
+    }
+    /** true from load() until the worker refused its graph or the new graph shows: the frames pause meanwhile */
+    get reloading() {
+        return this.swap || this.loads.size > 0;
+    }
+    /** a graph of the page's in place of the one shown: the typed arrays move to the worker (they are empty here
+     *  afterwards); true once it shows, false when the worker refused it (graph-explorer-error says why) */
+    load(data) {
+        const transfer = new Set();
+        for (const part of [data?.clusters, data?.nodes, data?.edges])
+            for (const v of Object.values(part ?? {}))
+                if (ArrayBuffer.isView(v) && v.buffer instanceof ArrayBuffer)
+                    transfer.add(v.buffer);
+        const req = ++this.loadSeq;
+        return new Promise((resolve) => {
+            this.loads.set(req, resolve);
+            if (this.view && this.isReady)
+                this.armReady();
+            dfDollar(this.el).attr('aria-busy', 'true');
+            try {
+                this.worker.postMessage({ t: 'load', data, req }, [...transfer]);
+            }
+            catch (err) {
+                this.refused(req, `Invalid graph data: ${err instanceof Error ? err.message : err}`);
+            }
+        });
+    }
+    /** the worker refused a graph: the one shown stays (without one, the explorer shows the error) */
+    refused(req, message) {
+        const resolve = this.loads.get(req);
+        this.loads.delete(req);
+        if (this.view) {
+            this.fail(message, true);
+            if (!this.reloading) {
+                dfDollar(this.el).attr('aria-busy', null);
+                this.resolveReady();
+                this.requestTick();
+            }
+        }
+        else
+            this.fail(message);
+        resolve?.(false);
+    }
+    /** the worker installed a loaded graph: its top view is asked for; the one shown stays until it comes (onView) */
+    installed(m) {
+        const resolve = this.loads.get(m.req);
+        this.loads.delete(m.req);
+        (this.landing ??= []).push(resolve);
+        this.loaded = true;
+        this.n = m.stats.nodes;
+        this.views.clear();
+        this.swap = true;
+    }
+    /** everything the graph shown before left: its views and answers, the selection, the updates, the search, Live
+     *  mode; then its top view shows (the state lands at the top, nothing selected) */
+    land(m) {
+        const picked = this.selected.size > 0 || !!this.edge;
+        this.swap = false;
+        this.gen++;
+        this.stopFlight();
+        this.diving = null;
+        this.upping = false;
+        this.requests.clear();
+        this.rowCache.clear();
+        this.dataRev.clear();
+        this.selected = new Set();
+        this.edge = null;
+        this.bitmapCam = null;
+        this.sent = null;
+        this.inflight = 0;
+        this.pendingBitmap?.bitmap.close();
+        this.pendingBitmap = null;
+        if (this.expanded)
+            this.collapseDetails(false);
+        this.updates = [];
+        this.changes.clear();
+        for (const dot of this.changeDots.values())
+            dot.remove();
+        this.changeDots.clear();
+        this.results = [];
+        this.activeResult = -1;
+        for (const outlet of this.outlets('search')) {
+            const { input, list } = this.searchBox(outlet);
+            dfDollar(input).attr('placeholder', `Search ${fmt(this.n)} nodes ( / )`);
+            morph(list, []);
+        }
+        this.closeResults();
+        // Live mode belongs to a generated graph: its switch goes
+        this.simulating = false;
+        for (const b of boundOf(this.el, '[data-graph-explorer-action="live"]')) {
+            dfDollar(b).attr('aria-pressed', 'false');
+            b.hidden = true;
+        }
+        this.renderUpdates();
+        this.setView(m);
+        this.fit(false);
+        if (picked)
+            this.el.dispatchEvent(new CustomEvent('graph-explorer-select', {
+                detail: { selected: [], edge: null },
+                bubbles: true,
+            }));
+        for (const resolve of this.landing.splice(0))
+            resolve?.(true);
     }
     post(m, transfer) {
         if (!this.destroyed)
             this.worker.postMessage(m, transfer || []);
     }
-    fail(message) {
-        dfDollar(this.el).attr('data-graph-status', 'error');
-        dfDollar(this.el).attr('aria-busy', null);
-        dfDollar(this.loadingEl)
-            .find('.graph-explorer-loading-text')
-            .text(`The graph could not be built: ${message.split('\n')[0]}`);
-        // the worker or a renderer failed
+    /** a failure: the error event, and (unless the graph shown stays) the error in place of the graph */
+    fail(message, keep = false) {
+        if (!keep) {
+            dfDollar(this.el).attr('data-graph-status', 'error');
+            dfDollar(this.el).attr('aria-busy', null);
+            dfDollar(this.loadingEl)
+                .find('.graph-explorer-loading-text')
+                .text(`The graph could not be built: ${message.split('\n')[0]}`);
+        }
+        // the worker or a renderer failed, or load() was given data the worker refused (the graph shown stays)
         this.el.dispatchEvent(new CustomEvent('graph-explorer-error', { detail: { message }, bubbles: true }));
     }
     onWorker(m) {
@@ -1459,8 +1629,13 @@ class Explorer {
             case 'ready':
                 this.genStats = m.stats;
                 this.genMs = Math.round(performance.now() - this.t0);
+                if (m.req)
+                    this.installed(m);
                 this.postColors();
                 this.post({ t: 'focus', id: m.root });
+                break;
+            case 'rejected':
+                this.refused(m.req, String(m.message));
                 break;
             case 'view':
                 this.onView(m);
@@ -1523,7 +1698,7 @@ class Explorer {
         const rules = [];
         for (const reg of [globalRegistry, this.registry])
             for (const p of reg.edge) {
-                if (!this.shown.has(p.layer || 'relations'))
+                if (!this.shown.has(p.layer || 'relations') || !this.offers(p.layer || 'relations'))
                     continue;
                 for (const r of p.rules || [])
                     rules.push({
@@ -1666,7 +1841,17 @@ class Explorer {
             c.breakers = null;
         this.computeBreakerCounts(m);
         this.resolve('view:' + m.id, m);
-        if (first && !this.view) {
+        if (this.swap && m.id === 'c0') {
+            this.land(m);
+            this.loading = false;
+            this.loadingEl.hidden = true;
+            if (!this.reloading)
+                dfDollar(this.el).attr('aria-busy', null);
+            dfDollar(this.el).attr('data-graph-status', 'ready');
+            this.resolveReady();
+            this.requestTick();
+        }
+        else if (first && !this.view) {
             this.setView(m);
             this.fit(false);
             this.loading = false;
@@ -1677,7 +1862,7 @@ class Explorer {
         }
     }
     computeBreakerCounts(m) {
-        if (m.leafView)
+        if (m.leafView || this.loaded)
             return;
         for (const c of m.children)
             c.breakers = { open: 0, half: 0, cut: 0, total: 0 };
@@ -1853,11 +2038,14 @@ class Explorer {
     // ---------------------------------------------------- layers
     /** every layer the switch offers: the built-in ones, then the plugins' in the order they came */
     layerDefs() {
-        const out = BUILTIN_LAYERS.map((l) => ({ ...l, color: '' }));
+        const out = BUILTIN_LAYERS.filter((l) => this.offers(l.name)).map((l) => ({
+            ...l,
+            color: '',
+        }));
         const seen = new Set(out.map((l) => l.name));
         const plugins = [...globalRegistry.node, ...globalRegistry.edge, ...this.registry.node, ...this.registry.edge];
         for (const p of plugins.sort((a, b) => a._order - b._order)) {
-            if (!p.layer || seen.has(p.layer))
+            if (!p.layer || seen.has(p.layer) || !this.offers(p.layer))
                 continue;
             seen.add(p.layer);
             out.push({
@@ -1869,6 +2057,10 @@ class Explorer {
             });
         }
         return out.map((l, k) => ({ ...l, color: l.color || this.layerColor(k), shown: this.shown.has(l.name) }));
+    }
+    /** whether the graph has a layer: Health (the breakers) is a generated graph's only */
+    offers(layer) {
+        return !(this.loaded && layer === 'health');
     }
     /** the k-th layer's colour: the theme's chart colours - or, when they are one hue (the default theme's five blues),
      *  chart-1 turned around the hue circle, so every layer keeps a colour of its own */
@@ -1998,7 +2190,8 @@ class Explorer {
     }
     tick(now) {
         this.raf = 0;
-        if (!this.view || this.destroyed)
+        // a load() under way: the graph shown holds still until the new one shows (or the worker refuses it)
+        if (!this.view || this.destroyed || this.reloading)
             return;
         if (!this.w)
             this.size();
@@ -2098,7 +2291,7 @@ class Explorer {
             this.inflight = 0;
         this.stats.worker = m.stats;
         this.stats.lag = this.camSeq - m.camId;
-        if (!this.view || m.view !== this.view.cid || this.destroyed) {
+        if (!this.view || m.view !== this.view.cid || this.destroyed || this.reloading) {
             m.bitmap.close();
             return;
         }
@@ -2306,6 +2499,7 @@ class Explorer {
             expanded: tier === 'detail' && this.expanded,
             layers: [...this.shown],
             compact: this.compact,
+            synthetic: !this.loaded,
             parts: html ``,
             action: (name) => String(name),
             edgeLabel: (e, t = 'label') => this.edgeLabelHtml(e, t),
@@ -2534,7 +2728,7 @@ class Explorer {
     // morphed only when its markup changed.
     /** the label renderers - on the graph only the shown layers' (a plugin without a layer: labels) */
     labelPlugins(graph = false) {
-        return this.edgePlugins().filter((p) => p.label && (!graph || this.shown.has(p.layer || 'labels')));
+        return this.edgePlugins().filter((p) => p.label && (!graph || (this.shown.has(p.layer || 'labels') && this.offers(p.layer || 'labels'))));
     }
     labelFor(e, ctx) {
         const sig = e.breaker ? e.breaker.state + (e.breaker.openShare || 0) : '';
@@ -2916,13 +3110,15 @@ class Explorer {
         }
     }
     async rebaseDown(i) {
-        const n = this.view.children[i];
-        if (this.diving === n.id)
+        const n = this.view.children[i], gen = this.gen;
+        if (this.diving === n.id || this.reloading)
             return;
         this.diving = n.id;
         const child = await this.fetchView(n.id);
+        if (gen !== this.gen)
+            return;
         this.diving = null;
-        if (!this.view || this.view.children[i]?.id !== n.id)
+        if (!this.view || this.reloading || this.view.children[i]?.id !== n.id)
             return;
         const conv = (cam) => cam && { ...cam, cx: (cam.cx - n.x) / n.r, cy: (cam.cy - n.y) / n.r, z: cam.z * n.r };
         const keep = this.selected;
@@ -2935,13 +3131,15 @@ class Explorer {
         this.camChanged();
     }
     async up(animate = true) {
-        const m = this.view;
-        if (!m || !m.parent || this.upping)
+        const m = this.view, gen = this.gen;
+        if (!m || !m.parent || this.upping || this.reloading)
             return false;
         this.upping = true;
         const parent = await this.fetchView(m.parent.id);
+        if (gen !== this.gen)
+            return false;
         this.upping = false;
-        if (this.view !== m)
+        if (this.view !== m || this.reloading)
             return false;
         const p = m.parent;
         const conv = (cam) => cam && { ...cam, cx: p.x + cam.cx * p.r, cy: p.y + cam.cy * p.r, z: cam.z / p.r };
@@ -2957,7 +3155,7 @@ class Explorer {
     }
     async dive(i, animate = true) {
         const n = this.view.children[i];
-        if (!n || n.kind !== 'cluster')
+        if (!n || n.kind !== 'cluster' || this.reloading)
             return;
         void this.fetchView(n.id);
         await this.flyTo({ cx: n.x, cy: n.y, z: (0.9 * this.vmin) / (2 * n.r) }, { animate });
@@ -3016,31 +3214,37 @@ class Explorer {
         await this.ready;
         this.navigating = true;
         const animate = opts.animate !== false;
+        // a graph loaded meanwhile ends the way through this one
+        const gen = this.gen;
         try {
             const path = await this.waitFor('path:' + id, () => this.post({ t: 'path', id }));
-            if (!path || !path.length)
+            if (!path || !path.length || gen !== this.gen)
                 return;
             const ids = path.map((p) => p.id);
             // a node is selected among its parent's children: going to the view itself (a trail's last cluster) climbs
             const above = opts.enter ? ids : ids.slice(0, -1);
             let climbed = false;
             while (!above.includes(this.view.id)) {
-                if (!(await this.up(false)))
+                if (!(await this.up(false)) || gen !== this.gen)
                     break;
                 climbed = true;
             }
+            if (gen !== this.gen)
+                return;
             // after a climb the camera still shows the child it left, as big as when it was entered: fit the level first,
             // or the zoom dives straight back into it
             if (climbed)
                 await this.fit(animate);
             let depth = ids.indexOf(this.view.id);
-            while (depth < ids.length - 2) {
+            while (depth < ids.length - 2 && gen === this.gen) {
                 const nextId = ids[depth + 1], i = this.view.byId.get(nextId);
                 if (i === undefined)
                     break;
                 await this.dive(i, animate);
                 depth = ids.indexOf(this.view.id);
             }
+            if (gen !== this.gen)
+                return;
             const i = this.view.byId.get(id);
             if (i !== undefined && opts.enter && this.view.children[i].kind === 'cluster') {
                 await this.dive(i, animate);
@@ -3507,6 +3711,8 @@ class Explorer {
         else if (action === 'help')
             this.help.togglePopover();
         else if (action === 'live') {
+            if (this.loaded)
+                return; // Live mode simulates a generated graph
             const on = !this.simulating;
             this.simulating = on;
             this.post({ t: 'simulate', on });
@@ -4732,7 +4938,11 @@ df$.graphExplorer = {
      * @param id - the node's id (c<number> or n<number>)
      * @returns id and name of every step, the top (c0) first, the node last
      */
-    path: (target, id) => need(target).waitFor('path:' + id, () => need(target).post({ t: 'path', id })),
+    path: async (target, id) => {
+        const inst = need(target);
+        await inst.ready;
+        return inst.waitFor('path:' + id, () => inst.post({ t: 'path', id }));
+    },
     /**
      * A node and its descendants down to a number of levels, as flat records linked by parent id - what a tree grid
      * takes (data-parent-field="parent"). The worker answers: a domain of a million-node graph with two levels below it
@@ -4742,7 +4952,11 @@ df$.graphExplorer = {
      * @param levels - how many levels to return, the root's included (default 3)
      * @returns the rows, depth first, the root first
      */
-    subtree: (target, id, levels = 3) => need(target).fetchSubtree(id, levels),
+    subtree: async (target, id, levels = 3) => {
+        const inst = need(target);
+        await inst.ready;
+        return inst.fetchSubtree(id, levels);
+    },
     /**
      * Searches the whole graph for names that hold the query (or #<number> for an entity) and answers with the hits -
      * the clusters first, then up to twelve entities; the worker scans the entities in chunks. A newer search ends this
@@ -4752,7 +4966,11 @@ df$.graphExplorer = {
      * @param onPartial - called with the hits so far and the entities scanned while the scan runs
      * @returns the hits
      */
-    find: (target, query, onPartial) => need(target).find(query, onPartial),
+    find: async (target, query, onPartial) => {
+        const inst = need(target);
+        await inst.ready;
+        return inst.find(query, onPartial);
+    },
     /**
      * Searches the graph like the search outlet does (the results show in it).
      * @param target - the .graph-explorer element or its selector
@@ -4825,14 +5043,27 @@ df$.graphExplorer = {
      */
     collapse: (target) => need(target).collapseDetails(),
     /**
+     * Shows a graph of the page's in place of the one shown (a generated one too): the worker checks it whole - the
+     * hierarchy in BFS order with contiguous children, the nodes sorted by cluster, the out-CSR, every index in range -
+     * and installs it, or refuses it with graph-explorer-error and keeps the graph shown. The typed arrays are
+     * transferred, not copied: they are empty on the page afterwards. The new graph shows at its top, nothing selected,
+     * without the old one's updates; Health, breakers, Live mode and the generated attributes are a generated graph's
+     * only. With data-source="external" the element generates nothing and waits for this call.
+     * @param target - the .graph-explorer element or its selector
+     * @param data - the graph: clusters, nodes, edges and the names of their types
+     * @returns true once the new graph shows, false when the worker refused it (the event says why)
+     */
+    load: (target, data) => need(target).load(data),
+    /**
      * Starts or stops Live mode: a simulation in which breakers trip, probe and close, nodes deploy, traffic moves and
-     * counts change - each change an update (a dot on the node, a flash on the link, a row in the Updates outlet).
+     * counts change - each change an update (a dot on the node, a flash on the link, a row in the Updates outlet). A
+     * loaded graph has no Live mode: its changes come through update().
      * @param target - the .graph-explorer element or its selector
      * @param on - true to start, false to stop
      */
     simulate: (target, on) => {
         const inst = need(target);
-        if (!!inst.simulating !== on)
+        if (!inst.loaded && !!inst.simulating !== on)
             void inst.act('live', null);
     },
     /**
@@ -5169,9 +5400,14 @@ function graphExplorerWorker(self) {
     // ------------------------------------------------------------------ graph
     let N = 0, E = 0, C = 0, D = 0, S = 0, P = 0;
     let leafType, leafCluster, outStart, outTarget, edgeType, inDeg;
-    let cParent, cLevel, cChildStart, cChildCount, cLeafStart, cLeafEnd, cKind, cName;
+    // cLeafParent: the cluster's children are entities (a leaf view); cLeafStart/End: the range of those entities (a leaf
+    // parent's only - a loaded graph of variable depth keeps no cluster's whole subtree contiguous, rangesOf() walks it)
+    let cParent, cLevel, cChildStart, cChildCount, cLeafStart, cLeafEnd, cKind, cName, cLeafParent;
     let pairA, pairB, pairCount, pairState, pairTrips, pairSince, pairProbesOk, pairBy, pairVer;
-    let domPairs, rootPairs, pairMap;
+    // viewPairs: the cluster whose view draws a pair's aggregate edge (the lowest common ancestor of its two systems)
+    let domPairs, rootPairs, pairMap, viewPairs;
+    // a graph given to load() (EXT): its own names, labels and refs; no breakers, no simulation, no synthetic attributes
+    let EXT = false, TYPES = null, LABELS = null, REFS = null, cRef = null, cMembers = null;
     const views = new Map(); // cluster id -> view (layout, edges, cycles)
     const previews = new Map(); // cluster id -> cheap phyllotaxis layout for far-field dots
     function generate(n, seed) {
@@ -5205,6 +5441,8 @@ function graphExplorerWorker(self) {
         cLeafEnd = new Int32Array(C);
         cKind = new Uint8Array(C);
         cName = Array.from({ length: C });
+        cLeafParent = new Uint8Array(C);
+        EXT = false;
         // leaves per system, summing to n
         const sw = new Float64Array(S);
         let ssum = 0;
@@ -5261,6 +5499,7 @@ function graphExplorerWorker(self) {
                 cName[sys] = name;
                 cParent[sys] = dom;
                 cLevel[sys] = 2;
+                cLeafParent[sys] = 1;
                 cKind[sys] = (h >>> 16) % 4;
                 cLeafStart[sys] = leaf;
                 cChildStart[sys] = leaf;
@@ -5391,6 +5630,8 @@ function graphExplorerWorker(self) {
             else
                 rootPairs.push(p);
         }
+        viewPairs = new Map(domPairs);
+        viewPairs.set(0, rootPairs);
         views.clear();
         previews.clear();
         return {
@@ -5403,16 +5644,267 @@ function graphExplorerWorker(self) {
             ms: Math.round(performance.now() - t0),
         };
     }
+    // ------------------------------------------------------- a graph of the page's (load)
+    // GraphExplorerData as it arrives: checked whole before anything changes, so a rejected graph leaves the shown one
+    // as it was. The answer is the first thing wrong, or null.
+    function invalid(d) {
+        if (!d || typeof d !== 'object')
+            return 'the data must be an object';
+        const { clusters: c, nodes: n, edges: e, types: t } = d;
+        if (!c || !n || !e || !t)
+            return 'clusters, nodes, edges and types are required';
+        const typed = [
+            ['clusters.parent', c.parent, Int32Array],
+            ['clusters.type', c.type, Uint8Array],
+            ['nodes.cluster', n.cluster, Int32Array],
+            ['nodes.type', n.type, Uint8Array],
+            ['edges.start', e.start, Int32Array],
+            ['edges.target', e.target, Int32Array],
+            ['edges.type', e.type, Uint8Array],
+        ];
+        for (const [name, v, T] of typed)
+            if (!(v instanceof T))
+                return `${name} must be an ${T.name}`;
+        const names = (v) => Array.isArray(v) && v.every((s) => typeof s === 'string');
+        for (const k of ['cluster', 'node', 'edge'])
+            if (!names(t[k]))
+                return `types.${k} must be a list of names`;
+        const nc = c.parent.length, nn = n.cluster.length, ne = e.target.length;
+        if (!nc)
+            return 'clusters: there must be a root (cluster 0)';
+        if (!nn)
+            return 'nodes: there must be at least one';
+        const sized = [
+            ['clusters.type', c.type.length, nc],
+            ['clusters.label', names(c.label) ? c.label.length : -1, nc],
+            ['nodes.type', n.type.length, nn],
+            ['nodes.label', names(n.label) ? n.label.length : -1, nn],
+            ['nodes.ref', names(n.ref) ? n.ref.length : -1, nn],
+            ['edges.start', e.start.length, nn + 1],
+            ['edges.type', e.type.length, ne],
+        ];
+        if (c.ref !== undefined)
+            sized.push(['clusters.ref', names(c.ref) ? c.ref.length : -1, nc]);
+        for (const [name, got, want] of sized)
+            if (got !== want)
+                return got < 0 ? `${name} must be a list of strings` : `${name} has ${got} entries, ${want} expected`;
+        if (c.parent[0] !== -1)
+            return 'clusters.parent[0] must be -1: cluster 0 is the root';
+        const kids = new Uint8Array(nc), held = new Uint8Array(nc);
+        for (let i = 1; i < nc; i++) {
+            const p = c.parent[i];
+            if (p < 0 || p >= i)
+                return `cluster ${i} has parent ${p}: a parent comes before its children (BFS order)`;
+            if (p < c.parent[i - 1])
+                return `cluster ${i} has parent ${p} after a child of ${c.parent[i - 1]}: the children of a cluster must be contiguous, the clusters in BFS order`;
+            kids[p] = 1;
+        }
+        for (let i = 0; i < nc; i++)
+            if (c.type[i] >= t.cluster.length)
+                return `cluster ${i} has type ${c.type[i]}, beyond types.cluster`;
+        for (let i = 0; i < nn; i++) {
+            const k = n.cluster[i];
+            if (k < 0 || k >= nc)
+                return `node ${i} is in cluster ${k}, which does not exist`;
+            if (i && k < n.cluster[i - 1])
+                return `node ${i} is in cluster ${k} after a node of ${n.cluster[i - 1]}: nodes are sorted by cluster`;
+            if (kids[k])
+                return `cluster ${k} holds clusters and nodes: a cluster holds only one of them`;
+            if (n.type[i] >= t.node.length)
+                return `node ${i} has type ${n.type[i]}, beyond types.node`;
+            held[k] = 1;
+        }
+        for (let i = 0; i < nc; i++)
+            if (!kids[i] && !held[i])
+                return `cluster ${i} is empty: it needs clusters or nodes`;
+        if (e.start[0] !== 0)
+            return 'edges.start[0] must be 0';
+        for (let i = 0; i < nn; i++)
+            if (e.start[i + 1] < e.start[i])
+                return `edges.start falls at node ${i}: it must not decrease`;
+        if (e.start[nn] !== ne)
+            return `edges.start[${nn}] is ${e.start[nn]}, the length of edges.target (${ne}) expected`;
+        for (let k = 0; k < ne; k++) {
+            if (e.target[k] < 0 || e.target[k] >= nn)
+                return `edge ${k} has target ${e.target[k]}, which is no node`;
+            if (e.type[k] >= t.edge.length)
+                return `edge ${k} has type ${e.type[k]}, beyond types.edge`;
+        }
+        return null;
+    }
+    // the lowest common ancestor of two clusters, and the child of `anc` that holds cluster c
+    function lcaOf(a, b) {
+        while (a !== b) {
+            if (cLevel[a] >= cLevel[b])
+                a = cParent[a];
+            else
+                b = cParent[b];
+        }
+        return a;
+    }
+    function childOf(c, anc) {
+        while (cParent[c] !== anc)
+            c = cParent[c];
+        return c;
+    }
+    /** the checked data in place of the graph: the hierarchy's ranges, the in-degrees and the aggregate pairs */
+    function install(d) {
+        const t0 = performance.now();
+        simulate(false);
+        abortSearch();
+        EXT = true;
+        TYPES = { cluster: d.types.cluster, node: d.types.node, edge: d.types.edge };
+        C = d.clusters.parent.length;
+        N = d.nodes.cluster.length;
+        E = d.edges.target.length;
+        D = S = 0;
+        cParent = d.clusters.parent;
+        cKind = d.clusters.type;
+        cName = d.clusters.label;
+        cRef = d.clusters.ref ?? null;
+        leafCluster = d.nodes.cluster;
+        leafType = d.nodes.type;
+        LABELS = d.nodes.label;
+        REFS = d.nodes.ref;
+        outStart = d.edges.start;
+        outTarget = d.edges.target;
+        edgeType = d.edges.type;
+        cLevel = new Uint16Array(C);
+        cChildStart = new Int32Array(C);
+        cChildCount = new Int32Array(C);
+        cLeafStart = new Int32Array(C);
+        cLeafEnd = new Int32Array(C);
+        cLeafParent = new Uint8Array(C);
+        cMembers = new Int32Array(C);
+        for (let i = C - 1; i >= 1; i--) {
+            const p = cParent[i];
+            cChildStart[p] = i;
+            cChildCount[p]++;
+        }
+        for (let i = 1; i < C; i++)
+            cLevel[i] = cLevel[cParent[i]] + 1;
+        for (let i = N - 1; i >= 0; i--) {
+            const k = leafCluster[i];
+            if (!cLeafParent[k])
+                cLeafEnd[k] = i + 1;
+            cLeafParent[k] = 1;
+            cLeafStart[k] = cChildStart[k] = i;
+            cChildCount[k]++;
+            cMembers[k]++;
+        }
+        for (let i = C - 1; i >= 1; i--)
+            cMembers[cParent[i]] += cMembers[i];
+        inDeg = new Int32Array(N);
+        for (let k = 0; k < E; k++)
+            inDeg[outTarget[k]]++;
+        // links between two systems (leaf parents) bundled per pair, each pair drawn in the view of the lowest cluster
+        // that holds both - like generate()'s, without breakers
+        pairMap = new Map();
+        const pa = [], pb = [], pc = [];
+        for (let i = 0; i < N; i++) {
+            const sa = leafCluster[i];
+            for (let k = outStart[i]; k < outStart[i + 1]; k++) {
+                const sb = leafCluster[outTarget[k]];
+                if (sa === sb)
+                    continue;
+                const key = sa * C + sb;
+                let p = pairMap.get(key);
+                if (p === undefined) {
+                    p = pa.length;
+                    pairMap.set(key, p);
+                    pa.push(sa);
+                    pb.push(sb);
+                    pc.push(0);
+                }
+                pc[p]++;
+            }
+        }
+        P = pa.length;
+        pairA = Int32Array.from(pa);
+        pairB = Int32Array.from(pb);
+        pairCount = Int32Array.from(pc);
+        pairState = pairTrips = pairSince = pairProbesOk = pairBy = pairVer = null;
+        domPairs = new Map();
+        rootPairs = [];
+        viewPairs = new Map();
+        for (let p = 0; p < P; p++) {
+            const l = lcaOf(pairA[p], pairB[p]);
+            let list = viewPairs.get(l);
+            if (!list)
+                viewPairs.set(l, (list = []));
+            list.push(p);
+        }
+        views.clear();
+        previews.clear();
+        layoutQueue.clear();
+        clearTimeout(layoutTimer);
+        layoutTimer = 0;
+        clearTimeout(pendingFrame.timer);
+        pendingFrame.timer = 0;
+        pendingFrame.cam = null;
+        lastCam = null;
+        let depth = 0;
+        for (let i = 0; i < C; i++)
+            depth = Math.max(depth, cLevel[i]);
+        return { nodes: N, edges: E, clusters: C, depth: depth + 1, pairs: P, ms: Math.round(performance.now() - t0) };
+    }
     // --------------------------------------------------------------- labels
+    // a generated entity's name comes from its index; a loaded one's from the page
     const leafLabel = (i) => {
+        if (EXT)
+            return LABELS[i];
         const h = h32(i, 99);
         return NOUN[h % 64] + '-' + ADJ[(h >>> 6) % 64] + '-' + ((h >>> 12) % 1000);
     };
+    const nodeType = (i) => (EXT ? TYPES.node[leafType[i]] : ENTITY_TYPES[leafType[i]]);
+    const clusterType = (c) => EXT ? TYPES.cluster[cKind[c]] : cLevel[c] === 0 ? 'Graph' : cLevel[c] === 1 ? 'Domain' : SYSTEM_KINDS[cKind[c]];
+    const edgeName = (k) => (EXT ? TYPES.edge[edgeType[k]] : EDGE_TYPES[edgeType[k]]);
+    // the page's id of a loaded node or cluster (none for a generated graph)
+    const refOf = (leaf, idx) => (EXT ? (leaf ? REFS[idx] : (cRef?.[idx] ?? undefined)) : undefined);
+    const withRef = (o, leaf, idx) => {
+        const ref = refOf(leaf, idx);
+        if (ref !== undefined)
+            o.ref = ref;
+        return o;
+    };
     const idOf = (kindLeaf, idx) => (kindLeaf ? 'n' : 'c') + idx;
     const parseId = (id) => ({ leaf: id[0] === 'n', idx: parseInt(id.slice(1), 10) });
+    // an id of this graph (an answer for an id of a graph loaded before is empty)
+    const known = (id) => {
+        const { leaf, idx } = parseId(String(id));
+        return idx >= 0 && idx < (leaf ? N : C);
+    };
+    // the entities below a cluster as ranges of indices, in the hierarchy's order (adjacent ones merged: one range for
+    // every cluster of a generated graph)
+    function rangesOf(c) {
+        const out = [], walk = [c];
+        while (walk.length) {
+            const x = walk.pop();
+            if (cLeafParent[x]) {
+                const last = out[out.length - 1];
+                if (last && last[1] === cLeafStart[x])
+                    last[1] = cLeafEnd[x];
+                else
+                    out.push([cLeafStart[x], cLeafEnd[x]]);
+            }
+            else
+                for (let k = cChildStart[x] + cChildCount[x] - 1; k >= cChildStart[x]; k--)
+                    walk.push(k);
+        }
+        return out;
+    }
+    // whether cluster c is b or below it
+    function under(c, b) {
+        const lb = cLevel[b];
+        while (cLevel[c] > lb)
+            c = cParent[c];
+        return c === b;
+    }
     function pathOf(id) {
         const { leaf, idx } = parseId(id);
         const chain = [];
+        if (!known(id))
+            return chain;
         let c = leaf ? leafCluster[idx] : idx;
         if (leaf)
             chain.push({ id, label: leafLabel(idx) });
@@ -5427,48 +5919,50 @@ function graphExplorerWorker(self) {
     // million-node graph with two levels below it is its systems and their entities (tens of thousands of rows)
     function subtreeOf(id, levels) {
         const rows = [];
-        const entity = (g, parent) => rows.push({
+        const entity = (g, parent) => rows.push(withRef({
             id: 'n' + g,
             parent,
             label: leafLabel(g),
             kind: 'entity',
-            type: ENTITY_TYPES[leafType[g]],
-            level: 3,
+            type: nodeType(g),
+            level: cLevel[leafCluster[g]] + 1,
             count: outStart[g + 1] - outStart[g] + inDeg[g],
             children: 0,
-        });
+        }, true, g));
         const cluster = (c, parent, left) => {
-            rows.push({
+            rows.push(withRef({
                 id: 'c' + c,
                 parent,
                 label: cName[c],
                 kind: 'cluster',
-                type: cLevel[c] === 0 ? 'Graph' : cLevel[c] === 1 ? 'Domain' : SYSTEM_KINDS[cKind[c]],
+                type: clusterType(c),
                 level: cLevel[c],
                 count: membersOf(c),
                 children: cChildCount[c],
-            });
+            }, false, c));
             if (left <= 1)
                 return;
             const first = cChildStart[c], end = first + cChildCount[c];
             for (let k = first; k < end; k++)
-                if (cLevel[c] === 2)
+                if (cLeafParent[c])
                     entity(k, 'c' + c);
                 else
                     cluster(k, 'c' + c, left - 1);
         };
         const { leaf, idx } = parseId(id);
-        if (leaf)
-            entity(idx, '');
-        else if (idx >= 0 && idx < C)
-            cluster(idx, '', Math.max(1, levels | 0));
+        if (known(id)) {
+            if (leaf)
+                entity(idx, '');
+            else
+                cluster(idx, '', Math.max(1, levels | 0));
+        }
         if (rows.length)
             rows[0].parent = '';
         return { t: 'subtree', id, levels, rows };
     }
     // ---------------------------------------------------------------- views
     function membersOf(c) {
-        return cLeafEnd[c] - cLeafStart[c];
+        return EXT ? cMembers[c] : cLeafEnd[c] - cLeafStart[c];
     }
     function buildView(cid, wantLayout = true) {
         let v = views.get(cid);
@@ -5479,7 +5973,7 @@ function graphExplorerWorker(self) {
                 layoutView(v);
             return v;
         }
-        const leafView = cLevel[cid] === 2;
+        const leafView = cLeafParent[cid] === 1;
         const start = cChildStart[cid], n = cChildCount[cid];
         v = { cid, leafView, start, n, edges: [], laidOut: false, dirty: false, sizes: null };
         v.type = new Uint8Array(n);
@@ -5517,16 +6011,13 @@ function graphExplorerWorker(self) {
                 for (let e = outStart[i]; e < outStart[i + 1]; e++) {
                     const t = outTarget[e];
                     if (t >= s && t < end && t !== i)
-                        add(i - s, t - s, 1, 'leaf', EDGE_TYPES[edgeType[e]], null);
+                        add(i - s, t - s, 1, 'leaf', edgeName(e), null);
                 }
         }
-        else if (v.cid === 0) {
-            for (const p of rootPairs)
-                add(cParent[pairA[p]] - 1, cParent[pairB[p]] - 1, pairCount[p], 'agg', 'calls', [p]);
-        }
         else {
-            for (const p of domPairs.get(v.cid) ?? [])
-                add(pairA[p] - v.start, pairB[p] - v.start, pairCount[p], 'agg', 'calls', [p]);
+            // the pairs whose lowest common cluster this is, between the children that hold their two ends
+            for (const p of viewPairs.get(v.cid) ?? [])
+                add(childOf(pairA[p], v.cid) - v.start, childOf(pairB[p], v.cid) - v.start, pairCount[p], 'agg', 'calls', [p]);
         }
         // merge bidirectional pairs into one edge with two counts
         const out = [];
@@ -5574,7 +6065,8 @@ function graphExplorerWorker(self) {
     // breaker facts of an edge: one pair, or the worst of its member pairs (aggregates)
     function refreshEdgeState(v) {
         for (const e of v.edges) {
-            if (!e.pairs.length) {
+            // a loaded graph has no breakers
+            if (EXT || !e.pairs.length) {
                 e.breaker = null;
                 continue;
             }
@@ -5859,7 +6351,7 @@ function graphExplorerWorker(self) {
         let p = previews.get(cid);
         if (p)
             return p;
-        const leafView = cLevel[cid] === 2, start = cChildStart[cid], n = cChildCount[cid];
+        const leafView = cLeafParent[cid] === 1, start = cChildStart[cid], n = cChildCount[cid];
         const type = new Uint8Array(n), members = new Int32Array(n);
         for (let i = 0; i < n; i++) {
             type[i] = leafView ? leafType[start + i] : cKind[start + i];
@@ -6134,7 +6626,7 @@ function graphExplorerWorker(self) {
                     if (rs > 120)
                         requestLayout(sc, rs * 0.5);
                     const l = preview(sc), d0 = dots;
-                    if (cLevel[sc] === 2)
+                    if (cLeafParent[sc])
                         farField(l, sx, sy, rs, 0.4);
                     else {
                         const cs = cChildStart[sc];
@@ -6355,7 +6847,7 @@ function graphExplorerWorker(self) {
                 if (rs[i] > 36)
                     requestLayout(cc, rs[i]);
                 const dim = dimming && !hl.has(i);
-                farField(l, sx[i], sy[i], rs[i], dim ? 0.2 : cLevel[cc] < 2 ? 0.55 : 0.85);
+                farField(l, sx[i], sy[i], rs[i], dim ? 0.2 : cLeafParent[cc] ? 0.85 : 0.55);
                 // inner edges of a child that is big on screen and already laid out
                 if (showRelations && rs[i] > 170 && l.laidOut && innerSegs < 6000) {
                     ctx.strokeStyle = alpha(palette.muted, dim ? 0.06 : 0.22);
@@ -6526,7 +7018,7 @@ function graphExplorerWorker(self) {
                 kind: v.leafView ? 'entity' : 'cluster',
                 label: v.leafView ? leafLabel(g) : cName[g],
                 type: v.type[i],
-                typeName: v.leafView ? ENTITY_TYPES[v.type[i]] : cLevel[g] === 1 ? 'Domain' : SYSTEM_KINDS[v.type[i]],
+                typeName: v.leafView ? nodeType(g) : clusterType(g),
                 members: v.members[i],
                 children: v.leafView ? 0 : cChildCount[g],
                 degree: Math.round(v.degree[i]),
@@ -6536,16 +7028,21 @@ function graphExplorerWorker(self) {
                 r: v.r[i],
             };
             if (v.leafView) {
-                const h = h32(g, 61);
                 node.degree = outStart[g + 1] - outStart[g] + inDeg[g];
-                node.attrs = {
-                    owner: USERS[h % USERS.length],
-                    rows: ((h >>> 4) % 9000) + 12,
-                    freshness: 1 + ((h >>> 18) % 48),
-                    out: outStart[g + 1] - outStart[g],
-                    in: inDeg[g],
-                };
+                if (EXT)
+                    node.attrs = { out: outStart[g + 1] - outStart[g], in: inDeg[g] };
+                else {
+                    const h = h32(g, 61);
+                    node.attrs = {
+                        owner: USERS[h % USERS.length],
+                        rows: ((h >>> 4) % 9000) + 12,
+                        freshness: 1 + ((h >>> 18) % 48),
+                        out: outStart[g + 1] - outStart[g],
+                        in: inDeg[g],
+                    };
+                }
             }
+            withRef(node, v.leafView, g);
             children.push(node);
         }
         const edges = v.edges.map((e, k) => ({
@@ -6596,8 +7093,12 @@ function graphExplorerWorker(self) {
             stats: { nodes: N, edges: E },
         };
     }
+    // the cluster above a system ('' when the top holds entities itself)
+    const above = (sys) => (cParent[sys] >= 0 ? cName[cParent[sys]] : '');
     function details(id) {
         const { leaf, idx } = parseId(id);
+        if (!known(id))
+            return { t: 'details', id, path: [], relations: [], out: [], in: [], outDeg: 0, inDeg: 0 };
         if (leaf) {
             const out = [];
             for (let e = outStart[idx]; e < outStart[idx + 1] && out.length < 40; e++) {
@@ -6605,21 +7106,21 @@ function graphExplorerWorker(self) {
                 out.push({
                     id: 'n' + t,
                     label: leafLabel(t),
-                    type: ENTITY_TYPES[leafType[t]],
+                    type: nodeType(t),
                     system: cName[leafCluster[t]],
-                    domain: cName[cParent[leafCluster[t]]],
-                    edge: EDGE_TYPES[edgeType[e]],
+                    domain: above(leafCluster[t]),
+                    edge: edgeName(e),
                     same: leafCluster[t] === leafCluster[idx],
                 });
             }
-            const inc = [], want = Math.min(40, inDeg[idx]), sys = leafCluster[idx], dom = cParent[sys];
-            const ranges = [
-                [cLeafStart[sys], cLeafEnd[sys]],
-                [cLeafStart[dom], cLeafStart[sys]],
-                [cLeafEnd[sys], cLeafEnd[dom]],
-                [0, cLeafStart[dom]],
-                [cLeafEnd[dom], N],
-            ];
+            const inc = [], want = Math.min(40, inDeg[idx]), sys = leafCluster[idx];
+            // the sources nearest first: the system, then the rest of each cluster above it (no reverse index: a scan of
+            // the out-links until enough are found)
+            const ranges = [[cLeafStart[sys], cLeafEnd[sys]]];
+            for (let p = sys, a = cParent[sys]; a >= 0; p = a, a = cParent[a])
+                for (let k = cChildStart[a]; k < cChildStart[a] + cChildCount[a]; k++)
+                    if (k !== p)
+                        ranges.push(...rangesOf(k));
             for (const [r0, r1] of ranges) {
                 for (let i = r0; i < r1 && inc.length < want; i++)
                     for (let e = outStart[i]; e < outStart[i + 1]; e++)
@@ -6627,10 +7128,10 @@ function graphExplorerWorker(self) {
                             inc.push({
                                 id: 'n' + i,
                                 label: leafLabel(i),
-                                type: ENTITY_TYPES[leafType[i]],
+                                type: nodeType(i),
                                 system: cName[leafCluster[i]],
-                                domain: cName[cParent[leafCluster[i]]],
-                                edge: EDGE_TYPES[edgeType[e]],
+                                domain: above(leafCluster[i]),
+                                edge: edgeName(e),
                                 same: leafCluster[i] === sys,
                             });
                             break;
@@ -6675,59 +7176,79 @@ function graphExplorerWorker(self) {
         };
     }
     // --------------------------------------------------------------- an edge's details
-    const endOf = (leaf, idx) => leaf
-        ? { id: 'n' + idx, label: leafLabel(idx), type: ENTITY_TYPES[leafType[idx]], system: cName[leafCluster[idx]] }
-        : { id: 'c' + idx, label: cName[idx], type: cLevel[idx] === 1 ? 'Domain' : SYSTEM_KINDS[cKind[idx]] };
-    // every row behind a node or a link, for a page's grid: a cluster's entities (one contiguous range of leaves - a domain
-    // of a million-node graph holds about 40,000), or a link's single links both ways (one pass over both ends' leaves)
+    const endOf = (leaf, idx) => !known((leaf ? 'n' : 'c') + idx)
+        ? { id: (leaf ? 'n' : 'c') + idx, label: '', type: '', system: '' }
+        : leaf
+            ? { id: 'n' + idx, label: leafLabel(idx), type: nodeType(idx), system: cName[leafCluster[idx]] }
+            : { id: 'c' + idx, label: cName[idx], type: clusterType(idx) };
+    // the entities a node id stands for: itself, or every entity below a cluster; `inside` tests a target against it
+    const spanOf = (p) => (!known(idOf(p.leaf, p.idx)) ? [] : p.leaf ? [[p.idx, p.idx + 1]] : rangesOf(p.idx));
+    const inside = (t, p) => (p.leaf ? t === p.idx : under(leafCluster[t], p.idx));
+    // every row behind a node or a link, for a page's grid: a cluster's entities (its ranges of leaves - a domain of a
+    // million-node graph holds about 40,000), or a link's single links both ways (one pass over both ends' leaves)
     function rowsOf(id) {
         if (id.includes('>')) {
             const [aId, bId] = id.split('>');
             const A = parseId(aId), B = parseId(bId);
-            const span = (p) => (p.leaf ? [p.idx, p.idx + 1] : [cLeafStart[p.idx], cLeafEnd[p.idx]]);
-            const [a0, a1] = span(A), [b0, b1] = span(B);
             const rows = [];
-            const scan = (s0, s1, t0, t1, back) => {
-                for (let i = s0; i < s1; i++)
-                    for (let e = outStart[i]; e < outStart[i + 1]; e++) {
-                        const t = outTarget[e];
-                        if (t < t0 || t >= t1)
-                            continue;
-                        rows.push({
-                            id: e,
-                            from: 'n' + i,
-                            fromLabel: leafLabel(i),
-                            relation: EDGE_TYPES[edgeType[e]],
-                            to: 'n' + t,
-                            toLabel: leafLabel(t),
-                            direction: back ? 'back' : 'forward',
-                            fromSystem: cName[leafCluster[i]],
-                            toSystem: cName[leafCluster[t]],
-                        });
-                    }
+            const scan = (from, to, back) => {
+                if (!known(idOf(to.leaf, to.idx)))
+                    return;
+                for (const [s0, s1] of spanOf(from))
+                    for (let i = s0; i < s1; i++)
+                        for (let e = outStart[i]; e < outStart[i + 1]; e++) {
+                            const t = outTarget[e];
+                            if (!inside(t, to))
+                                continue;
+                            rows.push({
+                                id: e,
+                                from: 'n' + i,
+                                fromLabel: leafLabel(i),
+                                relation: edgeName(e),
+                                to: 'n' + t,
+                                toLabel: leafLabel(t),
+                                direction: back ? 'back' : 'forward',
+                                fromSystem: cName[leafCluster[i]],
+                                toSystem: cName[leafCluster[t]],
+                            });
+                        }
             };
-            scan(a0, a1, b0, b1, false);
-            scan(b0, b1, a0, a1, true);
+            scan(A, B, false);
+            scan(B, A, true);
             return { t: 'rows', id, kind: 'links', rows };
         }
-        const { leaf, idx } = parseId(id);
-        const s0 = leaf ? idx : cLeafStart[idx], s1 = leaf ? idx + 1 : cLeafEnd[idx];
         const rows = [];
-        for (let g = s0; g < s1; g++) {
-            const h = h32(g, 61), sys = leafCluster[g];
-            rows.push({
-                id: 'n' + g,
-                label: leafLabel(g),
-                type: ENTITY_TYPES[leafType[g]],
-                system: cName[sys],
-                domain: cName[cParent[sys]],
-                owner: USERS[h % USERS.length],
-                out: outStart[g + 1] - outStart[g],
-                in: inDeg[g],
-                rows: ((h >>> 4) % 9000) + 12,
-                freshness: 1 + ((h >>> 18) % 48),
-            });
-        }
+        for (const [s0, s1] of spanOf(parseId(id)))
+            for (let g = s0; g < s1; g++) {
+                const sys = leafCluster[g];
+                if (EXT) {
+                    // a loaded entity: what the page gave - no owner, rows or freshness
+                    rows.push({
+                        id: 'n' + g,
+                        label: leafLabel(g),
+                        type: nodeType(g),
+                        system: cName[sys],
+                        domain: above(sys),
+                        out: outStart[g + 1] - outStart[g],
+                        in: inDeg[g],
+                        ref: REFS[g],
+                    });
+                    continue;
+                }
+                const h = h32(g, 61);
+                rows.push({
+                    id: 'n' + g,
+                    label: leafLabel(g),
+                    type: ENTITY_TYPES[leafType[g]],
+                    system: cName[sys],
+                    domain: cName[cParent[sys]],
+                    owner: USERS[h % USERS.length],
+                    out: outStart[g + 1] - outStart[g],
+                    in: inDeg[g],
+                    rows: ((h >>> 4) % 9000) + 12,
+                    freshness: 1 + ((h >>> 18) % 48),
+                });
+            }
         return { t: 'rows', id, kind: 'entities', rows };
     }
     // the links of one edge of a view, both ways: by relation, the system pairs it bundles with their breakers, the
@@ -6736,14 +7257,15 @@ function graphExplorerWorker(self) {
     function edgeDetails(aId, bId) {
         const A = parseId(aId), B = parseId(bId);
         const byType = {};
-        for (const t of EDGE_TYPES)
+        for (const t of EXT ? TYPES.edge : EDGE_TYPES)
             byType[t] = 0;
         const samples = [];
+        const ok = known(aId) && known(bId);
         const out = {
             t: 'edge',
             id: aId + '>' + bId,
             kind: A.leaf ? 'leaf' : 'agg',
-            path: pathOf('c' + (A.leaf ? leafCluster[A.idx] : cParent[A.idx])),
+            path: ok ? pathOf('c' + (A.leaf ? leafCluster[A.idx] : cParent[A.idx])) : [],
             source: endOf(A.leaf, A.idx),
             target: endOf(B.leaf, B.idx),
             forward: 0,
@@ -6754,6 +7276,8 @@ function graphExplorerWorker(self) {
             targets: [],
             samples,
         };
+        if (!ok)
+            return out;
         if (A.leaf) {
             for (const [from, to, back] of [
                 [A.idx, B.idx, false],
@@ -6766,53 +7290,57 @@ function graphExplorerWorker(self) {
                         out.backward++;
                     else
                         out.forward++;
-                    byType[EDGE_TYPES[edgeType[e]]]++;
-                    samples.push({ from: endOf(true, from), to: endOf(true, to), type: EDGE_TYPES[edgeType[e]], back });
+                    byType[edgeName(e)]++;
+                    samples.push({ from: endOf(true, from), to: endOf(true, to), type: edgeName(e), back });
                 }
             return out;
         }
-        // a domain edge's members are its systems, a system edge's its entities
-        const domainEdge = cLevel[A.idx] === 1;
-        const keyOf = (leaf) => (domainEdge ? leafCluster[leaf] : leaf);
+        // the members of a link between clusters are each end's children: a domain edge's its systems, a system edge's
+        // its entities (two siblings of a loaded graph may sit at different depths)
+        const keyOf = (c) => (cLeafParent[c] ? (leaf) => leaf : (leaf) => childOf(leafCluster[leaf], c));
+        const keyA = keyOf(A.idx), keyB = keyOf(B.idx);
         const sent = new Map(), got = new Map();
         let fs = 0, bs = 0;
-        const scan = (s0, s1, t0, t1, back) => {
+        const scan = (from, to, back) => {
             let n = 0;
-            for (let i = s0; i < s1; i++)
-                for (let e = outStart[i]; e < outStart[i + 1]; e++) {
-                    const t = outTarget[e];
-                    if (t < t0 || t >= t1)
-                        continue;
-                    n++;
-                    byType[EDGE_TYPES[edgeType[e]]]++;
-                    if (!back) {
-                        const ks = keyOf(i), kt = keyOf(t);
-                        sent.set(ks, (sent.get(ks) || 0) + 1);
-                        got.set(kt, (got.get(kt) || 0) + 1);
+            for (const [s0, s1] of rangesOf(from.idx))
+                for (let i = s0; i < s1; i++)
+                    for (let e = outStart[i]; e < outStart[i + 1]; e++) {
+                        const t = outTarget[e];
+                        if (!under(leafCluster[t], to.idx))
+                            continue;
+                        n++;
+                        byType[edgeName(e)]++;
+                        if (!back) {
+                            const ks = keyA(i), kt = keyB(t);
+                            sent.set(ks, (sent.get(ks) || 0) + 1);
+                            got.set(kt, (got.get(kt) || 0) + 1);
+                        }
+                        if (back ? bs < 12 : fs < 28) {
+                            samples.push({ from: endOf(true, i), to: endOf(true, t), type: edgeName(e), back });
+                            if (back)
+                                bs++;
+                            else
+                                fs++;
+                        }
                     }
-                    if (back ? bs < 12 : fs < 28) {
-                        samples.push({ from: endOf(true, i), to: endOf(true, t), type: EDGE_TYPES[edgeType[e]], back });
-                        if (back)
-                            bs++;
-                        else
-                            fs++;
-                    }
-                }
             return n;
         };
-        out.forward = scan(cLeafStart[A.idx], cLeafEnd[A.idx], cLeafStart[B.idx], cLeafEnd[B.idx], false);
-        out.backward = scan(cLeafStart[B.idx], cLeafEnd[B.idx], cLeafStart[A.idx], cLeafEnd[A.idx], true);
-        const top = (m) => [...m.entries()]
+        out.forward = scan(A, B, false);
+        out.backward = scan(B, A, true);
+        const top = (m, leaves) => [...m.entries()]
             .sort((x, y) => y[1] - x[1])
             .slice(0, 8)
             .map(([k, count]) => {
-            const end = endOf(!domainEdge, k);
+            const end = endOf(leaves, k);
             return { id: end.id, label: end.label, type: end.type, count };
         });
-        out.sources = top(sent);
-        out.targets = top(got);
+        out.sources = top(sent, !!cLeafParent[A.idx]);
+        out.targets = top(got, !!cLeafParent[B.idx]);
+        if (EXT)
+            return out;
         const pairs = [];
-        if (domainEdge) {
+        if (!cLeafParent[A.idx]) {
             for (const p of rootPairs) {
                 const da = cParent[pairA[p]], db = cParent[pairB[p]];
                 if ((da === A.idx && db === B.idx) || (da === B.idx && db === A.idx))
@@ -6840,9 +7368,23 @@ function graphExplorerWorker(self) {
         return out;
     }
     // --------------------------------------------------------------- search
-    let searchSeq = 0;
+    let searchSeq = 0, scanning = null; // the scan in progress: { seq, q, results, at }
+    // a graph loaded mid-scan ends the scan with what it found (in the graph it searched)
+    function abortSearch() {
+        if (scanning)
+            self.postMessage({
+                t: 'search',
+                seq: scanning.seq,
+                q: scanning.q,
+                results: scanning.results,
+                scanned: scanning.at,
+            });
+        scanning = null;
+        searchSeq = -1;
+    }
     function search(q, seq) {
         searchSeq = seq;
+        scanning = null;
         const query = String(q || '')
             .trim()
             .toLowerCase();
@@ -6851,9 +7393,9 @@ function graphExplorerWorker(self) {
             return;
         }
         const results = [];
-        const push = (id, label, kind, type) => {
+        const push = (id, label, kind, type, idx) => {
             const chain = pathOf(id);
-            results.push({
+            results.push(withRef({
                 id,
                 label,
                 kind,
@@ -6863,28 +7405,36 @@ function graphExplorerWorker(self) {
                     .map((p) => p.label)
                     .join(' › '),
                 parents: chain.slice(0, -1),
-            });
+            }, kind === 'entity', idx));
         };
         const direct = /^#?(\d+)$/.exec(query);
         if (direct && +direct[1] < N)
-            push('n' + direct[1], leafLabel(+direct[1]), 'entity', ENTITY_TYPES[leafType[+direct[1]]]);
+            push('n' + direct[1], leafLabel(+direct[1]), 'entity', nodeType(+direct[1]), +direct[1]);
         for (let c = 1; c < C && results.length < 6; c++)
             if (cName[c].toLowerCase().includes(query))
-                push('c' + c, cName[c], 'cluster', cLevel[c] === 1 ? 'Domain' : SYSTEM_KINDS[cKind[c]]);
+                push('c' + c, cName[c], 'cluster', clusterType(c), c);
+        // a generated name is lower case already; a loaded one is compared in lower case
+        const hit = EXT ? (i) => leafLabel(i).toLowerCase().includes(query) : (i) => leafLabel(i).includes(query);
+        const run = { seq, q, results, at: 0 };
+        scanning = run;
         let i = 0;
         const step = () => {
             if (seq !== searchSeq)
                 return; // a newer keystroke aborted this scan
             const end = Math.min(N, i + 120000);
             for (; i < end && results.length < 12; i++)
-                if (leafLabel(i).includes(query))
-                    push('n' + i, leafLabel(i), 'entity', ENTITY_TYPES[leafType[i]]);
+                if (hit(i))
+                    push('n' + i, leafLabel(i), 'entity', nodeType(i), i);
+            run.at = i;
             if (i < N && results.length < 12) {
                 self.postMessage({ t: 'search', seq, q, results, partial: true, scanned: i });
                 setTimeout(step, 0);
             }
-            else
+            else {
+                if (scanning === run)
+                    scanning = null;
                 self.postMessage({ t: 'search', seq, q, results, scanned: i });
+            }
         };
         step();
     }
@@ -7052,6 +7602,15 @@ function graphExplorerWorker(self) {
                     self.postMessage({ t: 'ready', stats, root: 'c0' });
                     break;
                 }
+                case 'load': {
+                    // the page's graph: refused whole (the shown one stays) or installed whole
+                    const why = invalid(m.data);
+                    if (why)
+                        self.postMessage({ t: 'rejected', req: m.req, message: 'Invalid graph data: ' + why });
+                    else
+                        self.postMessage({ t: 'ready', stats: install(m.data), root: 'c0', req: m.req });
+                    break;
+                }
                 case 'rules':
                     rules = (m.rules || []).map((r, order) => ({
                         when: r.when || [],
@@ -7078,8 +7637,22 @@ function graphExplorerWorker(self) {
                         scheduleFrame(lastCam);
                     break;
                 case 'focus': {
-                    const { idx } = parseId(m.id);
-                    self.postMessage(viewPayload(idx));
+                    const { leaf, idx } = parseId(m.id);
+                    // an id of a graph loaded before: an empty view (the main thread drops it with that graph)
+                    if (leaf || !known(m.id))
+                        self.postMessage({
+                            t: 'view',
+                            id: m.id,
+                            cid: -1,
+                            leafView: false,
+                            path: [],
+                            children: [],
+                            edges: [],
+                            parent: null,
+                            stats: { nodes: N, edges: E },
+                        });
+                    else
+                        self.postMessage(viewPayload(idx));
                     break;
                 }
                 case 'sizes': {
@@ -7092,7 +7665,8 @@ function graphExplorerWorker(self) {
                     break;
                 }
                 case 'camera':
-                    scheduleFrame(m);
+                    if (m.view >= 0 && m.view < C)
+                        scheduleFrame(m);
                     break;
                 case 'search':
                     search(m.q, m.seq);
@@ -7113,7 +7687,8 @@ function graphExplorerWorker(self) {
                     self.postMessage({ t: 'path', id: m.id, path: pathOf(m.id), req: m.req });
                     break;
                 case 'simulate':
-                    simulate(!!m.on);
+                    // Live mode simulates the generated graph's breakers; a loaded graph changes through update()
+                    simulate(!!m.on && !EXT);
                     break;
             }
         }

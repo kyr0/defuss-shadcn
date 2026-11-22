@@ -2,6 +2,29 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [],
+      "updated": [
+        "graph-explorer",
+        "index",
+        "system-in-numbers"
+      ],
+      "examples": {
+        "graph-explorer": {
+          "created": [
+            "A code base as a graph"
+          ],
+          "updated": []
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        }
+      }
+    },
+    {
       "version": "0.9.18",
       "created": [
         "scaffold-db-explorer"
