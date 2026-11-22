@@ -1,0 +1,14 @@
+{
+  "kind": "guide",
+  "route": "#/guides/errors",
+  "id": "errors",
+  "title": "Errors",
+  "lead": "Failed requests answer with a 4xx or 5xx status and an error object that names what went wrong.",
+  "body": [
+    "The error's type groups the cause, its message is written for people, and param names the field when one parameter is at fault.",
+    "$ { \"error\": { \"type\": \"invalid_request_error\", \"message\": \"Missing required parameter: title.\", \"param\": \"title\" } }",
+    "## Types",
+    "authentication_error - no key or a wrong one. invalid_request_error - a parameter is missing or malformed. resource_missing - no object with that id. rate_limit_error - too many requests."
+  ],
+  "markdown": "errors.md"
+}

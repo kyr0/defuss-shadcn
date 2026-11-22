@@ -1,0 +1,47 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/members/list",
+  "id": "list",
+  "resource": "members",
+  "title": "List members",
+  "lead": "Returns everyone in a workspace, with their role and status.",
+  "method": "GET",
+  "url": "https://api.acme.example/v4/workspaces/{workspace}/members",
+  "params": [
+    {
+      "name": "workspace",
+      "in": "path",
+      "type": "string",
+      "required": true,
+      "example": "ws_acme",
+      "description": "The workspace."
+    },
+    {
+      "name": "role",
+      "in": "query",
+      "type": "enum",
+      "required": false,
+      "values": [
+        "admin",
+        "member",
+        "guest"
+      ],
+      "description": "Only members with this role."
+    }
+  ],
+  "responses": [
+    {
+      "status": 200,
+      "description": "The object, or a page of the list"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    },
+    {
+      "status": 404,
+      "description": "No object with that id"
+    }
+  ],
+  "markdown": "list.md"
+}

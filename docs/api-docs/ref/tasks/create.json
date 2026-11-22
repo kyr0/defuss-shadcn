@@ -1,0 +1,71 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/tasks/create",
+  "id": "create",
+  "resource": "tasks",
+  "title": "Create a task",
+  "lead": "Creates a task in a workspace and returns it.",
+  "method": "POST",
+  "url": "https://api.acme.example/v4/tasks",
+  "params": [
+    {
+      "name": "workspace",
+      "in": "body",
+      "type": "string",
+      "required": true,
+      "example": "ws_acme",
+      "description": "The workspace the task belongs to."
+    },
+    {
+      "name": "title",
+      "in": "body",
+      "type": "string",
+      "required": true,
+      "example": "Ship the onboarding emails",
+      "description": "What has to be done."
+    },
+    {
+      "name": "assignee",
+      "in": "body",
+      "type": "string",
+      "required": false,
+      "example": "m_ana",
+      "description": "The member who does it."
+    },
+    {
+      "name": "due_on",
+      "in": "body",
+      "type": "date",
+      "required": false,
+      "example": "2026-12-01",
+      "description": "The day it is due, YYYY-MM-DD."
+    },
+    {
+      "name": "status",
+      "in": "body",
+      "type": "enum",
+      "required": false,
+      "values": [
+        "todo",
+        "doing",
+        "done"
+      ],
+      "description": "Starts as todo when left out."
+    }
+  ],
+  "responses": [
+    {
+      "status": 201,
+      "description": "Created - the new object"
+    },
+    {
+      "status": 400,
+      "description": "A parameter is missing or wrong"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    }
+  ],
+  "markdown": "create.md"
+}

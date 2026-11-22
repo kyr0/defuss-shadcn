@@ -5,7 +5,8 @@
       "date": "November 22, 2026",
       "commits": [
         "feat(db-explorer): Database Explorer scaffold on defuss-db 3.1 (OPFS worker, Mongo-style queries, aggregations with date parts / zones / median / percentiles, history and timestamps with a revision Timeline per document, schema, indexes, export / import); Insert document with a highlighted JSON editor and a Property Tree mode; List view scrolls only its records, loads box-sized batches ahead in both directions, mounts trees on open; Table / JSON views windowed over every match; fix: a first-visit seed survives an interrupted or concurrent visit (Web Lock, a marker per collection); feat(api-docs): defuss-rpc 3.0 reference (Shiki examples, scrolling answers, centred RPC tag); fix(panel): a folded west panel reads bottom-up from the top - chevron, title, icon, tools; pins defuss-db 3.1.0, defuss-rpc 3.0.0, defuss-dataview 0.10.0"
-      ]
+      ],
+      "hash": "5673938af"
     },
     {
       "version": "v0.9.17",

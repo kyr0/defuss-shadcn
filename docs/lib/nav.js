@@ -357,6 +357,7 @@ export const NAV = [
                     { label: 'Calendar', href: 'scaffold-calendar.html', type: 'TPL' },
                     { label: 'Workflow Studio', href: 'scaffold-workflow-studio.html', type: 'TPL' },
                     { label: 'AI Chat', href: 'scaffold-ai-chat.html', type: 'TPL' },
+                    { label: 'Database Explorer', href: 'scaffold-db-explorer.html', type: 'TPL' },
                 ],
             },
         ] },

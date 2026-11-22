@@ -1,0 +1,89 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Tasks/get",
+  "namespace": "Tasks",
+  "name": "get",
+  "signature": "async get(id: string): Promise<Task>",
+  "async": true,
+  "generator": false,
+  "description": "Retrieves one task.",
+  "params": [
+    {
+      "name": "id",
+      "type": "string",
+      "schema": {
+        "type": "string"
+      },
+      "description": "The task's id."
+    }
+  ],
+  "returns": {
+    "type": "Task",
+    "schema": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Its id, `t_` and a number."
+        },
+        "title": {
+          "type": "string",
+          "description": "What has to be done."
+        },
+        "status": {
+          "enum": [
+            "todo",
+            "doing",
+            "done"
+          ]
+        },
+        "assignee": {
+          "type": "string",
+          "description": "The member it is assigned to, by id."
+        },
+        "due": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date",
+          "description": "When it is due."
+        },
+        "labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "x-dson": "set",
+          "items": {
+            "type": "string"
+          },
+          "description": "Labels, each at most once."
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "x-dson": "date"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "status",
+        "labels",
+        "created"
+      ]
+    },
+    "description": "The task."
+  },
+  "throws": [
+    "RpcError when there is no task with that id"
+  ],
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Tasks",
+      "methodName": "get",
+      "args": [
+        "t_101"
+      ]
+    }
+  },
+  "markdown": "get.md"
+}

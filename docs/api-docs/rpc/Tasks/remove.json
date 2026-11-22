@@ -1,0 +1,38 @@
+{
+  "kind": "method",
+  "route": "#/rpc/Tasks/remove",
+  "namespace": "Tasks",
+  "name": "remove",
+  "signature": "async remove(id: string): Promise<boolean>",
+  "async": true,
+  "generator": false,
+  "description": "Deletes a task.",
+  "params": [
+    {
+      "name": "id",
+      "type": "string",
+      "schema": {
+        "type": "string"
+      },
+      "description": "The task's id."
+    }
+  ],
+  "returns": {
+    "type": "boolean",
+    "schema": {
+      "type": "boolean"
+    },
+    "description": "True when a task was deleted, false when there was none."
+  },
+  "call": {
+    "endpoint": "/rpc",
+    "body": {
+      "className": "Tasks",
+      "methodName": "remove",
+      "args": [
+        "t_101"
+      ]
+    }
+  },
+  "markdown": "remove.md"
+}

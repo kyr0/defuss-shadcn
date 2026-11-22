@@ -1,0 +1,11 @@
+{
+  "kind": "namespace",
+  "moduleName": "Activity",
+  "description": "What happens in the workspace, as a stream.",
+  "methods": [
+    "recent"
+  ],
+  "namespaceKind": "module",
+  "route": "#/rpc/Activity",
+  "markdown": "Activity.md"
+}

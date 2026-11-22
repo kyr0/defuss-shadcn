@@ -1,0 +1,16 @@
+{
+  "kind": "namespace",
+  "className": "Tasks",
+  "description": "The tasks of the workspace. A class: the server makes a fresh instance for every call.",
+  "methods": [
+    "list",
+    "get",
+    "create",
+    "move",
+    "remove"
+  ],
+  "properties": {},
+  "namespaceKind": "class",
+  "route": "#/rpc/Tasks",
+  "markdown": "Tasks.md"
+}

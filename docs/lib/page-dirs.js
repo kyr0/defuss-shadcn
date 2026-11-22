@@ -48,6 +48,7 @@ export const STANDALONE_APPS = [
     'scaffold-calendar',
     'scaffold-workflow-studio',
     'scaffold-ai-chat',
+    'scaffold-db-explorer',
 ];
 /** the Website templates: a site needs an address to route - their full-screen page is where the router owns one
  *  (a docs card is an about:srcdoc frame - the Client-side Routing guide) */
@@ -254,7 +255,9 @@ export function resolveStandaloneAssets(html, outputFile) {
         .replace(/^.*\//, '')
         .replace(/\.html$/, '');
     const root = assetHref(id, '');
-    return root ? html.replace(/(["'`]|url\(\s*)images\//g, (_m, open) => `${open}${root}images/`) : html;
+    // images/, js/db/ (the Database Explorer's defuss-db runtime), js/api-docs/ and api-docs/ (the API Documentation
+    // scaffold's defuss-rpc runtime and its pages as Markdown and JSON) live at the docs root
+    return root ? html.replace(/(["'`]|url\(\s*)(images|js\/db|js\/api-docs|api-docs)\//g, (_m, open, dir) => `${open}${root}${dir}/`) : html;
 }
 /** A link value that names a page by its id (`button.html#variants`): [id, its `#` / `?` part], else null. */
 function pageTarget(value) {

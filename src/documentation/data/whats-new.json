@@ -2,7 +2,7 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.9.18",
       "created": [
         "scaffold-db-explorer"
       ],
@@ -13,6 +13,7 @@
         "data-grid",
         "data-tree",
         "index",
+        "installation",
         "panel",
         "scaffold-api-docs",
         "scaffold-calendar",

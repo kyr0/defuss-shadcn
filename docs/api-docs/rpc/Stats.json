@@ -1,0 +1,11 @@
+{
+  "kind": "namespace",
+  "moduleName": "Stats",
+  "description": "Figures about the workspace.",
+  "methods": [
+    "summary"
+  ],
+  "namespaceKind": "module",
+  "route": "#/rpc/Stats",
+  "markdown": "Stats.md"
+}

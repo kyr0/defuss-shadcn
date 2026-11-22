@@ -1,0 +1,59 @@
+{
+  "kind": "endpoint",
+  "route": "#/ref/members/invite",
+  "id": "invite",
+  "resource": "members",
+  "title": "Invite a member",
+  "lead": "Sends an invitation by email. The member is invited until they accept.",
+  "method": "POST",
+  "url": "https://api.acme.example/v4/workspaces/{workspace}/members",
+  "params": [
+    {
+      "name": "workspace",
+      "in": "path",
+      "type": "string",
+      "required": true,
+      "example": "ws_acme",
+      "description": "The workspace."
+    },
+    {
+      "name": "email",
+      "in": "body",
+      "type": "string",
+      "required": true,
+      "example": "sam@acme.example",
+      "description": "Where the invitation goes."
+    },
+    {
+      "name": "role",
+      "in": "body",
+      "type": "enum",
+      "required": false,
+      "values": [
+        "admin",
+        "member",
+        "guest"
+      ],
+      "description": "member when left out."
+    }
+  ],
+  "responses": [
+    {
+      "status": 201,
+      "description": "Created - the new object"
+    },
+    {
+      "status": 400,
+      "description": "A parameter is missing or wrong"
+    },
+    {
+      "status": 401,
+      "description": "No valid API key"
+    },
+    {
+      "status": 404,
+      "description": "No object with that id"
+    }
+  ],
+  "markdown": "invite.md"
+}

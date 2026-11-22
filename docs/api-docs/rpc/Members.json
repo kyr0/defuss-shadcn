@@ -1,0 +1,12 @@
+{
+  "kind": "namespace",
+  "moduleName": "Members",
+  "description": "The people in the workspace. A module: one shared object.",
+  "methods": [
+    "list",
+    "invite"
+  ],
+  "namespaceKind": "module",
+  "route": "#/rpc/Members",
+  "markdown": "Members.md"
+}
