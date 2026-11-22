@@ -13287,10 +13287,14 @@ class Explorer {
     this.activeResult = -1;
     for (const outlet of this.outlets("search")) {
       const { input, list } = this.searchBox(outlet);
+      input.value = "";
       dfDollar10(input).attr("placeholder", `Search ${fmt(this.n)} nodes ( / )`);
       morph2(list, []);
     }
     this.closeResults();
+    for (const outlet of this.outlets("outline"))
+      for (const filter of dfDollar10(outlet).find(".graph-explorer-outline-filter").toArray())
+        filter.value = "";
     this.simulating = false;
     for (const b of boundOf(this.el, '[data-graph-explorer-action="live"]')) {
       dfDollar10(b).attr("aria-pressed", "false");
@@ -13304,8 +13308,8 @@ class Explorer {
         detail: { selected: [], edge: null },
         bubbles: true
       }));
-    for (const resolve of this.landing.splice(0))
-      resolve?.(true);
+    const landing = this.landing.splice(0);
+    landing.forEach((resolve, k) => resolve?.(k === landing.length - 1));
   }
   post(m, transfer) {
     if (!this.destroyed)
@@ -14830,10 +14834,13 @@ class Explorer {
         const nextId = ids[depth + 1], i = this.view.byId.get(nextId);
         if (i === undefined)
           break;
+        const before = this.view;
         await this.dive(i, animate);
+        if (this.view === before)
+          break;
         depth = ids.indexOf(this.view.id);
       }
-      if (gen !== this.gen)
+      if (gen !== this.gen || this.reloading)
         return;
       const i = this.view.byId.get(id);
       if (i !== undefined && opts.enter && this.view.children[i].kind === "cluster") {
@@ -16971,6 +16978,7 @@ function graphExplorerWorker(self) {
       ms: Math.round(performance.now() - t0)
     };
   }
+  const MAX_CHILDREN = 1024, MAX_LEVELS = 256;
   function invalid(d) {
     if (!d || typeof d !== "object")
       return "the data must be an object";
@@ -16986,10 +16994,20 @@ function graphExplorerWorker(self) {
       ["edges.target", e.target, Int32Array],
       ["edges.type", e.type, Uint8Array]
     ];
-    for (const [name, v, T] of typed)
+    for (const [name, v, T] of typed) {
       if (!(v instanceof T))
         return `${name} must be an ${T.name}`;
-    const names = (v) => Array.isArray(v) && v.every((s) => typeof s === "string");
+      if (!(v.buffer instanceof ArrayBuffer))
+        return `${name} must not be backed by a SharedArrayBuffer: the page could change it after the check`;
+    }
+    const names = (v) => {
+      if (!Array.isArray(v))
+        return false;
+      for (let i = 0;i < v.length; i++)
+        if (typeof v[i] !== "string")
+          return false;
+      return true;
+    };
     for (const k of ["cluster", "node", "edge"])
       if (!names(t[k]))
         return `types.${k} must be a list of names`;
@@ -17014,14 +17032,16 @@ function graphExplorerWorker(self) {
         return got < 0 ? `${name} must be a list of strings` : `${name} has ${got} entries, ${want} expected`;
     if (c.parent[0] !== -1)
       return "clusters.parent[0] must be -1: cluster 0 is the root";
-    const kids = new Uint8Array(nc), held = new Uint8Array(nc);
+    const kids = new Int32Array(nc), held = new Int32Array(nc), level = new Uint16Array(nc);
     for (let i = 1;i < nc; i++) {
       const p = c.parent[i];
       if (p < 0 || p >= i)
         return `cluster ${i} has parent ${p}: a parent comes before its children (BFS order)`;
       if (p < c.parent[i - 1])
         return `cluster ${i} has parent ${p} after a child of ${c.parent[i - 1]}: the children of a cluster must be contiguous, the clusters in BFS order`;
-      kids[p] = 1;
+      kids[p]++;
+      if ((level[i] = level[p] + 1) >= MAX_LEVELS)
+        return `cluster ${i} is at level ${level[i]}: at most ${MAX_LEVELS} cluster levels`;
     }
     for (let i = 0;i < nc; i++)
       if (c.type[i] >= t.cluster.length)
@@ -17036,11 +17056,14 @@ function graphExplorerWorker(self) {
         return `cluster ${k} holds clusters and nodes: a cluster holds only one of them`;
       if (n.type[i] >= t.node.length)
         return `node ${i} has type ${n.type[i]}, beyond types.node`;
-      held[k] = 1;
+      held[k]++;
     }
-    for (let i = 0;i < nc; i++)
+    for (let i = 0;i < nc; i++) {
       if (!kids[i] && !held[i])
         return `cluster ${i} is empty: it needs clusters or nodes`;
+      if (kids[i] + held[i] > MAX_CHILDREN)
+        return `cluster ${i} has ${kids[i] + held[i]} children, at most ${MAX_CHILDREN}`;
+    }
     if (e.start[0] !== 0)
       return "edges.start[0] must be 0";
     for (let i = 0;i < nn; i++)
@@ -18375,12 +18398,7 @@ function graphExplorerWorker(self) {
         });
       }
       const inc = [], want = Math.min(40, inDeg[idx]), sys = leafCluster[idx];
-      const ranges = [[cLeafStart[sys], cLeafEnd[sys]]];
-      for (let p = sys, a = cParent[sys];a >= 0; p = a, a = cParent[a])
-        for (let k = cChildStart[a];k < cChildStart[a] + cChildCount[a]; k++)
-          if (k !== p)
-            ranges.push(...rangesOf(k));
-      for (const [r0, r1] of ranges) {
+      const scan = (r0, r1) => {
         for (let i = r0;i < r1 && inc.length < want; i++)
           for (let e = outStart[i];e < outStart[i + 1]; e++)
             if (outTarget[e] === idx) {
@@ -18395,8 +18413,17 @@ function graphExplorerWorker(self) {
               });
               break;
             }
-        if (inc.length >= want)
-          break;
+        return inc.length >= want;
+      };
+      if (!scan(cLeafStart[sys], cLeafEnd[sys])) {
+        around:
+          for (let p = sys, a = cParent[sys];a >= 0; p = a, a = cParent[a])
+            for (let k = cChildStart[a];k < cChildStart[a] + cChildCount[a]; k++)
+              if (k !== p) {
+                for (const [r0, r1] of rangesOf(k))
+                  if (scan(r0, r1))
+                    break around;
+              }
       }
       return {
         t: "details",
@@ -20554,6 +20581,6 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-//# debugId=8CC9B0673EC8E93664756E2164756E21
+//# debugId=91892AD0043D25AB64756E2164756E21
 /* defuss-shadcn v0.9.18 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=knowledge-graph.js.map

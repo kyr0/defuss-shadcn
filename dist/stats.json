@@ -22,10 +22,10 @@
   "unitTestFiles": 57,
   "withJs": 92,
   "withoutJs": 180,
-  "totalSize": 4984482,
-  "totalSizeMinified": 2514264,
-  "totalSizeGz": 1397495,
-  "totalSizeGzMinified": 813326,
+  "totalSize": 4986893,
+  "totalSizeMinified": 2514888,
+  "totalSizeGz": 1398242,
+  "totalSizeGzMinified": 813516,
   "bundle": {
     "jsSize": 1292638,
     "jsSizeMinified": 755964,
@@ -108,13 +108,13 @@
       "cssSizeGzMinified": 2028
     },
     "graphs": {
-      "jsSize": 255122,
-      "jsSizeMinified": 159134,
+      "jsSize": 256219,
+      "jsSizeMinified": 159767,
       "cssSize": 78190,
       "cssSizeMinified": 61889,
-      "totalSizeGz": 79268,
-      "totalSizeGzMinified": 62867,
-      "jsSizeGzMinified": 52924,
+      "totalSizeGz": 79557,
+      "totalSizeGzMinified": 63057,
+      "jsSizeGzMinified": 53114,
       "cssSizeGzMinified": 9943
     },
     "workflows": {
@@ -483,13 +483,13 @@
         "components/graphs.css",
         "components/graphs.js"
       ],
-      "jsSize": 255122,
-      "jsSizeMinified": 159134,
+      "jsSize": 256219,
+      "jsSizeMinified": 159767,
       "cssSize": 78190,
       "cssSizeMinified": 61889,
-      "totalSizeGz": 79268,
-      "totalSizeGzMinified": 62867,
-      "jsSizeGzMinified": 52924,
+      "totalSizeGz": 79557,
+      "totalSizeGzMinified": 63057,
+      "jsSizeGzMinified": 53114,
       "cssSizeGzMinified": 9943
     },
     "workflows": {
@@ -1060,7 +1060,7 @@
     "count": 28,
     "minGzMinified": 5000,
     "maxGzMinified": 66114,
-    "meanGzMinified": 23346
+    "meanGzMinified": 23353
   },
   "components": {
     "about-intro": {
@@ -2406,14 +2406,14 @@
       "name": "graph-explorer",
       "type": "MOL",
       "withJs": true,
-      "jsSize": 341880,
-      "jsSizeMinified": 159279,
+      "jsSize": 344291,
+      "jsSizeMinified": 159903,
       "cssSize": 78125,
       "cssSizeMinified": 61847,
-      "totalSizeGz": 98758,
-      "totalSizeGzMinified": 62836,
-      "totalSize": 420005,
-      "totalSizeMinified": 221126
+      "totalSizeGz": 99505,
+      "totalSizeGzMinified": 63026,
+      "totalSize": 422416,
+      "totalSizeMinified": 221750
     },
     "heading-anchor": {
       "name": "heading-anchor",
@@ -4936,13 +4936,13 @@
         "toggle-group",
         "typography"
       ],
-      "jsSize": 743597,
-      "jsSizeMinified": 434967,
+      "jsSize": 744696,
+      "jsSizeMinified": 435600,
       "cssSize": 460466,
       "cssSizeMinified": 301336,
-      "totalSizeGz": 268116,
-      "totalSizeGzMinified": 188119,
-      "jsSizeGzMinified": 144217,
+      "totalSizeGz": 268413,
+      "totalSizeGzMinified": 188326,
+      "jsSizeGzMinified": 144424,
       "cssSizeGzMinified": 43902
     },
     "api-docs": {

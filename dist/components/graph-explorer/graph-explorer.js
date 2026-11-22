@@ -1510,7 +1510,8 @@ class Explorer {
         return this.swap || this.loads.size > 0;
     }
     /** a graph of the page's in place of the one shown: the typed arrays move to the worker (they are empty here
-     *  afterwards); true once it shows, false when the worker refused it (graph-explorer-error says why) */
+     *  afterwards, refused or not); true once it shows, false when the worker refused it (graph-explorer-error says
+     *  why) or a later load superseded it */
     load(data) {
         const transfer = new Set();
         for (const part of [data?.clusters, data?.nodes, data?.edges])
@@ -1587,10 +1588,15 @@ class Explorer {
         this.activeResult = -1;
         for (const outlet of this.outlets('search')) {
             const { input, list } = this.searchBox(outlet);
+            input.value = '';
             dfDollar(input).attr('placeholder', `Search ${fmt(this.n)} nodes ( / )`);
             morph(list, []);
         }
         this.closeResults();
+        // the outline's filter was for the old graph's names: the new top shows whole
+        for (const outlet of this.outlets('outline'))
+            for (const filter of dfDollar(outlet).find('.graph-explorer-outline-filter').toArray())
+                filter.value = '';
         // Live mode belongs to a generated graph: its switch goes
         this.simulating = false;
         for (const b of boundOf(this.el, '[data-graph-explorer-action="live"]')) {
@@ -1605,8 +1611,9 @@ class Explorer {
                 detail: { selected: [], edge: null },
                 bubbles: true,
             }));
-        for (const resolve of this.landing.splice(0))
-            resolve?.(true);
+        // the last load installed is the graph that shows; the loads it superseded did not
+        const landing = this.landing.splice(0);
+        landing.forEach((resolve, k) => resolve?.(k === landing.length - 1));
     }
     post(m, transfer) {
         if (!this.destroyed)
@@ -3240,10 +3247,15 @@ class Explorer {
                 const nextId = ids[depth + 1], i = this.view.byId.get(nextId);
                 if (i === undefined)
                     break;
+                // a dive that went nowhere (a graph is being loaded, or the same dive is under way) ends the way: else the
+                // loop spins on resolved promises and the message that would end it is never read
+                const before = this.view;
                 await this.dive(i, animate);
+                if (this.view === before)
+                    break;
                 depth = ids.indexOf(this.view.id);
             }
-            if (gen !== this.gen)
+            if (gen !== this.gen || this.reloading)
                 return;
             const i = this.view.byId.get(id);
             if (i !== undefined && opts.enter && this.view.children[i].kind === 'cluster') {
@@ -5044,14 +5056,17 @@ df$.graphExplorer = {
     collapse: (target) => need(target).collapseDetails(),
     /**
      * Shows a graph of the page's in place of the one shown (a generated one too): the worker checks it whole - the
-     * hierarchy in BFS order with contiguous children, the nodes sorted by cluster, the out-CSR, every index in range -
-     * and installs it, or refuses it with graph-explorer-error and keeps the graph shown. The typed arrays are
-     * transferred, not copied: they are empty on the page afterwards. The new graph shows at its top, nothing selected,
-     * without the old one's updates; Health, breakers, Live mode and the generated attributes are a generated graph's
-     * only. With data-source="external" the element generates nothing and waits for this call.
+     * hierarchy in BFS order with contiguous children, the nodes sorted by cluster, the out-CSR, every index in range,
+     * at most 1,024 children per cluster and 256 cluster levels - and installs it, or refuses it with
+     * graph-explorer-error and keeps the graph shown. The typed arrays' buffers are transferred, not copied, refused or
+     * not: they are empty on the page afterwards, and a refused graph is built anew to try again. The new graph shows
+     * at its top, nothing selected, without the old one's updates, search or outline filter; Health, breakers, Live
+     * mode and the generated attributes are a generated graph's only. With data-source="external" the element generates
+     * nothing and waits for this call.
      * @param target - the .graph-explorer element or its selector
      * @param data - the graph: clusters, nodes, edges and the names of their types
-     * @returns true once the new graph shows, false when the worker refused it (the event says why)
+     * @returns true once the new graph shows; false when the worker refused it (the event says why) or a later load()
+     * superseded it before it showed
      */
     load: (target, data) => need(target).load(data),
     /**
@@ -5646,7 +5661,9 @@ function graphExplorerWorker(self) {
     }
     // ------------------------------------------------------- a graph of the page's (load)
     // GraphExplorerData as it arrives: checked whole before anything changes, so a rejected graph leaves the shown one
-    // as it was. The answer is the first thing wrong, or null.
+    // as it was. The answer is the first thing wrong, or null. The bounds: a view lays out its children in O(n^2)
+    // (1,024 take ~0.1 s, 8,000 ~9 s), and the hierarchy's walks recurse per level.
+    const MAX_CHILDREN = 1024, MAX_LEVELS = 256;
     function invalid(d) {
         if (!d || typeof d !== 'object')
             return 'the data must be an object';
@@ -5662,10 +5679,22 @@ function graphExplorerWorker(self) {
             ['edges.target', e.target, Int32Array],
             ['edges.type', e.type, Uint8Array],
         ];
-        for (const [name, v, T] of typed)
+        for (const [name, v, T] of typed) {
             if (!(v instanceof T))
                 return `${name} must be an ${T.name}`;
-        const names = (v) => Array.isArray(v) && v.every((s) => typeof s === 'string');
+            // a shared buffer stays the page's: it could change after the check
+            if (!(v.buffer instanceof ArrayBuffer))
+                return `${name} must not be backed by a SharedArrayBuffer: the page could change it after the check`;
+        }
+        // each index, holes too (every() skips them, and new Array(n) with an entry missing has one)
+        const names = (v) => {
+            if (!Array.isArray(v))
+                return false;
+            for (let i = 0; i < v.length; i++)
+                if (typeof v[i] !== 'string')
+                    return false;
+            return true;
+        };
         for (const k of ['cluster', 'node', 'edge'])
             if (!names(t[k]))
                 return `types.${k} must be a list of names`;
@@ -5690,14 +5719,17 @@ function graphExplorerWorker(self) {
                 return got < 0 ? `${name} must be a list of strings` : `${name} has ${got} entries, ${want} expected`;
         if (c.parent[0] !== -1)
             return 'clusters.parent[0] must be -1: cluster 0 is the root';
-        const kids = new Uint8Array(nc), held = new Uint8Array(nc);
+        // children per cluster (clusters or nodes) and levels: within what a view lays out and the hierarchy's walks hold
+        const kids = new Int32Array(nc), held = new Int32Array(nc), level = new Uint16Array(nc);
         for (let i = 1; i < nc; i++) {
             const p = c.parent[i];
             if (p < 0 || p >= i)
                 return `cluster ${i} has parent ${p}: a parent comes before its children (BFS order)`;
             if (p < c.parent[i - 1])
                 return `cluster ${i} has parent ${p} after a child of ${c.parent[i - 1]}: the children of a cluster must be contiguous, the clusters in BFS order`;
-            kids[p] = 1;
+            kids[p]++;
+            if ((level[i] = level[p] + 1) >= MAX_LEVELS)
+                return `cluster ${i} is at level ${level[i]}: at most ${MAX_LEVELS} cluster levels`;
         }
         for (let i = 0; i < nc; i++)
             if (c.type[i] >= t.cluster.length)
@@ -5712,11 +5744,14 @@ function graphExplorerWorker(self) {
                 return `cluster ${k} holds clusters and nodes: a cluster holds only one of them`;
             if (n.type[i] >= t.node.length)
                 return `node ${i} has type ${n.type[i]}, beyond types.node`;
-            held[k] = 1;
+            held[k]++;
         }
-        for (let i = 0; i < nc; i++)
+        for (let i = 0; i < nc; i++) {
             if (!kids[i] && !held[i])
                 return `cluster ${i} is empty: it needs clusters or nodes`;
+            if (kids[i] + held[i] > MAX_CHILDREN)
+                return `cluster ${i} has ${kids[i] + held[i]} children, at most ${MAX_CHILDREN}`;
+        }
         if (e.start[0] !== 0)
             return 'edges.start[0] must be 0';
         for (let i = 0; i < nn; i++)
@@ -7115,13 +7150,8 @@ function graphExplorerWorker(self) {
             }
             const inc = [], want = Math.min(40, inDeg[idx]), sys = leafCluster[idx];
             // the sources nearest first: the system, then the rest of each cluster above it (no reverse index: a scan of
-            // the out-links until enough are found)
-            const ranges = [[cLeafStart[sys], cLeafEnd[sys]]];
-            for (let p = sys, a = cParent[sys]; a >= 0; p = a, a = cParent[a])
-                for (let k = cChildStart[a]; k < cChildStart[a] + cChildCount[a]; k++)
-                    if (k !== p)
-                        ranges.push(...rangesOf(k));
-            for (const [r0, r1] of ranges) {
+            // the out-links until enough are found; a sibling's ranges are walked only when it is reached)
+            const scan = (r0, r1) => {
                 for (let i = r0; i < r1 && inc.length < want; i++)
                     for (let e = outStart[i]; e < outStart[i + 1]; e++)
                         if (outTarget[e] === idx) {
@@ -7136,9 +7166,15 @@ function graphExplorerWorker(self) {
                             });
                             break;
                         }
-                if (inc.length >= want)
-                    break;
-            }
+                return inc.length >= want;
+            };
+            if (!scan(cLeafStart[sys], cLeafEnd[sys]))
+                around: for (let p = sys, a = cParent[sys]; a >= 0; p = a, a = cParent[a])
+                    for (let k = cChildStart[a]; k < cChildStart[a] + cChildCount[a]; k++)
+                        if (k !== p)
+                            for (const [r0, r1] of rangesOf(k))
+                                if (scan(r0, r1))
+                                    break around;
             return {
                 t: 'details',
                 id,
