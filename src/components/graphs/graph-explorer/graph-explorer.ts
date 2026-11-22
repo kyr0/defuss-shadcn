@@ -2675,7 +2675,8 @@ class Explorer {
     return this.swap || this.loads.size > 0;
   }
   /** a graph of the page's in place of the one shown: the typed arrays move to the worker (they are empty here
-   *  afterwards); true once it shows, false when the worker refused it (graph-explorer-error says why) */
+   *  afterwards, refused or not); true once it shows, false when the worker refused it (graph-explorer-error says
+   *  why) or a later load superseded it */
   load(data: GraphExplorerData): Promise<boolean> {
     const transfer = new Set<ArrayBuffer>();
     for (const part of [data?.clusters, data?.nodes, data?.edges])
@@ -2745,10 +2746,15 @@ class Explorer {
     this.activeResult = -1;
     for (const outlet of this.outlets('search')) {
       const { input, list } = this.searchBox(outlet);
+      input.value = '';
       dfDollar(input).attr('placeholder', `Search ${fmt(this.n)} nodes ( / )`);
       morph(list, []);
     }
     this.closeResults();
+    // the outline's filter was for the old graph's names: the new top shows whole
+    for (const outlet of this.outlets('outline'))
+      for (const filter of outlet.querySelectorAll<HTMLInputElement>('.graph-explorer-outline-filter'))
+        filter.value = '';
     // Live mode belongs to a generated graph: its switch goes
     this.simulating = false;
     for (const b of boundOf(this.el, '[data-graph-explorer-action="live"]')) {
@@ -2765,7 +2771,9 @@ class Explorer {
           bubbles: true,
         }),
       );
-    for (const resolve of this.landing.splice(0)) resolve?.(true);
+    // the last load installed is the graph that shows; the loads it superseded did not
+    const landing = this.landing.splice(0);
+    landing.forEach((resolve, k) => resolve?.(k === landing.length - 1));
   }
   post(m: Record<string, unknown>, transfer?: Transferable[]): void {
     if (!this.destroyed) this.worker.postMessage(m, transfer || []);
@@ -4378,10 +4386,14 @@ class Explorer {
         const nextId = ids[depth + 1],
           i = this.view.byId.get(nextId);
         if (i === undefined) break;
+        // a dive that went nowhere (a graph is being loaded, or the same dive is under way) ends the way: else the
+        // loop spins on resolved promises and the message that would end it is never read
+        const before = this.view;
         await this.dive(i, animate);
+        if (this.view === before) break;
         depth = ids.indexOf(this.view.id);
       }
-      if (gen !== this.gen) return;
+      if (gen !== this.gen || this.reloading) return;
       const i = this.view.byId.get(id);
       if (i !== undefined && opts.enter && this.view.children[i].kind === 'cluster') {
         await this.dive(i, animate);
@@ -6161,14 +6173,17 @@ df$.graphExplorer = {
   collapse: (target: string | HTMLElement): void => need(target).collapseDetails(),
   /**
    * Shows a graph of the page's in place of the one shown (a generated one too): the worker checks it whole - the
-   * hierarchy in BFS order with contiguous children, the nodes sorted by cluster, the out-CSR, every index in range -
-   * and installs it, or refuses it with graph-explorer-error and keeps the graph shown. The typed arrays are
-   * transferred, not copied: they are empty on the page afterwards. The new graph shows at its top, nothing selected,
-   * without the old one's updates; Health, breakers, Live mode and the generated attributes are a generated graph's
-   * only. With data-source="external" the element generates nothing and waits for this call.
+   * hierarchy in BFS order with contiguous children, the nodes sorted by cluster, the out-CSR, every index in range,
+   * at most 1,024 children per cluster and 256 cluster levels - and installs it, or refuses it with
+   * graph-explorer-error and keeps the graph shown. The typed arrays' buffers are transferred, not copied, refused or
+   * not: they are empty on the page afterwards, and a refused graph is built anew to try again. The new graph shows
+   * at its top, nothing selected, without the old one's updates, search or outline filter; Health, breakers, Live
+   * mode and the generated attributes are a generated graph's only. With data-source="external" the element generates
+   * nothing and waits for this call.
    * @param target - the .graph-explorer element or its selector
    * @param data - the graph: clusters, nodes, edges and the names of their types
-   * @returns true once the new graph shows, false when the worker refused it (the event says why)
+   * @returns true once the new graph shows; false when the worker refused it (the event says why) or a later load()
+   * superseded it before it showed
    */
   load: (target: string | HTMLElement, data: GraphExplorerData): Promise<boolean> => need(target).load(data),
   /**
