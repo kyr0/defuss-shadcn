@@ -1,7 +1,7 @@
 // dist/components/graph-explorer/graph-explorer.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.9.18") {
+if (!__df$shared || __df$shared.abi !== "0.10.0") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent } = __df$shared;
@@ -6956,5 +6956,5 @@ function graphExplorerWorker(self) {
   };
 }
 
-//# debugId=B481EAD44B6504B264756E2164756E21
+//# debugId=11587B649A06CD8E64756E2164756E21
 //# sourceMappingURL=graphs.js.map

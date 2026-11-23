@@ -17,7 +17,8 @@
         "docs(graph-explorer): Your own graph - a code base loaded from the page",
         "feat(graph-explorer): load() a page's graph (GraphExplorerData, data-source=&quot;external&quot;)",
         "test(e2e): wait for lazily booted example previews (shared exampleFrame helper) and poll the Studio canvas after a WebKit drop - both flaked under load during the v0.9.18 release"
-      ]
+      ],
+      "hash": "e7e6ce3aa"
     },
     {
       "version": "v0.9.18",

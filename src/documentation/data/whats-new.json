@@ -2,11 +2,12 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.10.0",
       "created": [],
       "updated": [
         "graph-explorer",
         "index",
+        "installation",
         "system-in-numbers"
       ],
       "examples": {
