@@ -2,6 +2,22 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [],
+      "updated": [
+        "graph-explorer",
+        "index"
+      ],
+      "examples": {
+        "graph-explorer": {
+          "created": [],
+          "updated": [
+            "A code base as a graph"
+          ]
+        }
+      }
+    },
+    {
       "version": "0.10.0",
       "created": [],
       "updated": [

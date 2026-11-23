@@ -13219,10 +13219,16 @@ class Explorer {
   }
   load(data) {
     const transfer = new Set;
+    const move = (v) => {
+      if (ArrayBuffer.isView(v) && v.buffer instanceof ArrayBuffer)
+        transfer.add(v.buffer);
+    };
     for (const part of [data?.clusters, data?.nodes, data?.edges])
       for (const v of Object.values(part ?? {}))
-        if (ArrayBuffer.isView(v) && v.buffer instanceof ArrayBuffer)
-          transfer.add(v.buffer);
+        if (v && typeof v === "object" && !Array.isArray(v) && !ArrayBuffer.isView(v))
+          Object.values(v).forEach(move);
+        else
+          move(v);
     const req = ++this.loadSeq;
     return new Promise((resolve) => {
       this.loads.set(req, resolve);
@@ -17016,12 +17022,13 @@ function graphExplorerWorker(self) {
       return "clusters: there must be a root (cluster 0)";
     if (!nn)
       return "nodes: there must be at least one";
+    const packed = (v) => !!v && typeof v === "object" && !Array.isArray(v);
     const sized = [
       ["clusters.type", c.type.length, nc],
       ["clusters.label", names(c.label) ? c.label.length : -1, nc],
       ["nodes.type", n.type.length, nn],
-      ["nodes.label", names(n.label) ? n.label.length : -1, nn],
-      ["nodes.ref", names(n.ref) ? n.ref.length : -1, nn],
+      ...packed(n.label) ? [] : [["nodes.label", names(n.label) ? n.label.length : -1, nn]],
+      ...packed(n.ref) ? [] : [["nodes.ref", names(n.ref) ? n.ref.length : -1, nn]],
       ["edges.start", e.start.length, nn + 1],
       ["edges.type", e.type.length, ne]
     ];
@@ -17030,6 +17037,25 @@ function graphExplorerWorker(self) {
     for (const [name, got, want] of sized)
       if (got !== want)
         return got < 0 ? `${name} must be a list of strings` : `${name} has ${got} entries, ${want} expected`;
+    const viewWhy = (name, v, T) => !(v instanceof T) ? `${name} must be an ${T.name}` : v.buffer instanceof ArrayBuffer ? null : `${name} must not be backed by a SharedArrayBuffer: the page could change it after the check`;
+    for (const name of ["label", "ref"]) {
+      const s = n[name], field = "nodes." + name;
+      if (!packed(s))
+        continue;
+      const why = viewWhy(field + ".offsets", s.offsets, Int32Array) ?? viewWhy(field + ".bytes", s.bytes, Uint8Array);
+      if (why)
+        return why;
+      const o = s.offsets;
+      if (o.length !== nn + 1)
+        return `${field}.offsets has ${o.length} entries, ${nn + 1} expected`;
+      if (o[0] !== 0)
+        return `${field}.offsets[0] must be 0`;
+      for (let i = 0;i < nn; i++)
+        if (o[i + 1] < o[i])
+          return `${field}.offsets falls at string ${i}: it must not decrease`;
+      if (o[nn] !== s.bytes.length)
+        return `${field}.offsets[${nn}] is ${o[nn]}, the length of ${field}.bytes (${s.bytes.length}) expected`;
+    }
     if (c.parent[0] !== -1)
       return "clusters.parent[0] must be -1: cluster 0 is the root";
     const kids = new Int32Array(nc), held = new Int32Array(nc), level = new Uint16Array(nc);
@@ -17191,16 +17217,19 @@ function graphExplorerWorker(self) {
       depth = Math.max(depth, cLevel[i]);
     return { nodes: N, edges: E, clusters: C, depth: depth + 1, pairs: P, ms: Math.round(performance.now() - t0) };
   }
+  const UTF8 = new TextDecoder;
+  const stringAt = (s, i) => Array.isArray(s) ? s[i] : UTF8.decode(s.bytes.subarray(s.offsets[i], s.offsets[i + 1]));
   const leafLabel = (i) => {
     if (EXT)
-      return LABELS[i];
+      return stringAt(LABELS, i);
     const h = h32(i, 99);
     return NOUN[h % 64] + "-" + ADJ[(h >>> 6) % 64] + "-" + (h >>> 12) % 1000;
   };
+  const leafRef = (i) => stringAt(REFS, i);
   const nodeType = (i) => EXT ? TYPES.node[leafType[i]] : ENTITY_TYPES[leafType[i]];
   const clusterType = (c) => EXT ? TYPES.cluster[cKind[c]] : cLevel[c] === 0 ? "Graph" : cLevel[c] === 1 ? "Domain" : SYSTEM_KINDS[cKind[c]];
   const edgeName = (k) => EXT ? TYPES.edge[edgeType[k]] : EDGE_TYPES[edgeType[k]];
-  const refOf = (leaf, idx) => EXT ? leaf ? REFS[idx] : cRef?.[idx] ?? undefined : undefined;
+  const refOf = (leaf, idx) => EXT ? leaf ? leafRef(idx) : cRef?.[idx] ?? undefined : undefined;
   const withRef = (o, leaf, idx) => {
     const ref = refOf(leaf, idx);
     if (ref !== undefined)
@@ -18508,7 +18537,7 @@ function graphExplorerWorker(self) {
             domain: above(sys),
             out: outStart[g + 1] - outStart[g],
             in: inDeg[g],
-            ref: REFS[g]
+            ref: leafRef(g)
           });
           continue;
         }
@@ -18645,6 +18674,33 @@ function graphExplorerWorker(self) {
     scanning = null;
     searchSeq = -1;
   }
+  function packedHit(query) {
+    const q = new TextEncoder().encode(query), qn = q.length, ascii = q.every((b) => b < 128), q0 = q[0], Q0 = q0 >= 97 && q0 <= 122 ? q0 - 32 : q0, o = LABELS.offsets, b = LABELS.bytes;
+    const decoded = (i) => stringAt(LABELS, i).toLowerCase().includes(query);
+    return (i) => {
+      const z = o[i + 1], last = ascii ? z - qn : -1;
+      let k = o[i];
+      next:
+        for (;k <= last; k++) {
+          const c = b[k];
+          if (c !== q0 && c !== Q0) {
+            if (c > 127)
+              return decoded(i);
+            continue;
+          }
+          for (let j = 1;j < qn; j++) {
+            const d = b[k + j];
+            if ((d >= 65 && d <= 90 ? d | 32 : d) !== q[j])
+              continue next;
+          }
+          return true;
+        }
+      for (;k < z; k++)
+        if (b[k] > 127)
+          return decoded(i);
+      return false;
+    };
+  }
   function search(q, seq) {
     searchSeq = seq;
     scanning = null;
@@ -18671,7 +18727,7 @@ function graphExplorerWorker(self) {
     for (let c = 1;c < C && results.length < 6; c++)
       if (cName[c].toLowerCase().includes(query))
         push("c" + c, cName[c], "cluster", clusterType(c), c);
-    const hit = EXT ? (i) => leafLabel(i).toLowerCase().includes(query) : (i) => leafLabel(i).includes(query);
+    const hit = !EXT ? (i) => leafLabel(i).includes(query) : Array.isArray(LABELS) ? (i) => LABELS[i].toLowerCase().includes(query) : packedHit(query);
     const run = { seq, q, results, at: 0 };
     scanning = run;
     let i = 0;
@@ -20581,6 +20637,6 @@ function init17() {
 init17();
 new MutationObserver(init17).observe(document, { childList: true, subtree: true });
 
-//# debugId=3E32DBE795609FBD64756E2164756E21
+//# debugId=F0448432B91B272364756E2164756E21
 /* defuss-shadcn v0.10.0 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=knowledge-graph.js.map

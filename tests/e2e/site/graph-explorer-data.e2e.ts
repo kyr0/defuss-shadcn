@@ -50,9 +50,18 @@ const inspect = (f: Frame, id: string) =>
 const rootLabels = async (f: Frame, id: string) =>
   ((await inspect(f, id)).children as { label: string }[]).map((c) => c.label).sort();
 
-/** a small graph of the test's own, as a builder in the frame (__own()): two clusters of three nodes, links both ways */
+/** a small graph of the test's own, as a builder in the frame (__own()): two clusters of three nodes, links both ways;
+ *  __pack(list) packs strings as UTF-8 offsets and bytes (GraphExplorerStrings) */
 const defineOwn = (f: Frame) =>
   f.evaluate(() => {
+    (globalThis as any).__pack = (list: string[]) => {
+      const parts = list.map((s) => new TextEncoder().encode(s)),
+        offsets = new Int32Array(parts.length + 1);
+      parts.forEach((p, i) => (offsets[i + 1] = offsets[i] + p.length));
+      const bytes = new Uint8Array(offsets[parts.length]);
+      parts.forEach((p, i) => bytes.set(p, offsets[i]));
+      return { offsets, bytes };
+    };
     (globalThis as any).__own = () => ({
       clusters: {
         parent: Int32Array.of(-1, 0, 0),
@@ -681,6 +690,14 @@ try {
     'nodes.label with holes': 'nodes.label must be a list of strings',
     'nodes.ref with a number': 'nodes.ref must be a list of strings',
     'nodes.ref length': 'nodes.ref has 7 entries, 6 expected',
+    'packed offsets kind': 'nodes.label.offsets must be an Int32Array',
+    'packed bytes kind': 'nodes.ref.bytes must be an Uint8Array',
+    'packed shared buffer':
+      'nodes.label.bytes must not be backed by a SharedArrayBuffer: the page could change it after the check',
+    'packed offsets length': 'nodes.label.offsets has 6 entries, 7 expected',
+    'packed offsets start': 'nodes.label.offsets[0] must be 0',
+    'packed offsets fall': 'nodes.ref.offsets falls at string 1: it must not decrease',
+    'packed offsets end': 'nodes.label.offsets[6] is 5, the length of nodes.label.bytes (6) expected',
     'edges.start length': 'edges.start has 6 entries, 7 expected',
     'edges.type length': 'edges.type has 5 entries, 6 expected',
     'root with a parent': 'clusters.parent[0] must be -1: cluster 0 is the root',
@@ -766,6 +783,40 @@ try {
         ['nodes.label with holes', (d) => ((d.nodes.label = holes(6, { 0: 'only one' })), d)],
         ['nodes.ref with a number', (d) => ((d.nodes.ref = ['a', 'b', 'c', 'd', 'e', 6]), d)],
         ['nodes.ref length', (d) => ((d.nodes.ref = [...d.nodes.ref, 'extra']), d)],
+        [
+          'packed offsets kind',
+          (d) => ((d.nodes.label = { offsets: Uint32Array.of(0, 1, 2, 3, 4, 5, 6), bytes: new Uint8Array(6) }), d),
+        ],
+        [
+          'packed bytes kind',
+          (d) => ((d.nodes.ref = { offsets: Int32Array.of(0, 1, 2, 3, 4, 5, 6), bytes: [1, 2, 3, 4, 5, 6] }), d),
+        ],
+        [
+          'packed shared buffer',
+          (d) => (
+            (d.nodes.label = {
+              offsets: Int32Array.of(0, 1, 2, 3, 4, 5, 6),
+              bytes: new Uint8Array(new SharedArrayBuffer(6)),
+            }),
+            d
+          ),
+        ],
+        [
+          'packed offsets length',
+          (d) => ((d.nodes.label = { offsets: Int32Array.of(0, 1, 2, 3, 4, 5), bytes: new Uint8Array(5) }), d),
+        ],
+        [
+          'packed offsets start',
+          (d) => ((d.nodes.label = { offsets: Int32Array.of(1, 1, 2, 3, 4, 5, 6), bytes: new Uint8Array(6) }), d),
+        ],
+        [
+          'packed offsets fall',
+          (d) => ((d.nodes.ref = { offsets: Int32Array.of(0, 2, 1, 3, 4, 5, 6), bytes: new Uint8Array(6) }), d),
+        ],
+        [
+          'packed offsets end',
+          (d) => ((d.nodes.label = { offsets: Int32Array.of(0, 1, 2, 3, 4, 5, 5), bytes: new Uint8Array(6) }), d),
+        ],
         ['edges.start length', (d) => ((d.edges.start = Int32Array.of(0, 2, 3, 4, 5, 6)), d)],
         ['edges.type length', (d) => ((d.edges.type = Uint8Array.of(0, 1, 0, 0, 0)), d)],
         ['root with a parent', (d) => ((d.clusters.parent = Int32Array.of(0, 0, 0)), d)],
@@ -855,6 +906,60 @@ try {
     assert.deepEqual([again.first, again.emptied, again.second], [false, 0, false]);
     assert.match(again.message ?? '', /^Invalid graph data: .*detached/i);
   });
+
+  await check(
+    'packed labels and refs (UTF-8 offsets and bytes) move to the worker; the details, find(), subtree() and the search decode them',
+    async () => {
+      const out = await x.evaluate(async () => {
+        const g = globalThis as any,
+          ge = g.df$.shadcn.graphExplorer;
+        const d = g.__own();
+        // beta-\u212Aelvin: the Kelvin sign lowercases to an ASCII k
+        d.nodes.label = g.__pack(['Alpha-One', 'alpha-two', 'Ärger im Büro', 'beta-one', 'beta-two', 'beta-\u212Aelvin']);
+        d.nodes.ref = g.__pack(['own:a1', 'own:a2', 'own:ä3', 'own:b1', 'own:b2', 'own:b3']);
+        const { label, ref } = d.nodes;
+        const shown = await ge.load('#ext', d);
+        const hits = async (q: string) =>
+          (await ge.find('#ext', q)).filter((h: any) => h.kind === 'entity').map((h: any) => [h.label, h.ref]);
+        return {
+          shown,
+          moved: [label.offsets, label.bytes, ref.offsets, ref.bytes].map((v) => v.byteLength),
+          upper: await hits('ALPHA-ONE'),
+          ascii: await hits('alpha'),
+          umlaut: await hits('är'),
+          word: await hits('BÜRO'),
+          kelvin: await hits('kelvin'),
+          none: await hits('own'),
+          rows: (await ge.subtree('#ext', 'c1', 2))
+            .filter((r: any) => r.kind === 'entity')
+            .map((r: any) => [r.label, r.ref]),
+        };
+      });
+      assert.equal(out.shown, true);
+      assert.deepEqual(out.moved, [0, 0, 0, 0], "the page's packed buffers are empty: they moved to the worker");
+      assert.deepEqual(out.upper, [['Alpha-One', 'own:a1']]);
+      assert.deepEqual(out.ascii, [
+        ['Alpha-One', 'own:a1'],
+        ['alpha-two', 'own:a2'],
+      ]);
+      assert.deepEqual(out.umlaut, [['Ärger im Büro', 'own:ä3']]);
+      assert.deepEqual(out.word, [['Ärger im Büro', 'own:ä3']]);
+      assert.deepEqual(out.kelvin, [['beta-\u212Aelvin', 'own:b3']], 'as toLowerCase() finds it');
+      assert.deepEqual(out.none, [], 'the search reads labels, not refs');
+      assert.deepEqual(out.rows, [
+        ['Alpha-One', 'own:a1'],
+        ['alpha-two', 'own:a2'],
+        ['Ärger im Büro', 'own:ä3'],
+      ]);
+      await x.evaluate(() => (globalThis as any).df$.shadcn.graphExplorer.navigate('#ext', 'n2'));
+      await x.waitForFunction(() =>
+        /own:ä3/.test(document.querySelector('[data-graph-explorer-outlet="details"]')?.textContent ?? ''),
+      );
+      // the details carry the node's ref and name its neighbours, decoded from the packed bytes
+      const details = await x.textContent('[data-graph-explorer-outlet="details"]');
+      for (const name of ['own:ä3', 'Alpha-One', 'alpha-two']) assert.ok(details?.includes(name), name);
+    },
+  );
 
   await check('of two loads under way only the one that shows resolves true; the one it superseded false', async () => {
     const out = await x.evaluate(async () => {
