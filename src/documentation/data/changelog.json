@@ -1,6 +1,25 @@
 {
   "entries": [
     {
+      "version": "v0.10.0",
+      "date": "November 23, 2026",
+      "commits": [
+        "build: regenerate dist, the skills copy and the stat figures for the load() review fixes",
+        "fix(graph-explorer): the outline filter reset selects through df$",
+        "test(e2e): graph-explorer-data covers every refusal, the first load, races, resets and the bounds",
+        "docs(graph-explorer): load()'s bounds, transfer on refusal, superseded loads; the probe's timings replace the UNKNOWN",
+        "fix(graph-explorer): a navigation during load() ends; load() clears search and outline filter; a superseded load() resolves false",
+        "fix(graph-explorer): a node's incoming links scan the sibling ranges in place",
+        "fix(graph-explorer): load() refuses holey name lists, SharedArrayBuffer arrays, clusters of more than 1,024 children and more than 256 levels",
+        "build: regenerate dist, the skills copy, What's new and the stat figures for load()",
+        "docs(graph-explorer): keep the transfer claim to what the e2e shows; the label copy cost is UNKNOWN",
+        "test(e2e): graph-explorer-data - a page's graph in the explorer",
+        "docs(graph-explorer): Your own graph - a code base loaded from the page",
+        "feat(graph-explorer): load() a page's graph (GraphExplorerData, data-source=&quot;external&quot;)",
+        "test(e2e): wait for lazily booted example previews (shared exampleFrame helper) and poll the Studio canvas after a WebKit drop - both flaked under load during the v0.9.18 release"
+      ]
+    },
+    {
       "version": "v0.9.18",
       "date": "November 22, 2026",
       "commits": [
