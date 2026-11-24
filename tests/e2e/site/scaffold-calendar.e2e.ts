@@ -295,6 +295,52 @@ try {
     assert.equal(await page.$$eval('[data-ag-d="people"] .avatar', (a) => a.length), 3, 'with the three others invited');
   });
 
+  await check('moving: an event drags to another day and time (15-minute steps), a repeating one moves one occurrence, a month chip drops on another day, Alt+arrows move a focused event; the drop opens no card', async () => {
+    await go('#/week/2026-11-17');
+    await page.$eval('.ag-tg-scroll', (s) => ((s as HTMLElement).scrollTop = 600));
+    const rect = (day: string) => page.$eval(`.ag-col[data-day="${day}"]`, (c) => { const r = c.getBoundingClientRect(); return { x: r.left, w: r.width, top: r.top, h: r.height }; });
+    /** a point in a day column at a minute (+ 10px: where an event is grabbed) */
+    const at = async (day: string, min: number) => { const r = await rect(day); return { x: r.x + r.w / 2, y: r.top + (min / 1440) * r.h + 10 }; };
+    /** an event's own box, 10px below its top - events that overlap share the column */
+    const grab = async (sel: string) => { const b = (await (await page.$(sel))!.boundingBox())!; return { x: b.x + b.width / 2, y: b.y + 10 }; };
+    const drag = async (from: { x: number; y: number }, to: { x: number; y: number }) => {
+      await page.mouse.move(from.x, from.y);
+      await page.mouse.down();
+      await page.mouse.move(to.x, to.y, { steps: 8 });
+      await page.mouse.up();
+      await page.waitForTimeout(100);
+    };
+    const toastSays = (text: string) => page.waitForFunction((t) => [...document.querySelectorAll('.toast')].some((n) => n.textContent!.includes(t)), text, { timeout: 3000 });
+    // Hiring sync, Tuesday 14:30 - 15:30, onto Thursday 16:00
+    await drag(await grab(evIn('2026-11-17', 'Hiring sync')), await at('2026-11-19', 16 * 60));
+    assert.equal(await page.$(evIn('2026-11-17', 'Hiring sync')), null, 'gone from Tuesday');
+    assert.equal(await page.$eval(evIn('2026-11-19', 'Hiring sync'), (e) => [(e as HTMLElement).style.getPropertyValue('--s'), (e as HTMLElement).style.getPropertyValue('--d')].join()), '960,60', 'Thursday 16:00, an hour long');
+    assert.equal(await page.$eval('#ag-detail', (d) => d.matches(':popover-open')), false, 'the drop opened no card');
+    await toastSays('Event moved');
+    // Design review repeats every Tuesday: this Tuesday's moves to Wednesday, the series keeps its other Tuesdays
+    await drag(await grab(evIn('2026-11-17', 'Design review')), await at('2026-11-18', 14 * 60));
+    assert.equal(await page.$(evIn('2026-11-17', 'Design review')), null, 'this Tuesday skips it');
+    assert.ok(await page.$(evIn('2026-11-18', 'Design review')), 'Wednesday has it');
+    await toastSays('This occurrence moved');
+    // the keys: Alt+Arrow Down 15 minutes later, Alt+Arrow Right a day later; the focus stays on it
+    await page.focus(evIn('2026-11-19', 'Hiring sync'));
+    await page.keyboard.press('Alt+ArrowDown');
+    await page.keyboard.press('Alt+ArrowRight');
+    assert.equal(await page.$eval(evIn('2026-11-20', 'Hiring sync'), (e) => (e as HTMLElement).style.getPropertyValue('--s')), '975');
+    assert.equal(await page.evaluate(() => document.activeElement?.querySelector('b')?.textContent), 'Hiring sync');
+    await go('#/week/2026-11-24');
+    assert.ok(await page.$(evIn('2026-11-24', 'Design review')), 'next Tuesday still has the series');
+    // month: Copy deadline from Wednesday the 18th onto Wednesday the 25th
+    await go('#/month/2026-11-01');
+    const chip = '.ag-mday[data-day="2026-11-18"] .ag-chip:has(span:text-is("Copy deadline"))';
+    const c = (await (await page.$(chip))!.boundingBox())!;
+    const d = (await (await page.$('.ag-mday[data-day="2026-11-25"]'))!.boundingBox())!;
+    await drag({ x: c.x + 10, y: c.y + c.height / 2 }, { x: d.x + d.width / 2, y: d.y + d.height - 8 });
+    assert.equal(await page.$(chip), null);
+    assert.ok(await page.$('.ag-mday[data-day="2026-11-25"] .ag-chip:has(span:text-is("Copy deadline"))'), 'it landed on the 25th');
+    assert.equal(await page.$('[data-ag-moving], [data-moving], [data-drop]'), null, 'nothing is left mid-move');
+  });
+
   await check('no script errors along the way', async () => {
     assert.deepEqual(errors, []);
   });
