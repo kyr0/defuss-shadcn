@@ -1,6 +1,19 @@
 {
   "entries": [
     {
+      "version": "v0.10.1",
+      "date": "November 24, 2026",
+      "commits": [
+        "chore(agents): updated agent memory after self-reflection",
+        "build: regenerate dist, the skills copies, What's new and the stat figures for selection, checkboxes and drag and drop",
+        "feat(scaffold-calendar): drag events to another day and time",
+        "feat(data-tree): drag and drop between trees and grids, insert() / remove()",
+        "feat(data-grid): selection models, the checkbox model, copy and paste, drag and drop",
+        "feat(shared): record-drag - dragging records between the Data Grid, Tree Grid and Data Tree",
+        "feat(graph-explorer): load() takes node labels and refs packed as UTF-8"
+      ]
+    },
+    {
       "version": "v0.10.0",
       "date": "November 23, 2026",
       "commits": [
