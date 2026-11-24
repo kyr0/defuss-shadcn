@@ -28,6 +28,10 @@
   <div class="data-tree" id="dt-edit" aria-label="Editable tree" data-editable data-required data-max-length="12" data-persist="none"></div>
   <div class="data-tree" id="dt-wait" aria-label="Pending tree"></div>
 
+  <!-- drag and drop: items (with their subtrees) move between two trees, or within one into another item -->
+  <div class="data-tree" id="dt-left" aria-label="Library" data-drag data-drop data-persist="none" style="height:200px;"></div>
+  <div class="data-tree" id="dt-right" aria-label="Playlist" data-drag data-drop="copy" data-persist="none" style="height:200px;"></div>
+
   <script type="module" src="/dist/components/core.js"></script>
   <script type="module" src="/dist/components/data-tree/data-tree.js"></script>
   <script type="module">
@@ -89,6 +93,14 @@
       },
       validateFn: (field, value) => (value === 'Taken' ? 'That name is taken' : undefined),
     });
+    tree.setSource(document.getElementById('dt-left'), [
+      { id: 'rock', parentId: null, name: 'Rock' },
+      { id: 'r1', parentId: 'rock', name: 'Riff' },
+      { id: 'r2', parentId: 'rock', name: 'Ballad' },
+      { id: 'jazz', parentId: null, name: 'Jazz' },
+      { id: 'j1', parentId: 'jazz', name: 'Swing' },
+    ], { query: { expanded: ['rock', 'jazz'] } });
+    tree.setSource(document.getElementById('dt-right'), [{ id: 'mix', parentId: null, name: 'Mix' }]);
     globalThis.__fixtureReady = true;
   </script>
 </body>

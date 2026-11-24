@@ -295,6 +295,72 @@ try {
     assert.deepEqual((await labels()).slice(0, 2), ['Bravo', 'Delta']);
   });
 
+  await check('drag and drop: an item moves with its subtree into another item, before one; never into its own subtree; a tree that takes copies (data-drop="copy") gets copies with new ids; a move between trees empties the source; text/plain is the outline', async () => {
+    await page.$eval('#dt-left', (t) => t.scrollIntoView({ block: 'start' }));
+    await page.evaluate(() => {
+      const g = globalThis as any;
+      g.__texts = [];
+      g.__drops = [];
+      g.__ends = [];
+      document.addEventListener('dragstart', (e: any) => g.__texts.push(e.dataTransfer.getData('text/plain')));
+      document.querySelector('#dt-right')!.addEventListener('data-tree-drop', (e: any) => g.__drops.push([e.detail.effect, e.detail.at, e.detail.records.map((r: any) => r.id)]));
+      document.querySelector('#dt-left')!.addEventListener('data-tree-dragend', (e: any) => g.__ends.push([e.detail.effect, e.detail.target.id]));
+    });
+    const item = (sel: string, i: number) => page.locator(`${sel} .data-tree-items > .data-tree-item[data-index="${i}"]`);
+    const drag = async (from: any, to: { x: number; y: number }) => {
+      const b = await from.boundingBox();
+      await page.mouse.move(b.x + 40, b.y + b.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(b.x + 50, b.y + b.height / 2 + 6, { steps: 3 });
+      await page.mouse.move(to.x, to.y, { steps: 6 });
+      await page.mouse.move(to.x, to.y + 1);
+      await page.mouse.up();
+      await page.waitForTimeout(50);
+    };
+    const at = async (loc: any, f = 0.5) => {
+      const b = await loc.boundingBox();
+      return { x: b.x + 60, y: b.y + b.height * f };
+    };
+    const rows = (sel: string) => page.$eval(sel, (t: any) => (globalThis as any).df$.shadcn.dataTree.source(t).rows.map((r: any) => `${r.id}<${r.parentId ?? ''}`));
+    const labels = (sel: string) => page.$$eval(`${sel} .data-tree-item`, (is) => is.map((i) => i.textContent));
+    // Rock(0) Riff(1) Ballad(2) Jazz(3) Swing(4): Swing into Rock
+    await drag(item('#dt-left', 4), await at(item('#dt-left', 0)));
+    assert.deepEqual(await labels('#dt-left'), ['Rock', 'Riff', 'Ballad', 'Swing', 'Jazz']);
+    assert.equal(await page.$eval('#dt-left', (t: any) => t.store.value.config.selected), 'j1', 'the dropped item is selected');
+    // Ballad before Riff
+    await drag(item('#dt-left', 2), await at(item('#dt-left', 1), 0.1));
+    assert.deepEqual(await labels('#dt-left'), ['Rock', 'Ballad', 'Riff', 'Swing', 'Jazz']);
+    // Rock into Riff (under it): nothing moves
+    await drag(item('#dt-left', 0), await at(item('#dt-left', 2)));
+    assert.deepEqual(await rows('#dt-left'), ['rock<', 'r2<rock', 'r1<rock', 'jazz<', 'j1<rock']);
+    // Rock into Mix: the Playlist takes copies - new ids, linked to each other; the Library keeps Rock
+    await drag(item('#dt-left', 0), await at(item('#dt-right', 0)));
+    assert.deepEqual(await rows('#dt-right'), ['mix<', 'rock-2<mix', 'r2-2<rock-2', 'r1-2<rock-2', 'j1-2<rock-2']);
+    assert.equal((await rows('#dt-left')).length, 5);
+    assert.deepEqual(await page.evaluate(() => (globalThis as any).__drops[0]), ['copy', { id: 'mix', place: 'into' }, ['rock-2', 'r2-2', 'r1-2', 'j1-2']]);
+    assert.deepEqual(await page.evaluate(() => (globalThis as any).__ends.at(-1)), ['copy', 'dt-right']);
+    assert.equal(await page.evaluate(() => (globalThis as any).__texts.at(-1)), 'Rock\n\tBallad\n\tRiff\n\tSwing');
+    assert.deepEqual(await page.$eval('#dt-right', (t: any) => [t.store.value.config.selected, t.store.value.config.expanded]), ['rock-2', ['mix']]);
+    // Mix back to the Library's end: a move - the Playlist is left empty
+    const end = await page.$eval('#dt-left', (t) => { const r = t.getBoundingClientRect(); return { x: r.left + 80, y: r.bottom - 8 }; });
+    await page.$eval('#dt-left', (t: any) => (globalThis as any).df$.shadcn.dataTree.collapseAll(t));
+    await drag(item('#dt-right', 0), end);
+    assert.deepEqual(await rows('#dt-right'), []);
+    assert.equal(await state('#dt-right'), 'empty');
+    assert.deepEqual((await rows('#dt-left')).slice(5), ['mix<', 'rock-2<mix', 'r2-2<rock-2', 'r1-2<rock-2', 'j1-2<rock-2']);
+    assert.equal(await page.$$eval('.data-tree-drop', (m) => m.length), 0, 'no drop mark left');
+  });
+
+  await check('insert() / remove(): what a drop writes, from script', async () => {
+    const out = await page.$eval('#dt-left', (t: any) => {
+      const api = (globalThis as any).df$.shadcn.dataTree;
+      const gone = api.remove(t, ['mix']).length;
+      const added = api.insert(t, [{ id: 'rock', name: 'Rock again' }], { id: 'jazz', place: 'into' });
+      return { gone, added: added.map((r: any) => [r.id, r.parentId]), refused: api.insert(t, [{ id: 'x' }], { id: 'nope', place: 'after' }) };
+    });
+    assert.deepEqual(out, { gone: 5, added: [['rock-2', 'jazz']], refused: null });
+  });
+
   await check('render(): reproduces the authored markup 1:1 and every state', async () => {
     await ready();
     await assertRenderContract(page, '.data-tree[id]', ['default', 'loading', 'empty'], {

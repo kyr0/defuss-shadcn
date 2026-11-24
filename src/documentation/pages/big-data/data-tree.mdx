@@ -40,7 +40,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText><code>data-label-field</code>, <code>data-id-field</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>; <code>data-tree-filter="tree-id"</code> on any input; <code>--data-tree-row-height</code>, <code>--data-tree-indent</code>.</SkillText>
+<SkillText><code>data-label-field</code>, <code>data-id-field</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>, <code>data-drag</code> / <code>data-drop</code> (<code>move</code> · <code>copy</code>); <code>data-tree-filter="tree-id"</code> on any input; <code>--data-tree-row-height</code>, <code>--data-tree-indent</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -224,6 +224,71 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
     tree.addEventListener('data-tree-edit', (e) => {
       document.getElementById('dt-rename-log').textContent = e.detail.oldValue + ' is now ' + e.detail.value;
     });
+  });
+</script>
+```
+
+```html example label="Drag and drop between trees" schema="none" hint="data-drag lets items drag out - each with everything under it - and data-drop lets records drop in. Within the Library, drag a song onto another genre: the middle of an item drops into it (it opens), its top or bottom edge before or after it. Drag a genre or a song into the Playlist: the Playlist takes copies only (data-drop='copy'), so the Library keeps it and the copies get ids of their own. From the Playlist back into the Library a drag moves; hold Alt (Option) or Ctrl to copy. A move into its own subtree goes nowhere. The line below follows data-tree-drop."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr))">
+  <div
+    class="data-tree"
+    id="dt-library"
+    aria-label="Library"
+    data-drag
+    data-drop
+    data-persist="none"
+    style="height: 16rem"
+  ></div>
+  <div
+    class="data-tree"
+    id="dt-playlist"
+    aria-label="Playlist"
+    data-drag
+    data-drop="copy"
+    data-persist="none"
+    style="height: 16rem"
+  ></div>
+</div>
+<p class="text-sm" style="margin-block-start: 0.5rem"
+  ><output id="dt-dnd-log">Drag an item into the other tree.</output></p
+>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { dataTree } = df$.shadcn;
+    const genres = {
+      Rock: ['Thunder Road', 'Glass Hearts', 'Neon Rain'],
+      Jazz: ['Blue Hour', 'Late Train', 'Brass Moon'],
+      Folk: ['River Song', 'Old Pines'],
+      Electronic: ['Pulse', 'Afterglow', 'Night Drive'],
+    };
+    const rows = [];
+    for (const [genre, songs] of Object.entries(genres)) {
+      rows.push({ id: genre, parentId: null, name: genre });
+      for (const song of songs) rows.push({ id: genre + '/' + song, parentId: genre, name: song });
+    }
+    const library = document.getElementById('dt-library');
+    const playlist = document.getElementById('dt-playlist');
+    dataTree.setSource(library, rows, { query: { expanded: ['Rock', 'Jazz'] } });
+    dataTree.setSource(
+      playlist,
+      [
+        { id: 'focus', parentId: null, name: 'Focus' },
+        { id: 'focus/Blue Hour', parentId: 'focus', name: 'Blue Hour' },
+        { id: 'road', parentId: null, name: 'Road trip' },
+      ],
+      { query: { expanded: ['focus'] } },
+    );
+    for (const tree of [library, playlist])
+      tree.addEventListener('data-tree-drop', (e) => {
+        const { records, effect, at } = e.detail;
+        const name = records[0].name + (records.length > 1 ? ' (+' + (records.length - 1) + ')' : '');
+        const where = at.place === 'into' ? ' into ' + dataTree.source(tree).rows.find((r) => r.id === at.id).name : '';
+        log(effect === 'copy' ? 'Copied ' : 'Moved ', name, where, tree);
+      });
+    function log(verb, name, where, tree) {
+      document.getElementById('dt-dnd-log').textContent =
+        verb + name + where + ' (' + tree.getAttribute('aria-label') + ').';
+    }
   });
 </script>
 ```
