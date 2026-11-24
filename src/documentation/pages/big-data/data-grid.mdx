@@ -47,7 +47,7 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
   </SkillField>
 
   <SkillField label="Data attributes">
-<SkillText>Grid: <code>data-paging</code> (<code>virtual</code> · <code>pages</code> · <code>infinite</code>), <code>data-page-size</code>, <code>data-select</code>, <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>. Header: <code>data-field</code>, <code>data-sort</code>, <code>data-sort-field</code>, <code>data-type</code>, <code>data-format</code>, <code>data-width</code>, <code>data-filter</code>, <code>data-options</code>, <code>data-locked</code>, <code>hidden</code>, <code>data-sortable</code> / <code>data-lockable</code> / <code>data-hideable</code> / <code>data-movable</code> / <code>data-resizable</code> <code>="false"</code>.</SkillText>
+<SkillText>Grid: <code>data-paging</code> (<code>virtual</code> · <code>pages</code> · <code>infinite</code>), <code>data-page-size</code>, <code>data-select</code>, <code>data-select-model</code> (<code>row</code> · <code>checkbox</code> · <code>cell</code> · <code>column</code> · <code>row column</code>), <code>data-drag</code> / <code>data-drop</code> (<code>move</code> · <code>copy</code>), <code>data-parent-field</code>, <code>data-persist</code> / <code>data-persist-prefix</code> / <code>data-persist-key</code>, <code>data-empty-text</code>. Header: <code>data-field</code>, <code>data-sort</code>, <code>data-sort-field</code>, <code>data-type</code>, <code>data-format</code>, <code>data-width</code>, <code>data-filter</code>, <code>data-options</code>, <code>data-locked</code>, <code>hidden</code>, <code>data-sortable</code> / <code>data-lockable</code> / <code>data-hideable</code> / <code>data-movable</code> / <code>data-resizable</code> <code>="false"</code>.</SkillText>
   </SkillField>
 </SkillPanel>
 
@@ -432,6 +432,291 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
       document.getElementById('dg-custom-log').textContent =
         e.detail.record.task + ': ' + e.detail.field + ' is now ' + JSON.stringify(e.detail.value);
     });
+  });
+</script>
+```
+
+```html example label="Selection models" schema="none" hint="data-select turns selection on, data-select-model says what it takes - pick one above the grid. Row: a click selects a row, Shift+click the range, Ctrl/Cmd+click toggles, Shift+Arrow Up / Down extends. Cell: a click selects a cell, Shift+click or Shift+arrows the rectangle to it, Ctrl/Cmd+click adds a cell, the arrows select as they move - like Excel. Column: a cell or a header selects its column (a header no longer sorts - its menu does). Row + column: a cell selects its row, a header its column. Checkbox: a checkbox in front of every row toggles it (Shift: the range), the one in the head selects every row or none - a row click still selects just that row. A selected cell under the pointer deepens its tint, never the soft hover. Drag across cells to select what you cross (past an edge the grid scrolls on); on a phone rest a finger on a cell first. Ctrl/Cmd+A selects everything. Ctrl/Cmd+C copies the selection as tab-separated values - paste it into Excel, Google Sheets or Docs. Ctrl/Cmd+V pastes from a spreadsheet into the editable columns (Product, Stock, Price, Category): one selected cell is where the block starts, otherwise only the selected cells change, and a single value fills them all. The line below follows the store, data-grid-copy and data-grid-paste."
+<div class="flex flex-col gap-2">
+  <div class="toggle-group" role="group" aria-label="Selection model" data-type="single" data-size="sm" id="dg-models">
+    <button class="toggle" aria-pressed="false" value="row">Row</button>
+    <button class="toggle" aria-pressed="true" value="cell">Cell</button>
+    <button class="toggle" aria-pressed="false" value="column">Column</button>
+    <button class="toggle" aria-pressed="false" value="row column">Row + column</button>
+    <button class="toggle" aria-pressed="false" value="checkbox">Checkbox</button>
+  </div>
+  <div
+    class="data-grid"
+    id="dg-select"
+    aria-label="Parts"
+    data-select="multiple"
+    data-select-model="cell"
+    style="height: 20rem"
+  >
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="sku" data-width="7rem">SKU</div>
+          <div class="data-grid-header" data-field="name" data-width="minmax(9rem, 1fr)" data-editable data-required
+            >Product</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="stock"
+            data-type="number"
+            data-width="6rem"
+            data-editable
+            data-min="0"
+            data-integer
+            >Stock</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="price"
+            data-type="number"
+            data-format="currency:EUR"
+            data-width="7rem"
+            data-editable
+            data-min="0"
+            >Price</div
+          >
+          <div
+            class="data-grid-header"
+            data-field="category"
+            data-width="8rem"
+            data-editable
+            data-editor="enum"
+            data-options="Tools, Garden, Kitchen, Office"
+            >Category</div
+          >
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <p class="text-sm"><output id="dg-select-log">Select cells, then Ctrl/Cmd+C.</output></p>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const names = ['Bolt', 'Nut', 'Washer', 'Hinge', 'Bracket', 'Spring', 'Clamp', 'Rivet'];
+    const cats = ['Tools', 'Garden', 'Kitchen', 'Office'];
+    const rows = Array.from({ length: 10000 }, (_, i) => ({
+      id: i + 1,
+      sku: 'S-' + String(i + 1).padStart(5, '0'),
+      name: names[i % names.length] + ' ' + (Math.floor(i / names.length) + 1),
+      stock: (i * 37) % 500,
+      price: 0.5 + ((i * 53) % 2000) / 100,
+      category: cats[i % cats.length],
+    }));
+    const grid = document.getElementById('dg-select');
+    const log = document.getElementById('dg-select-log');
+    const { dataGrid } = df$.shadcn;
+    dataGrid.setSource(grid, rows);
+    // the selection is config: the store says what is selected
+    grid.store.subscribe(({ config }) => {
+      const n = config.selectedRanges.length || config.selectedColumns.length || config.selected.length;
+      if (!n) return;
+      log.textContent =
+        'selected: ' +
+        JSON.stringify(
+          config.selectedRanges.length
+            ? config.selectedRanges
+            : config.selectedColumns.length
+              ? config.selectedColumns
+              : config.selected.slice(0, 8),
+        );
+    });
+    grid.addEventListener('data-grid-copy', (e) => {
+      log.textContent = 'Copied ' + e.detail.rows + ' × ' + e.detail.columns + ' - paste it into a spreadsheet.';
+    });
+    grid.addEventListener('data-grid-paste', (e) => {
+      const { written, skipped, refused } = e.detail;
+      log.textContent =
+        'Pasted: ' +
+        written +
+        ' written, ' +
+        skipped +
+        ' read-only' +
+        (refused.length ? ', refused: ' + refused[0].text + ' (' + refused[0].message + ')' : '');
+    });
+    const models = document.getElementById('dg-models');
+    models.addEventListener('click', () =>
+      setTimeout(() => {
+        const on = models.querySelector('[aria-pressed="true"]');
+        if (!on || on.value === grid.dataset.selectModel) return;
+        grid.dataset.selectModel = on.value;
+        dataGrid.clearSelection(grid);
+        log.textContent = on.textContent + ' selection.';
+      }),
+    );
+  });
+</script>
+```
+
+```html example label="Checkbox selection" schema="none" hint="data-select-model='checkbox' puts a checkbox in front of every row and one in the head. A row's box toggles that row and keeps the others; Shift+click on a box selects the range from the last one. The head's box selects every row of the query - filter first and it takes only the matches - or, when all of them are ticked, none; it shows a dash while some are. A click elsewhere in a row still selects just that row, Space toggles the focused row, Ctrl/Cmd+A selects all. The line below follows config.selected in the grid's store."
+<div
+  class="data-grid"
+  id="dg-checks"
+  aria-label="People"
+  data-select="multiple"
+  data-select-model="checkbox"
+  data-persist="none"
+  style="height: 20rem"
+>
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="name" data-width="minmax(9rem, 1fr)" data-filter="text">Name</div>
+        <div class="data-grid-header" data-field="team" data-width="8rem" data-filter="select">Team</div>
+        <div class="data-grid-header" data-field="role" data-width="9rem">Role</div>
+        <div class="data-grid-header" data-field="since" data-type="number" data-format="" data-width="5rem">Since</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<p class="text-sm" style="margin-block-start: 0.5rem"><output id="dg-checks-log">Nobody is selected.</output></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = ['Ada', 'Grace', 'Linus', 'Barbara', 'Ken', 'Margaret', 'Dennis', 'Frances', 'Alan', 'Hedy'];
+    const last = [
+      'Lovelace',
+      'Hopper',
+      'Torvalds',
+      'Liskov',
+      'Thompson',
+      'Hamilton',
+      'Ritchie',
+      'Allen',
+      'Kay',
+      'Lamarr',
+    ];
+    const teams = ['Platform', 'Design', 'Data', 'Mobile', 'Support'];
+    const roles = ['Engineer', 'Designer', 'Analyst', 'Lead', 'Writer', 'Manager'];
+    const people = Array.from({ length: 500 }, (_, i) => ({
+      id: i + 1,
+      name: first[i % 10] + ' ' + last[(i * 3 + Math.floor(i / 10)) % 10],
+      team: teams[(i * 7) % 5],
+      role: roles[(i * 3) % 6],
+      since: 2012 + ((i * 7) % 14),
+    }));
+    const grid = document.getElementById('dg-checks');
+    const log = document.getElementById('dg-checks-log');
+    df$.shadcn.dataGrid.setSource(grid, people);
+    grid.store.subscribe(({ config }) => {
+      const picked = df$.shadcn.dataGrid.selected(grid);
+      log.textContent = picked.length
+        ? picked.length +
+          ' selected: ' +
+          picked
+            .slice(0, 3)
+            .map((p) => p.name)
+            .join(', ') +
+          (picked.length > 3 ? ' and ' + (picked.length - 3) + ' more' : '')
+        : 'Nobody is selected.';
+    });
+  });
+</script>
+```
+
+```html example label="Drag and drop between grids" schema="none" hint="data-drag lets rows drag out, data-drop lets records drop in. Drag a row from the Backlog into the Sprint: a line shows where it lands, and it moves. Tick several rows in the Sprint (the checkbox model) or Shift+click a range in the Backlog, then drag one of them - the selected rows go together. Hold Alt (Option) or Ctrl while dragging to copy instead: the copy gets an id of its own. Rows also reorder within a grid, and a drop onto a spreadsheet or a text field pastes them as tab-separated values. Without a mouse: select rows and use the buttons - they call remove() and insert(), what a drop writes. The line below follows data-grid-drop."
+<div class="flex flex-col gap-2">
+  <div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr))">
+    <div
+      class="data-grid"
+      id="dg-backlog"
+      aria-label="Backlog"
+      data-select="multiple"
+      data-drag
+      data-drop
+      data-persist="none"
+      style="height: 18rem"
+    >
+      <div class="data-grid-viewport">
+        <div class="data-grid-head">
+          <div class="data-grid-row">
+            <div class="data-grid-header" data-field="key" data-width="5rem">Key</div>
+            <div class="data-grid-header" data-field="title" data-width="minmax(8rem, 1fr)">Backlog</div>
+            <div class="data-grid-header" data-field="points" data-type="number" data-format="" data-width="4.5rem"
+              >Pts</div
+            >
+          </div>
+        </div>
+        <div class="data-grid-body"></div>
+      </div>
+    </div>
+    <div
+      class="data-grid"
+      id="dg-sprint"
+      aria-label="Sprint"
+      data-select="multiple"
+      data-select-model="checkbox"
+      data-drag
+      data-drop
+      data-persist="none"
+      style="height: 18rem"
+    >
+      <div class="data-grid-viewport">
+        <div class="data-grid-head">
+          <div class="data-grid-row">
+            <div class="data-grid-header" data-field="key" data-width="5rem">Key</div>
+            <div class="data-grid-header" data-field="title" data-width="minmax(8rem, 1fr)">Sprint</div>
+            <div class="data-grid-header" data-field="points" data-type="number" data-format="" data-width="4.5rem"
+              >Pts</div
+            >
+          </div>
+        </div>
+        <div class="data-grid-body"></div>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <button class="btn" data-variant="outline" data-size="sm" id="dg-to-sprint">Move to Sprint</button>
+    <button class="btn" data-variant="outline" data-size="sm" id="dg-to-backlog">Move to Backlog</button>
+    <p class="text-sm"><output id="dg-dnd-log">Drag a row from one grid into the other.</output></p>
+  </div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const { dataGrid } = df$.shadcn;
+    const verbs = ['Fix', 'Add', 'Polish', 'Test', 'Document', 'Speed up'];
+    const things = ['login', 'search', 'export', 'billing', 'onboarding', 'settings', 'reports', 'sync'];
+    const tasks = Array.from({ length: 40 }, (_, i) => ({
+      id: i + 1,
+      key: 'T-' + (101 + i),
+      title: verbs[i % verbs.length] + ' ' + things[(i * 5) % things.length],
+      points: [1, 2, 3, 5, 8][(i * 3) % 5],
+    }));
+    const backlog = document.getElementById('dg-backlog');
+    const sprint = document.getElementById('dg-sprint');
+    const log = document.getElementById('dg-dnd-log');
+    const name = new Map([
+      [backlog, 'Backlog'],
+      [sprint, 'Sprint'],
+    ]);
+    dataGrid.setSource(backlog, tasks.slice(3));
+    dataGrid.setSource(sprint, tasks.slice(0, 3));
+    for (const grid of [backlog, sprint])
+      grid.addEventListener('data-grid-drop', (e) => {
+        const { records, effect, source } = e.detail;
+        const what = records.length === 1 ? records[0].key : records.length + ' rows';
+        log.textContent =
+          (effect === 'copy' ? 'Copied ' : 'Moved ') +
+          what +
+          (source === grid ? ' within ' : ' to ') +
+          name.get(grid) +
+          '.';
+      });
+    // the keyboard's way: what a drag does, from a button
+    const move = (from, to) => {
+      const ids = dataGrid.selected(from).map((r) => r.id);
+      if (!ids.length) return (log.textContent = 'Select rows in ' + name.get(from) + ' first.');
+      const moved = dataGrid.insert(to, dataGrid.remove(from, ids));
+      dataGrid.query(to, { selected: moved.map((r) => r.id) });
+      log.textContent = 'Moved ' + moved.length + ' to ' + name.get(to) + '.';
+    };
+    document.getElementById('dg-to-sprint').addEventListener('click', () => move(backlog, sprint));
+    document.getElementById('dg-to-backlog').addEventListener('click', () => move(sprint, backlog));
   });
 </script>
 ```

@@ -861,7 +861,7 @@ try {
     });
     assert.ok(members, 'c2 is in the view');
     assert.equal(d, below, 'one row per entity below c2');
-    assert.equal(await page.getAttribute(grid, 'aria-rowcount'), String(below + 2));
+    assert.equal(await page.getAttribute(`${grid} > .data-grid-viewport`, 'aria-rowcount'), String(below + 2));
     assert.match((await page.textContent('#ge-layout .graph-explorer-records-count')) ?? '', new RegExp(`^${below.toLocaleString('en-US')} of ${below.toLocaleString('en-US')} entities`));
     // a filter: the count and every share follow it
     await page.selectOption(grid + ' .data-grid-filter[data-field="type"]', 'Dataset');

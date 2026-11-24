@@ -93,6 +93,117 @@ import { DocPage, PageHeader, SkillPanel, SourceFiles, SourceNote, StatesSection
 </script>
 ```
 
+```html example label="Checkbox selection" schema="none" hint="With data-select-model='checkbox' a tree grid gets a checkbox in front of every row - before the indentation, so the boxes line up at every depth - and one in the head. A box selects its own row only: a phase's box leaves its tasks as they are. Shift+click on a box selects the range of shown rows from the last one; the head's box selects every row the open branches show, or none. Open and close branches with the chevrons - the ticks stay. The line below follows config.selected."
+<div
+  class="data-grid"
+  id="tg-checks"
+  aria-label="Project plan"
+  data-parent-field="parentId"
+  data-select="multiple"
+  data-select-model="checkbox"
+  data-persist="none"
+  style="height: 20rem"
+>
+  <div class="data-grid-viewport">
+    <div class="data-grid-head">
+      <div class="data-grid-row">
+        <div class="data-grid-header" data-field="name" data-width="minmax(11rem, 1fr)">Task</div>
+        <div class="data-grid-header" data-field="owner" data-width="7rem">Owner</div>
+        <div class="data-grid-header" data-field="days" data-type="number" data-format="" data-width="5rem">Days</div>
+      </div>
+    </div>
+    <div class="data-grid-body"></div>
+  </div>
+</div>
+<p class="text-sm" style="margin-block-start: 0.5rem"><output id="tg-checks-log">Nothing is selected.</output></p>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const plan = {
+      Discovery: ['Interviews', 'Survey', 'Competitor review'],
+      Design: ['Wireframes', 'Visual design', 'Prototype', 'Usability test'],
+      Build: ['API', 'Web app', 'Mobile app', 'Payments', 'Search'],
+      Launch: ['Beta', 'Docs', 'Announcement'],
+    };
+    const owners = ['Ada', 'Ken', 'Grace', 'Linus', 'Hedy'];
+    const rows = [];
+    let id = 0;
+    for (const [phase, tasks] of Object.entries(plan)) {
+      const top = ++id;
+      rows.push({ id: top, parentId: null, name: phase, owner: owners[top % 5], days: null });
+      for (const task of tasks)
+        rows.push({ id: ++id, parentId: top, name: task, owner: owners[id % 5], days: 2 + ((id * 5) % 9) });
+    }
+    const grid = document.getElementById('tg-checks');
+    const log = document.getElementById('tg-checks-log');
+    df$.shadcn.dataGrid.setSource(grid, rows, { query: { expanded: [1, 5] } });
+    grid.store.subscribe(({ config }) => {
+      const picked = df$.shadcn.dataGrid.selected(grid);
+      log.textContent = picked.length
+        ? picked.length + ' selected: ' + picked.map((r) => r.name).join(', ')
+        : 'Nothing is selected.';
+    });
+  });
+</script>
+```
+
+```html example label="Checkboxes and drag into a branch" schema="none" hint="data-select-model='checkbox' puts a checkbox in front of every row - before the indentation - and one in the head for every row of the query (mixed while some are ticked). Tick a few files, then drag one of them: the ticked rows go together. With data-drag and data-drop rows move between branches: the middle of a row drops into it (it opens), its top or bottom edge before or after it; a folder brings everything under it, and never goes into its own subtree. Drag a row out to the Data Tree beside it - the Archive takes it with its subtree. Alt (Option) or Ctrl copies."
+<div class="grid gap-3" style="grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr))">
+  <div
+    class="data-grid"
+    id="tg-files"
+    aria-label="Files"
+    data-parent-field="parentId"
+    data-select="multiple"
+    data-select-model="checkbox"
+    data-drag
+    data-drop
+    data-persist="none"
+    style="height: 20rem"
+  >
+    <div class="data-grid-viewport">
+      <div class="data-grid-head">
+        <div class="data-grid-row">
+          <div class="data-grid-header" data-field="name" data-width="minmax(10rem, 1fr)">Name</div>
+          <div class="data-grid-header" data-field="size" data-type="number" data-width="5.5rem">KB</div>
+        </div>
+      </div>
+      <div class="data-grid-body"></div>
+    </div>
+  </div>
+  <div
+    class="data-tree"
+    id="tg-archive"
+    aria-label="Archive"
+    data-drag
+    data-drop
+    data-persist="none"
+    style="height: 20rem"
+  ></div>
+</div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const rows = [];
+    let id = 0;
+    for (const folder of ['Design', 'Research', 'Release']) {
+      const top = ++id;
+      rows.push({ id: top, parentId: null, name: folder, size: null });
+      for (let n = 1; n <= 4; n++)
+        rows.push({
+          id: ++id,
+          parentId: top,
+          name: folder.toLowerCase() + '-' + n + '.md',
+          size: ((id * 37) % 90) + 4,
+        });
+    }
+    df$.shadcn.dataGrid.setSource(document.getElementById('tg-files'), rows, { query: { expanded: [1, 6] } });
+    df$.shadcn.dataTree.setSource(document.getElementById('tg-archive'), [
+      { id: 'a2025', parentId: null, name: '2025' },
+      { id: 'a2026', parentId: null, name: '2026' },
+    ]);
+  });
+</script>
+```
+
 ```html example label="Paged tree" schema="none" hint="data-paging='pages' pages the VISIBLE rows: open a branch and the pages after it shift; a filter opens the paths to its matches and pages through them."
 <div
   class="data-grid"

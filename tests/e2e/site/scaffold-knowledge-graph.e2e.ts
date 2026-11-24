@@ -383,7 +383,7 @@ try {
     const grid = '#kg-details .kg-records .data-grid';
     await page.waitForFunction(() => document.querySelectorAll('#kg-details .kg-records .chart[data-init] svg').length === 3, null, { timeout: 30_000 });
     await page.waitForSelector(grid + ' .data-grid-row[data-index]');
-    assert.equal(await page.getAttribute(grid, 'aria-rowcount'), String(records + 2));
+    assert.equal(await page.getAttribute(`${grid} > .data-grid-viewport`, 'aria-rowcount'), String(records + 2));
     assert.match((await page.textContent('#kg-details .kg-records-count')) ?? '', new RegExp(`^${records.toLocaleString('en-US')} of ${records.toLocaleString('en-US')} records`));
     // a grid filter: the count and the charts follow
     await page.selectOption(grid + ' .data-grid-filter[data-field="status"]', 'failed');

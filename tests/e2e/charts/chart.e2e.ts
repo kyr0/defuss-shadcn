@@ -404,7 +404,7 @@ try {
     await page.waitForFunction(() => (globalThis as any).__follow.rows().reduce((n: number, x: any) => n + x.count, 0) < 100000);
     const ap = await page.evaluate(() => (globalThis as any).__rows.filter((x: any) => x.region === 'AP').length);
     assert.equal(await total(), ap);
-    assert.equal(await page.getAttribute('#bound-grid', 'aria-rowcount'), String(ap + 2), 'the grid shows the same rows');
+    assert.equal(await page.getAttribute('#bound-grid > .data-grid-viewport', 'aria-rowcount'), String(ap + 2), 'the grid shows the same rows');
     // and back
     await page.evaluate(() => (globalThis as any).df$.shadcn.dataGrid.query(document.getElementById('bound-grid'), { filters: [] }));
     await page.waitForFunction(() => (globalThis as any).__follow.rows().reduce((n: number, x: any) => n + x.count, 0) === 100000);
