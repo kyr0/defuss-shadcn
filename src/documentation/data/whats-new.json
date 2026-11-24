@@ -2,13 +2,14 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.10.1",
       "created": [],
       "updated": [
         "data-grid",
         "data-tree",
         "graph-explorer",
         "index",
+        "installation",
         "scaffold-calendar",
         "system-in-numbers",
         "tree-grid"

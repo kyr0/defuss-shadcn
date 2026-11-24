@@ -11,7 +11,8 @@
         "feat(data-grid): selection models, the checkbox model, copy and paste, drag and drop",
         "feat(shared): record-drag - dragging records between the Data Grid, Tree Grid and Data Tree",
         "feat(graph-explorer): load() takes node labels and refs packed as UTF-8"
-      ]
+      ],
+      "hash": "05b980263"
     },
     {
       "version": "v0.10.0",

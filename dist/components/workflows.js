@@ -1,7 +1,7 @@
 // dist/components/workflow/workflow.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.10.0") {
+if (!__df$shared || __df$shared.abi !== "0.10.1") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent, unbindComponent } = __df$shared;
@@ -5465,5 +5465,5 @@ new MutationObserver((records) => {
     init();
 }).observe(document, { childList: true, subtree: true });
 
-//# debugId=91338FCE5611AC3B64756E2164756E21
+//# debugId=0B133C969EDF49B864756E2164756E21
 //# sourceMappingURL=workflows.js.map

@@ -1,7 +1,7 @@
 // dist/components/mermaid/mermaid.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.10.0") {
+if (!__df$shared || __df$shared.abi !== "0.10.1") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, componentState, bindComponent } = __df$shared;
@@ -296,5 +296,5 @@ function init() {
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=495493C638C0D52164756E2164756E21
+//# debugId=2055718D960DFCE664756E2164756E21
 //# sourceMappingURL=mermaid.js.map
