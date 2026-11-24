@@ -843,13 +843,13 @@ Grouped like the documentation sidebar. **Type:** ATM atom · MOL molecule (comp
 #### Data Tree · ATM · JS
 
 - **Why:** A windowed ARIA tree - only the items on screen exist and focus stays on the tree (aria-activedescendant) - over records that name their parent; hierarchy, filtering and sorting run locally over every node through defuss-dataview.
-- **When:** Hierarchies too big for nested markup - catalogs, file systems, org charts, taxonomies - that people filter and walk with the keyboard. Tree View for a small tree written as markup; Tree Grid when each node has columns.
+- **When:** Hierarchies too big for nested markup - catalogs, file systems, org charts, taxonomies - that people filter, walk with the keyboard and rearrange by dragging (also to and from Data Grids). Tree View for a small tree written as markup; Tree Grid when each node has columns.
 - **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-tree.md](references/components/data-tree.md) · **Examples:** [src/documentation/pages/big-data/data-tree.mdx](../../src/documentation/pages/big-data/data-tree.mdx)
 
 #### Data Grid · ATM · JS
 
 - **Why:** One scroll container with a sticky head and a windowed body - only the rows on screen exist, sticky columns need no JS - while every query (multisort, column filters, pages) runs locally over all rows through defuss-dataview.
-- **When:** Tables of thousands to millions of records that people sort, filter, arrange (move, lock, hide, resize columns), page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
+- **When:** Tables of thousands to millions of records that people sort, filter, arrange (move, lock, hide, resize columns), select by row (with checkboxes), cell range or column, copy to and paste from a spreadsheet, drag rows between grids and trees, page through or load as they scroll; with parents (data-parent-field) a tree grid. A plain table when every row can exist at once; a virtual list for one column.
 - **States:** `default`, `loading`, `empty` · **Skill:** [references/components/data-grid.md](references/components/data-grid.md) · **Examples:** [src/documentation/pages/big-data/data-grid.mdx](../../src/documentation/pages/big-data/data-grid.mdx)
 
 #### Autocomplete · MOL · JS

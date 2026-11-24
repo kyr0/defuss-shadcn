@@ -2458,6 +2458,164 @@ function editorKey(e, editor) {
     return e.shiftKey ? "prev" : "next";
   return null;
 }
+// src/shared/record-drag.ts
+var RECORDS_MIME = "application/x-defuss-records+json";
+var current = null;
+function dropEffects(value) {
+  const words = (value ?? "").split(/\s+/).filter((w) => w === "move" || w === "copy");
+  return words.length ? [...new Set(words)] : ["move", "copy"];
+}
+function subtreeOf(rows, roots, fields) {
+  const take = new Set(roots);
+  if (fields.parentIdField) {
+    const children = new Map;
+    for (const r of rows) {
+      const p = r[fields.parentIdField] ?? null;
+      if (!children.has(p))
+        children.set(p, []);
+      children.get(p).push(r);
+    }
+    const queue = [...roots];
+    while (queue.length) {
+      const id = queue.shift();
+      for (const child of children.get(id) ?? []) {
+        const cid = child[fields.idField];
+        if (take.has(cid))
+          continue;
+        take.add(cid);
+        queue.push(cid);
+      }
+    }
+  }
+  return rows.filter((r) => take.has(r[fields.idField]));
+}
+function topRoots(records, roots, fields) {
+  if (!fields.parentIdField)
+    return [...roots];
+  const byId = new Map(records.map((r) => [r[fields.idField], r]));
+  const set = new Set(roots);
+  return roots.filter((id) => {
+    let parent = byId.get(id)?.[fields.parentIdField];
+    const seen = new Set;
+    while (parent != null && !seen.has(parent)) {
+      if (set.has(parent))
+        return false;
+      seen.add(parent);
+      parent = byId.get(parent)?.[fields.parentIdField];
+    }
+    return true;
+  });
+}
+function startRecordDrag(e, drag, text, label) {
+  current = drag;
+  const dt = e.dataTransfer;
+  if (!dt)
+    return;
+  const payload = {
+    version: 1,
+    records: drag.records,
+    roots: drag.roots,
+    idField: drag.idField,
+    parentIdField: drag.parentIdField
+  };
+  try {
+    dt.setData(RECORDS_MIME, JSON.stringify(payload));
+  } catch {}
+  dt.setData("text/plain", text.plain);
+  dt.setData("text/html", text.html);
+  dt.effectAllowed = drag.effects.length === 2 ? "copyMove" : drag.effects[0];
+  const image = document.createElement("div");
+  image.className = "record-drag-image";
+  image.textContent = label;
+  image.style.cssText = "position:absolute;top:-1000px;left:0;padding:0.25rem 0.625rem;border:1px solid var(--border);" + "border-radius:var(--radius-md);background:var(--popover);color:var(--popover-foreground);" + "font:500 0.8125rem/1.4 var(--font-sans);white-space:nowrap;box-shadow:var(--shadow-md)";
+  document.body.append(image);
+  dt.setDragImage(image, -12, -12);
+  setTimeout(() => image.remove());
+}
+var recordDrag = () => current?.source.isConnected ? current : null;
+var carriesRecords = (e) => !!recordDrag() || !!e.dataTransfer?.types.includes(RECORDS_MIME);
+function endRecordDrag(drag) {
+  if (!drag || drag === current)
+    current = null;
+}
+function dropEffectFor(e, target, drag) {
+  const allowed = (drag ? drag.effects : ["copy"]).filter((x) => target.includes(x));
+  if (!allowed.length)
+    return null;
+  if (allowed.length === 1)
+    return allowed[0];
+  return e.altKey || e.ctrlKey ? "copy" : "move";
+}
+function droppedRecords(e) {
+  const drag = recordDrag();
+  if (drag)
+    return {
+      version: 1,
+      records: drag.records,
+      roots: drag.roots,
+      idField: drag.idField,
+      parentIdField: drag.parentIdField
+    };
+  try {
+    const data = JSON.parse(e.dataTransfer?.getData(RECORDS_MIME) || "null");
+    if (data?.version === 1 && Array.isArray(data.records) && Array.isArray(data.roots) && data.idField)
+      return data;
+  } catch {}
+  return null;
+}
+function placeRecords(spec) {
+  const { idField, parentIdField, from, at } = spec;
+  const fromParent = from.parentIdField;
+  const roots = topRoots(from.records, from.roots, from);
+  const moving = new Set(from.records.map((r) => r[from.idField]));
+  if (spec.within && at.id !== null && moving.has(at.id))
+    return null;
+  const base = spec.within ? spec.rows.filter((r) => !moving.has(r[idField])) : spec.rows.slice();
+  const target = at.id === null ? null : base.find((r) => r[idField] === at.id);
+  if (at.id !== null && !target)
+    return null;
+  const taken = new Set(base.map((r) => r[idField]));
+  let next = Math.max(0, ...[...taken].filter((x) => typeof x === "number" && Number.isFinite(x))) + 1;
+  const ids = new Map;
+  for (const r of from.records) {
+    const old = r[from.idField];
+    let id = old;
+    if (spec.copy || taken.has(id)) {
+      if (typeof old === "number")
+        id = next++;
+      else
+        for (let n = 2;taken.has(id = `${old}-${n}`); n++)
+          ;
+    }
+    taken.add(id);
+    ids.set(old, id);
+  }
+  const parent = !parentIdField ? null : at.place === "into" ? at.id : at.place === "end" ? null : target?.[parentIdField] ?? null;
+  const rootSet = new Set(roots);
+  const inserted = from.records.map((r) => {
+    const old = r[from.idField];
+    const record = { ...r };
+    delete record[from.idField];
+    record[idField] = ids.get(old);
+    if (parentIdField) {
+      const was = fromParent ? r[fromParent] : null;
+      if (fromParent && fromParent !== parentIdField)
+        delete record[fromParent];
+      record[parentIdField] = rootSet.has(old) || !ids.has(was) ? parent : ids.get(was);
+    }
+    return record;
+  });
+  const index = at.place === "end" || at.place === "into" || !target ? base.length : base.indexOf(target) + (at.place === "after" ? 1 : 0);
+  return {
+    rows: [...base.slice(0, index), ...inserted, ...base.slice(index)],
+    inserted,
+    roots: roots.map((id) => ids.get(id))
+  };
+}
+function withoutRecords(rows, records, idField) {
+  const gone = new Set(records.map((r) => r[idField]));
+  return rows.filter((r) => !gone.has(r[idField]));
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5366,6 +5524,17 @@ shadcn.shared = {
   editorProblem,
   focusEditor,
   valueType,
+  carriesRecords,
+  dropEffectFor,
+  dropEffects,
+  droppedRecords,
+  endRecordDrag,
+  placeRecords,
+  recordDrag,
+  startRecordDrag,
+  subtreeOf,
+  topRoots,
+  withoutRecords,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -6618,6 +6787,7 @@ function renderItems(tree) {
   const { size, pos } = siblingInfo(tree);
   const selected = configOf(tree).selected ?? null;
   const idField = tree._source.idField;
+  const draggable = tree.hasAttribute("data-drag");
   let active = null;
   let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
@@ -6659,6 +6829,9 @@ function renderItems(tree) {
       }
     }
     item.setAttribute("aria-selected", String(selected !== null && entry.row[idField] === selected));
+    const drags = draggable && !(ed && ed.id === entry.row[idField]);
+    if (item.draggable !== drags)
+      item.draggable = drags;
     item.toggleAttribute("data-active", index === tree._active);
     if (index === tree._active)
       active = item;
@@ -6930,12 +7103,12 @@ var query = (tree, patch) => dataTreeApi.setState(tree, tree.store.value.name ==
 var entryAt = (tree, index) => tree._result?.entries[index];
 function ancestorsOf(tree, id) {
   const src = tree._source;
-  if (tree._parents?.source !== src) {
+  if (tree._parents?.rows !== src.rows) {
     const field = tree._parentField || "parentId";
     const map = new Map;
     for (const row of src.rows)
       map.set(row[src.idField], row[field] ?? null);
-    tree._parents = { source: src, map };
+    tree._parents = { rows: src.rows, map };
   }
   const map = tree._parents.map;
   const out = [];
@@ -7060,6 +7233,197 @@ function onClick(tree, e) {
   }
   select(tree, item._index);
 }
+var fieldsOf = (tree) => ({
+  idField: tree._source.idField,
+  parentIdField: tree._source.tree?.parentIdField ?? tree._parentField ?? "parentId"
+});
+function outline(tree, records, root) {
+  const { idField, parentIdField } = fieldsOf(tree);
+  const children = new Map;
+  for (const r of records) {
+    const p = r[parentIdField] ?? null;
+    if (!children.has(p))
+      children.set(p, []);
+    children.get(p).push(r);
+  }
+  const lines = [];
+  const items = [];
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const walk = (r, depth) => {
+    const label = String(r[labelField(tree)] ?? "");
+    lines.push("\t".repeat(depth) + label);
+    const kids = children.get(r[idField]) ?? [];
+    items.push(`<li>${esc(label)}`);
+    if (kids.length) {
+      items.push("<ul>");
+      for (const k of kids)
+        walk(k, depth + 1);
+      items.push("</ul>");
+    }
+    items.push("</li>");
+  };
+  const top = records.find((r) => r[idField] === root);
+  if (top)
+    walk(top, 0);
+  return { plain: lines.join(`
+`), html: `<ul>${items.join("")}</ul>` };
+}
+function onTreeDragStart(tree, e) {
+  const item = e.target;
+  if (!tree.hasAttribute("data-drag") || !tree._source || !item.classList?.contains("data-tree-item"))
+    return;
+  if (!tree._pool.contains(item))
+    return;
+  const entry = entryAt(tree, item._index);
+  if (!entry)
+    return e.preventDefault();
+  const fields = fieldsOf(tree);
+  const root = entry.row[fields.idField];
+  const records = subtreeOf(tree._source.rows, [root], fields);
+  const drag = {
+    source: tree,
+    records,
+    roots: [root],
+    ...fields,
+    effects: dropEffects(tree.dataset.drag),
+    remove: () => writeTreeRows(tree, withoutRecords(tree._source.rows, records, fields.idField)),
+    done: (effect, target) => tree.dispatchEvent(new CustomEvent("data-tree-dragend", {
+      bubbles: true,
+      detail: { records, effect, target }
+    }))
+  };
+  const label = String(entry.row[labelField(tree)] ?? "");
+  startRecordDrag(e, drag, outline(tree, records, root), records.length > 1 ? `${label} (+${records.length - 1})` : label);
+  tree.setAttribute("data-dragging-items", "");
+}
+function onTreeDragEnd(tree) {
+  tree.removeAttribute("data-dragging-items");
+  const drag = recordDrag();
+  if (drag?.source === tree)
+    endRecordDrag(drag);
+}
+function treeDropAt(tree, e) {
+  const h = tree._rowHeight;
+  const y = e.clientY - tree._sizer.getBoundingClientRect().top;
+  const index = Math.max(0, Math.floor(y / h));
+  const entry = entryAt(tree, index);
+  if (!entry)
+    return { at: { id: null, place: "end" }, index: tree._result?.entries.length ?? 0 };
+  const f = y / h - index;
+  const place = f < 0.25 ? "before" : f > 0.75 ? "after" : "into";
+  return { at: { id: entry.row[tree._source.idField], place }, index };
+}
+function showTreeDrop(tree, at, index = 0) {
+  let mark = tree._dropMark;
+  if (!at) {
+    mark?.remove();
+    tree._dropMark = null;
+    return;
+  }
+  if (!mark) {
+    mark = tree._dropMark = document.createElement("div");
+    mark.className = "data-tree-drop";
+    mark.setAttribute("aria-hidden", "true");
+  }
+  if (mark.parentElement !== tree._sizer)
+    tree._sizer.append(mark);
+  const entries = tree._result?.entries ?? [];
+  const row = at.place === "end" ? entries.length : at.place === "after" ? index + 1 : index;
+  mark.dataset.place = at.place;
+  mark.style.top = `${row * tree._rowHeight}px`;
+  mark.style.setProperty("--depth", String(at.place === "end" ? 0 : entries[index]?.meta.depth ?? 0));
+}
+function onTreeDragOver(tree, e) {
+  if (!tree.hasAttribute("data-drop") || !tree._source || !carriesRecords(e))
+    return;
+  const drag = recordDrag();
+  const effect = dropEffectFor(e, dropEffects(tree.dataset.drop), drag);
+  const { at, index } = treeDropAt(tree, e);
+  const box = tree.getBoundingClientRect();
+  if (e.clientY < box.top + tree._rowHeight)
+    tree.scrollTop -= 12;
+  else if (e.clientY > box.bottom - tree._rowHeight)
+    tree.scrollTop += 12;
+  const within = drag?.source === tree && effect === "move";
+  const idField = tree._source.idField;
+  if (!effect || within && at.id !== null && drag.records.some((r) => r[idField] === at.id)) {
+    if (e.dataTransfer)
+      e.dataTransfer.dropEffect = "none";
+    showTreeDrop(tree, null);
+    return;
+  }
+  e.preventDefault();
+  if (e.dataTransfer)
+    e.dataTransfer.dropEffect = effect;
+  showTreeDrop(tree, at, index);
+}
+function onTreeDrop(tree, e) {
+  showTreeDrop(tree, null);
+  if (!tree.hasAttribute("data-drop") || !tree._source)
+    return;
+  const drag = recordDrag();
+  const payload = droppedRecords(e);
+  const effect = dropEffectFor(e, dropEffects(tree.dataset.drop), drag);
+  if (!payload || !effect)
+    return;
+  e.preventDefault();
+  dropTreeRecords(tree, payload, effect, treeDropAt(tree, e).at, drag);
+}
+function dropTreeRecords(tree, payload, effect, at, drag) {
+  const fields = fieldsOf(tree);
+  const within = !!drag && drag.source === tree && effect === "move";
+  const placed = placeRecords({
+    rows: tree._source.rows,
+    ...fields,
+    from: payload,
+    at,
+    copy: effect === "copy",
+    within
+  });
+  const source = drag?.source ?? null;
+  const detail = { records: placed?.inserted ?? [], effect, source, at };
+  if (!placed || !tree.dispatchEvent(new CustomEvent("data-tree-beforedrop", { bubbles: true, cancelable: true, detail }))) {
+    endRecordDrag(drag);
+    return null;
+  }
+  if (drag && effect === "move" && !within)
+    drag.remove();
+  const first = placed.roots[0];
+  const parentOf = new Map(placed.rows.map((r) => [r[fields.idField], r[fields.parentIdField] ?? null]));
+  const way = [];
+  const seen = new Set;
+  for (let p = parentOf.get(first) ?? null;p !== null && parentOf.has(p) && !seen.has(p); p = parentOf.get(p) ?? null) {
+    seen.add(p);
+    way.unshift(p);
+  }
+  const patch = { selected: first ?? null };
+  if (way.length)
+    patch.expanded = [...new Set([...configOf(tree).expanded || [], ...way])];
+  writeTreeRows(tree, placed.rows, patch);
+  drag?.done(effect, tree);
+  endRecordDrag(drag);
+  const index = tree._result?.entries.findIndex((x) => x.row[fields.idField] === first) ?? -1;
+  if (index >= 0)
+    activate(tree, index);
+  tree.focus({ preventScroll: true });
+  tree.dispatchEvent(new CustomEvent("data-tree-drop", { bubbles: true, detail }));
+  return placed.inserted;
+}
+function writeTreeRows(tree, next, patch = {}) {
+  tree._source.setRows(next);
+  const sel = configOf(tree).selected ?? null;
+  if (!("selected" in patch) && sel !== null && !next.some((r) => r[tree._source.idField] === sel))
+    patch = { ...patch, selected: null };
+  tree._writing = true;
+  try {
+    if (Object.keys(patch).length)
+      query(tree, patch);
+    else
+      triggerStateChange3(tree, tree.store.value, tree.store.value);
+  } finally {
+    tree._writing = false;
+  }
+}
 if (!document.__dataTreeFilterInit) {
   document.__dataTreeFilterInit = true;
   document.addEventListener("input", (e) => {
@@ -7154,6 +7518,34 @@ df$3.dataTree = {
     const tree = resolve2(target);
     const id = configOf(tree).selected ?? null;
     return id === null ? null : tree._source?.rows.find((r) => r[tree._source.idField] === id) ?? null;
+  },
+  insert(target, records, at = { id: null, place: "end" }) {
+    const tree = resolve2(target);
+    if (!tree?._source || !tree.store)
+      return null;
+    const fields = fieldsOf(tree);
+    const placed = placeRecords({
+      rows: tree._source.rows,
+      ...fields,
+      from: { version: 1, records, roots: records.map((r) => r[fields.idField]), ...fields },
+      at,
+      copy: false,
+      within: false
+    });
+    if (!placed)
+      return null;
+    writeTreeRows(tree, placed.rows);
+    return placed.inserted;
+  },
+  remove(target, ids) {
+    const tree = resolve2(target);
+    if (!tree?._source || !tree.store)
+      return [];
+    const fields = fieldsOf(tree);
+    const gone = subtreeOf(tree._source.rows, ids, fields);
+    if (gone.length)
+      writeTreeRows(tree, withoutRecords(tree._source.rows, gone, fields.idField));
+    return gone;
   }
 };
 function init3() {
@@ -7197,6 +7589,19 @@ function init3() {
     new ResizeObserver(() => renderItems(tree)).observe(tree);
     tree.addEventListener("click", (e) => onClick(tree, e));
     tree.addEventListener("keydown", (e) => onKeydown2(tree, e));
+    tree.addEventListener("dragstart", (e) => onTreeDragStart(tree, e));
+    tree.addEventListener("dragend", () => onTreeDragEnd(tree));
+    tree.addEventListener("dragenter", (e) => onTreeDragOver(tree, e));
+    tree.addEventListener("dragover", (e) => onTreeDragOver(tree, e));
+    tree.addEventListener("dragleave", (e) => {
+      if (!tree.contains(e.relatedTarget))
+        showTreeDrop(tree, null);
+    });
+    tree.addEventListener("drop", (e) => onTreeDrop(tree, e));
+    new MutationObserver(() => {
+      tree._gen = (tree._gen || 0) + 1;
+      renderItems(tree);
+    }).observe(tree, { attributes: true, attributeFilter: ["data-drag"] });
     tree.addEventListener("dblclick", (e) => {
       const item = e.target.closest?.(".data-tree-item");
       if (!item || !tree._pool.contains(item) || e.target.closest(".data-tree-toggle"))
@@ -15541,6 +15946,6 @@ new MutationObserver((records) => {
     init15();
 }).observe(document, { childList: true, subtree: true });
 
-//# debugId=D74285F1D7E5881B64756E2164756E21
+//# debugId=400F8FBC040345A464756E2164756E21
 /* defuss-shadcn v0.10.0 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=workflow-studio.js.map

@@ -238,7 +238,7 @@ var __df$shared2 = __df$core2 && __df$core2.shadcn && __df$core2.shadcn.shared;
 if (!__df$shared2 || __df$shared2.abi !== "0.10.0") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, persisted, viewPersistence, dataSource: dataSource2, parseFilter: parseFilter2, filterText, virtualWindow: virtualWindow2, sizerHeight: sizerHeight2, scrollIntoViewTop, asEditor, builtinEditor, editorControl, editorKey, editorProblem, focusEditor, valueType } = __df$shared2;
+var { defussGlobals: defussGlobals2, defussQuery: defussQuery2, componentState: componentState2, bindComponent: bindComponent2, persisted, viewPersistence, dataSource: dataSource2, parseFilter: parseFilter2, filterText, virtualWindow: virtualWindow2, sizerHeight: sizerHeight2, scrollIntoViewTop, asEditor, builtinEditor, editorControl, editorKey, editorProblem, focusEditor, valueType, carriesRecords, dropEffectFor, dropEffects, droppedRecords, endRecordDrag, placeRecords, recordDrag, startRecordDrag, subtreeOf, withoutRecords } = __df$shared2;
 var df$2 = defussGlobals2();
 var dfDollar2 = defussQuery2();
 var dataTreeStates = ["default", "loading", "empty"];
@@ -291,6 +291,7 @@ function renderItems(tree) {
   const { size, pos } = siblingInfo(tree);
   const selected = configOf(tree).selected ?? null;
   const idField = tree._source.idField;
+  const draggable = tree.hasAttribute("data-drag");
   let active = null;
   let edShown = false;
   for (let i = 0;i < pool.children.length; i++) {
@@ -332,6 +333,9 @@ function renderItems(tree) {
       }
     }
     item.setAttribute("aria-selected", String(selected !== null && entry.row[idField] === selected));
+    const drags = draggable && !(ed && ed.id === entry.row[idField]);
+    if (item.draggable !== drags)
+      item.draggable = drags;
     item.toggleAttribute("data-active", index === tree._active);
     if (index === tree._active)
       active = item;
@@ -603,12 +607,12 @@ var query = (tree, patch) => dataTreeApi.setState(tree, tree.store.value.name ==
 var entryAt = (tree, index) => tree._result?.entries[index];
 function ancestorsOf(tree, id) {
   const src = tree._source;
-  if (tree._parents?.source !== src) {
+  if (tree._parents?.rows !== src.rows) {
     const field = tree._parentField || "parentId";
     const map = new Map;
     for (const row of src.rows)
       map.set(row[src.idField], row[field] ?? null);
-    tree._parents = { source: src, map };
+    tree._parents = { rows: src.rows, map };
   }
   const map = tree._parents.map;
   const out = [];
@@ -733,6 +737,197 @@ function onClick(tree, e) {
   }
   select(tree, item._index);
 }
+var fieldsOf = (tree) => ({
+  idField: tree._source.idField,
+  parentIdField: tree._source.tree?.parentIdField ?? tree._parentField ?? "parentId"
+});
+function outline(tree, records, root) {
+  const { idField, parentIdField } = fieldsOf(tree);
+  const children = new Map;
+  for (const r of records) {
+    const p = r[parentIdField] ?? null;
+    if (!children.has(p))
+      children.set(p, []);
+    children.get(p).push(r);
+  }
+  const lines = [];
+  const items = [];
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const walk = (r, depth) => {
+    const label = String(r[labelField(tree)] ?? "");
+    lines.push("\t".repeat(depth) + label);
+    const kids = children.get(r[idField]) ?? [];
+    items.push(`<li>${esc(label)}`);
+    if (kids.length) {
+      items.push("<ul>");
+      for (const k of kids)
+        walk(k, depth + 1);
+      items.push("</ul>");
+    }
+    items.push("</li>");
+  };
+  const top = records.find((r) => r[idField] === root);
+  if (top)
+    walk(top, 0);
+  return { plain: lines.join(`
+`), html: `<ul>${items.join("")}</ul>` };
+}
+function onTreeDragStart(tree, e) {
+  const item = e.target;
+  if (!tree.hasAttribute("data-drag") || !tree._source || !item.classList?.contains("data-tree-item"))
+    return;
+  if (!tree._pool.contains(item))
+    return;
+  const entry = entryAt(tree, item._index);
+  if (!entry)
+    return e.preventDefault();
+  const fields = fieldsOf(tree);
+  const root = entry.row[fields.idField];
+  const records = subtreeOf(tree._source.rows, [root], fields);
+  const drag = {
+    source: tree,
+    records,
+    roots: [root],
+    ...fields,
+    effects: dropEffects(tree.dataset.drag),
+    remove: () => writeTreeRows(tree, withoutRecords(tree._source.rows, records, fields.idField)),
+    done: (effect, target) => tree.dispatchEvent(new CustomEvent("data-tree-dragend", {
+      bubbles: true,
+      detail: { records, effect, target }
+    }))
+  };
+  const label = String(entry.row[labelField(tree)] ?? "");
+  startRecordDrag(e, drag, outline(tree, records, root), records.length > 1 ? `${label} (+${records.length - 1})` : label);
+  tree.setAttribute("data-dragging-items", "");
+}
+function onTreeDragEnd(tree) {
+  tree.removeAttribute("data-dragging-items");
+  const drag = recordDrag();
+  if (drag?.source === tree)
+    endRecordDrag(drag);
+}
+function treeDropAt(tree, e) {
+  const h = tree._rowHeight;
+  const y = e.clientY - tree._sizer.getBoundingClientRect().top;
+  const index = Math.max(0, Math.floor(y / h));
+  const entry = entryAt(tree, index);
+  if (!entry)
+    return { at: { id: null, place: "end" }, index: tree._result?.entries.length ?? 0 };
+  const f = y / h - index;
+  const place = f < 0.25 ? "before" : f > 0.75 ? "after" : "into";
+  return { at: { id: entry.row[tree._source.idField], place }, index };
+}
+function showTreeDrop(tree, at, index = 0) {
+  let mark = tree._dropMark;
+  if (!at) {
+    mark?.remove();
+    tree._dropMark = null;
+    return;
+  }
+  if (!mark) {
+    mark = tree._dropMark = document.createElement("div");
+    mark.className = "data-tree-drop";
+    mark.setAttribute("aria-hidden", "true");
+  }
+  if (mark.parentElement !== tree._sizer)
+    tree._sizer.append(mark);
+  const entries = tree._result?.entries ?? [];
+  const row = at.place === "end" ? entries.length : at.place === "after" ? index + 1 : index;
+  mark.dataset.place = at.place;
+  mark.style.top = `${row * tree._rowHeight}px`;
+  mark.style.setProperty("--depth", String(at.place === "end" ? 0 : entries[index]?.meta.depth ?? 0));
+}
+function onTreeDragOver(tree, e) {
+  if (!tree.hasAttribute("data-drop") || !tree._source || !carriesRecords(e))
+    return;
+  const drag = recordDrag();
+  const effect = dropEffectFor(e, dropEffects(tree.dataset.drop), drag);
+  const { at, index } = treeDropAt(tree, e);
+  const box = tree.getBoundingClientRect();
+  if (e.clientY < box.top + tree._rowHeight)
+    tree.scrollTop -= 12;
+  else if (e.clientY > box.bottom - tree._rowHeight)
+    tree.scrollTop += 12;
+  const within = drag?.source === tree && effect === "move";
+  const idField = tree._source.idField;
+  if (!effect || within && at.id !== null && drag.records.some((r) => r[idField] === at.id)) {
+    if (e.dataTransfer)
+      e.dataTransfer.dropEffect = "none";
+    showTreeDrop(tree, null);
+    return;
+  }
+  e.preventDefault();
+  if (e.dataTransfer)
+    e.dataTransfer.dropEffect = effect;
+  showTreeDrop(tree, at, index);
+}
+function onTreeDrop(tree, e) {
+  showTreeDrop(tree, null);
+  if (!tree.hasAttribute("data-drop") || !tree._source)
+    return;
+  const drag = recordDrag();
+  const payload = droppedRecords(e);
+  const effect = dropEffectFor(e, dropEffects(tree.dataset.drop), drag);
+  if (!payload || !effect)
+    return;
+  e.preventDefault();
+  dropTreeRecords(tree, payload, effect, treeDropAt(tree, e).at, drag);
+}
+function dropTreeRecords(tree, payload, effect, at, drag) {
+  const fields = fieldsOf(tree);
+  const within = !!drag && drag.source === tree && effect === "move";
+  const placed = placeRecords({
+    rows: tree._source.rows,
+    ...fields,
+    from: payload,
+    at,
+    copy: effect === "copy",
+    within
+  });
+  const source = drag?.source ?? null;
+  const detail = { records: placed?.inserted ?? [], effect, source, at };
+  if (!placed || !tree.dispatchEvent(new CustomEvent("data-tree-beforedrop", { bubbles: true, cancelable: true, detail }))) {
+    endRecordDrag(drag);
+    return null;
+  }
+  if (drag && effect === "move" && !within)
+    drag.remove();
+  const first = placed.roots[0];
+  const parentOf = new Map(placed.rows.map((r) => [r[fields.idField], r[fields.parentIdField] ?? null]));
+  const way = [];
+  const seen = new Set;
+  for (let p = parentOf.get(first) ?? null;p !== null && parentOf.has(p) && !seen.has(p); p = parentOf.get(p) ?? null) {
+    seen.add(p);
+    way.unshift(p);
+  }
+  const patch = { selected: first ?? null };
+  if (way.length)
+    patch.expanded = [...new Set([...configOf(tree).expanded || [], ...way])];
+  writeTreeRows(tree, placed.rows, patch);
+  drag?.done(effect, tree);
+  endRecordDrag(drag);
+  const index = tree._result?.entries.findIndex((x) => x.row[fields.idField] === first) ?? -1;
+  if (index >= 0)
+    activate(tree, index);
+  tree.focus({ preventScroll: true });
+  tree.dispatchEvent(new CustomEvent("data-tree-drop", { bubbles: true, detail }));
+  return placed.inserted;
+}
+function writeTreeRows(tree, next, patch = {}) {
+  tree._source.setRows(next);
+  const sel = configOf(tree).selected ?? null;
+  if (!("selected" in patch) && sel !== null && !next.some((r) => r[tree._source.idField] === sel))
+    patch = { ...patch, selected: null };
+  tree._writing = true;
+  try {
+    if (Object.keys(patch).length)
+      query(tree, patch);
+    else
+      triggerStateChange2(tree, tree.store.value, tree.store.value);
+  } finally {
+    tree._writing = false;
+  }
+}
 if (!document.__dataTreeFilterInit) {
   document.__dataTreeFilterInit = true;
   document.addEventListener("input", (e) => {
@@ -827,6 +1022,34 @@ df$2.dataTree = {
     const tree = resolve(target);
     const id = configOf(tree).selected ?? null;
     return id === null ? null : tree._source?.rows.find((r) => r[tree._source.idField] === id) ?? null;
+  },
+  insert(target, records, at = { id: null, place: "end" }) {
+    const tree = resolve(target);
+    if (!tree?._source || !tree.store)
+      return null;
+    const fields = fieldsOf(tree);
+    const placed = placeRecords({
+      rows: tree._source.rows,
+      ...fields,
+      from: { version: 1, records, roots: records.map((r) => r[fields.idField]), ...fields },
+      at,
+      copy: false,
+      within: false
+    });
+    if (!placed)
+      return null;
+    writeTreeRows(tree, placed.rows);
+    return placed.inserted;
+  },
+  remove(target, ids) {
+    const tree = resolve(target);
+    if (!tree?._source || !tree.store)
+      return [];
+    const fields = fieldsOf(tree);
+    const gone = subtreeOf(tree._source.rows, ids, fields);
+    if (gone.length)
+      writeTreeRows(tree, withoutRecords(tree._source.rows, gone, fields.idField));
+    return gone;
   }
 };
 function init2() {
@@ -870,6 +1093,19 @@ function init2() {
     new ResizeObserver(() => renderItems(tree)).observe(tree);
     tree.addEventListener("click", (e) => onClick(tree, e));
     tree.addEventListener("keydown", (e) => onKeydown(tree, e));
+    tree.addEventListener("dragstart", (e) => onTreeDragStart(tree, e));
+    tree.addEventListener("dragend", () => onTreeDragEnd(tree));
+    tree.addEventListener("dragenter", (e) => onTreeDragOver(tree, e));
+    tree.addEventListener("dragover", (e) => onTreeDragOver(tree, e));
+    tree.addEventListener("dragleave", (e) => {
+      if (!tree.contains(e.relatedTarget))
+        showTreeDrop(tree, null);
+    });
+    tree.addEventListener("drop", (e) => onTreeDrop(tree, e));
+    new MutationObserver(() => {
+      tree._gen = (tree._gen || 0) + 1;
+      renderItems(tree);
+    }).observe(tree, { attributes: true, attributeFilter: ["data-drag"] });
     tree.addEventListener("dblclick", (e) => {
       const item = e.target.closest?.(".data-tree-item");
       if (!item || !tree._pool.contains(item) || e.target.closest(".data-tree-toggle"))
@@ -890,7 +1126,7 @@ var __df$shared3 = __df$core3 && __df$core3.shadcn && __df$core3.shadcn.shared;
 if (!__df$shared3 || __df$shared3.abi !== "0.10.0") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
-var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, textLocale, componentState: componentState3, bindComponent: bindComponent3, persisted: persisted2, viewPersistence: viewPersistence2, dataSource: dataSource3, parseFilter: parseFilter3, filterText: filterText2, cycleSort, virtualWindow: virtualWindow3, sizerHeight: sizerHeight3, scrollIntoViewTop: scrollIntoViewTop2, asEditor: asEditor2, builtinEditor: builtinEditor2, editorControl: editorControl2, editorKey: editorKey2, editorProblem: editorProblem2, focusEditor: focusEditor2, valueType: valueType2 } = __df$shared3;
+var { defussGlobals: defussGlobals3, defussQuery: defussQuery3, textLocale, componentState: componentState3, bindComponent: bindComponent3, persisted: persisted2, viewPersistence: viewPersistence2, dataSource: dataSource3, parseFilter: parseFilter3, filterText: filterText2, cycleSort, virtualWindow: virtualWindow3, sizerHeight: sizerHeight3, scrollIntoViewTop: scrollIntoViewTop2, asEditor: asEditor2, builtinEditor: builtinEditor2, editorControl: editorControl2, editorKey: editorKey2, editorProblem: editorProblem2, focusEditor: focusEditor2, valueType: valueType2, carriesRecords: carriesRecords2, dropEffectFor: dropEffectFor2, dropEffects: dropEffects2, droppedRecords: droppedRecords2, endRecordDrag: endRecordDrag2, placeRecords: placeRecords2, recordDrag: recordDrag2, startRecordDrag: startRecordDrag2, subtreeOf: subtreeOf2, withoutRecords: withoutRecords2 } = __df$shared3;
 var df$3 = defussGlobals3();
 var dfDollar3 = defussQuery3();
 var dataGridStates = ["default", "loading", "empty"];
@@ -996,6 +1232,7 @@ function applyMarkup3(root, state) {
   const locked = new Set(config.locked || []);
   const sorters = config.sorters || [];
   const hidden = new Set(config.hidden || []);
+  const picked = selectsColumns(root) ? new Set(config.selectedColumns || []) : null;
   if (headers.every((el) => hidden.has(el.dataset.field)))
     hidden.clear();
   const order = arrange(headers, config, (el) => el.dataset.field);
@@ -1005,9 +1242,109 @@ function applyMarkup3(root, state) {
   for (const el of headers) {
     const at = sorters.findIndex((s) => s.field === (el.dataset.sortField || el.dataset.field));
     const dir = at < 0 ? null : sorters[at].direction || sorters[at].dir || "asc";
-    dfDollar3(el).attr("data-locked", locked.has(el.dataset.field) ? "" : null).attr("hidden", hidden.has(el.dataset.field) ? "" : null).attr("aria-sort", dir ? dir === "asc" ? "ascending" : "descending" : null).attr("data-sort-index", dir && sorters.length > 1 ? String(at + 1) : null);
+    dfDollar3(el).attr("data-locked", locked.has(el.dataset.field) ? "" : null).attr("hidden", hidden.has(el.dataset.field) ? "" : null).attr("aria-sort", dir ? dir === "asc" ? "ascending" : "descending" : null).attr("data-sort-index", dir && sorters.length > 1 ? String(at + 1) : null).attr("aria-selected", picked ? String(picked.has(el.dataset.field)) : null);
   }
-  dfDollar3(root).attr("data-state", state.name).attr("aria-busy", state.name === "loading" ? "true" : null);
+  dfDollar3(root).attr("data-state", state.name);
+  dfDollar3(root).children(".data-grid-viewport").attr("aria-busy", state.name === "loading" ? "true" : null);
+}
+function modelOf(grid) {
+  if (!grid.dataset?.select)
+    return null;
+  const words = (grid.dataset.selectModel || "row").split(/\s+/);
+  if (words.includes("cell"))
+    return "cell";
+  if (words.includes("checkbox"))
+    return "checkbox";
+  const rows = words.includes("row");
+  const columns = words.includes("column");
+  return rows && columns ? "both" : columns ? "column" : "row";
+}
+var multi = (grid) => grid.dataset.select === "multiple";
+function selectsColumns(grid) {
+  const model = modelOf(grid);
+  return model === "column" || model === "both";
+}
+function bodyKind(grid) {
+  const model = modelOf(grid);
+  return model === "cell" ? "cell" : model === "column" ? "column" : "row";
+}
+var howOf = (e) => e.shiftKey ? "range" : e.ctrlKey || e.metaKey ? "toggle" : "only";
+var positions = new WeakMap;
+function indexOfId(grid, id) {
+  const result = grid._result;
+  if (!result || !grid._source)
+    return -1;
+  let map = positions.get(result);
+  if (!map) {
+    const field = grid._source.idField;
+    const built = new Map;
+    result.entries.forEach((e, i) => built.set(e.row[field], i));
+    positions.set(result, built);
+    map = built;
+  }
+  return map.get(id) ?? -1;
+}
+var idAt = (grid, g) => g >= 0 ? grid._result?.entries[g]?.row[grid._source.idField] : undefined;
+var colOf = (grid, field) => grid._order.findIndex((c) => c.field === field);
+function selectionView(grid, config) {
+  const model = modelOf(grid);
+  if (!model || !grid._source || !grid._order)
+    return null;
+  const n = grid._result?.entries.length ?? 0;
+  const m = grid._order.length;
+  if (model === "cell") {
+    const boxes = [];
+    for (const r of config.selectedRanges || []) {
+      const a = indexOfId(grid, r?.from?.id);
+      const b = indexOfId(grid, r?.to?.id);
+      const c = colOf(grid, r?.from?.field);
+      const d = colOf(grid, r?.to?.field);
+      if (a < 0 || b < 0 || c < 0 || d < 0)
+        continue;
+      boxes.push({ r0: Math.min(a, b), r1: Math.max(a, b), c0: Math.min(c, d), c1: Math.max(c, d) });
+    }
+    return {
+      kind: "cell",
+      boxes,
+      has: (g, c) => boxes.some((b) => g >= b.r0 && g <= b.r1 && c >= b.c0 && c <= b.c1)
+    };
+  }
+  const fields = config.selectedColumns || [];
+  if (model === "column" || model === "both" && fields.length) {
+    const cols = new Set(fields.map((f) => colOf(grid, f)).filter((c) => c >= 0));
+    return { kind: "column", cols, has: (g, c) => g >= 0 && g < n && cols.has(c) };
+  }
+  const rows = grid._selected;
+  return { kind: "row", rows, has: (g, c) => c >= 0 && c < m && g >= 0 && g < n && rows.has(idAt(grid, g)) };
+}
+function areaOf(boxes) {
+  const ys = [...new Set(boxes.flatMap((b) => [b.r0, b.r1 + 1]))].sort((a, b) => a - b);
+  let total = 0;
+  for (let i = 0;i < ys.length - 1; i++) {
+    const spans = boxes.filter((b) => b.r0 <= ys[i] && b.r1 >= ys[i]).map((b) => [b.c0, b.c1]).sort((a, b) => a[0] - b[0]);
+    let width = 0;
+    let end = -1;
+    for (const [c0, c1] of spans) {
+      if (c1 <= end)
+        continue;
+      width += c1 - Math.max(c0, end + 1) + 1;
+      end = c1;
+    }
+    total += width * (ys[i + 1] - ys[i]);
+  }
+  return total;
+}
+function selectionText(view, count) {
+  if (!view)
+    return "";
+  if (view.kind === "row")
+    return view.rows.size ? ` · ${count(view.rows.size)} selected` : "";
+  if (view.kind === "column") {
+    const n = view.cols.size;
+    return n ? ` · ${count(n)} ${n === 1 ? "column" : "columns"} selected` : "";
+  }
+  const n = areaOf(view.boxes);
+  return n ? ` · ${count(n)} ${n === 1 ? "cell" : "cells"} selected` : "";
 }
 var configOf2 = (grid) => grid._config ?? grid.store?.value.config ?? {};
 var isTree = (grid) => !!grid._source?.tree;
@@ -1042,9 +1379,10 @@ function layoutColumns(grid, config) {
   const columns = visible.length ? visible : all;
   grid._order = columns;
   const widths = config.widths || {};
-  grid.style.setProperty("--data-grid-template", columns.map((c) => widths[c.field] > 0 ? `${widths[c.field]}px` : c.width).join(" "));
+  const check = syncCheckHead(grid);
+  grid.style.setProperty("--data-grid-template", (check ? "var(--data-grid-check-width) " : "") + columns.map((c) => widths[c.field] > 0 ? `${widths[c.field]}px` : c.width).join(" "));
   const locked = new Set(config.locked || []);
-  let left = 0;
+  let left = check ? check.getBoundingClientRect().width : 0;
   grid._lockLeft = {};
   for (const column of columns) {
     if (!locked.has(column.field)) {
@@ -1057,12 +1395,66 @@ function layoutColumns(grid, config) {
   }
   grid.toggleAttribute("data-has-locked", locked.size > 0);
 }
+var checks = (grid) => modelOf(grid) === "checkbox";
+function checkCell(withBox = true) {
+  const cell = document.createElement("div");
+  cell.className = "data-grid-check";
+  cell.setAttribute("aria-hidden", "true");
+  if (withBox) {
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.className = "checkbox";
+    box.tabIndex = -1;
+    cell.append(box);
+  }
+  return cell;
+}
+function syncCheckHead(grid) {
+  const row = headerRowOf(grid);
+  const on = checks(grid);
+  if (on && !grid._parts.check && row) {
+    grid._parts.check = checkCell();
+    row.append(grid._parts.check);
+  } else if (!on && grid._parts.check) {
+    grid._parts.check.remove();
+    grid._parts.check = null;
+  }
+  return grid._parts.check ?? null;
+}
+function syncCheckAll(grid) {
+  const box = grid._parts.check?.firstElementChild;
+  if (!box)
+    return;
+  const idField = grid._source?.idField ?? "id";
+  const entries = grid._result?.entries ?? [];
+  let n = 0;
+  if (grid._selected.size) {
+    for (const e of entries)
+      if (grid._selected.has(e.row[idField]))
+        n++;
+  }
+  box.checked = n > 0 && n === entries.length;
+  box.indeterminate = n > 0 && n < entries.length;
+  box.disabled = !multi(grid) || !entries.length;
+}
+function toggleAll(grid) {
+  if (!multi(grid))
+    return;
+  const idField = grid._source?.idField ?? "id";
+  const ids = (grid._result?.entries ?? []).map((e) => e.row[idField]);
+  const all = ids.length > 0 && ids.every((id) => grid._selected.has(id));
+  const shown = new Set(ids);
+  setSelection(grid, {
+    selected: all ? [...grid._selected].filter((id) => !shown.has(id)) : [...new Set([...grid._selected, ...ids])]
+  });
+}
 function buildFilters(grid) {
   if (!grid._columns.some((c) => c.filter) || grid._parts.filters)
     return;
   const row = document.createElement("div");
   row.className = "data-grid-row data-grid-filters";
   row.setAttribute("role", "row");
+  row.setAttribute("aria-rowindex", "2");
   grid._parts.filters = row;
   dfDollar3(grid._parts.head).append(row);
 }
@@ -1072,10 +1464,12 @@ function syncFilters(grid, config) {
     return;
   const filters = config.filters || [];
   const locked = new Set(config.locked || []);
-  const key = grid._order.map((c) => c.field).join("|");
+  const key = grid._order.map((c) => c.field).join("|") + (checks(grid) ? "|check" : "");
   if (row._key !== key) {
     row._key = key;
     row.textContent = "";
+    if (checks(grid))
+      row.append(checkCell(false));
     for (const column of grid._order) {
       const cell = document.createElement("div");
       cell.className = "data-grid-filter-cell";
@@ -1219,6 +1613,15 @@ function renderRows2(grid) {
   const headRows = grid._parts.filters ? 2 : 1;
   const focus = grid._focus;
   let edShown = false;
+  const model = modelOf(grid);
+  const sel = selectionView(grid, config);
+  const checkOn = model === "checkbox";
+  const isSel = (g, c) => !!sel && g >= base && g < base + total && (c === -1 ? checkOn && sel.has(g, 0) : sel.has(g, c));
+  const rowAria = model === "row" || model === "checkbox" || model === "both";
+  const cellAria = model === "cell" || model === "column" || model === "both";
+  const hover = grid._hover ?? null;
+  const columns = grid._order.length;
+  const draggable = grid.hasAttribute("data-drag");
   for (let i = 0;i < pool.children.length; i++) {
     const row = pool.children[i];
     const index = win.first + i;
@@ -1229,6 +1632,7 @@ function renderRows2(grid) {
       row._index = index;
       row.dataset.index = String(index);
       row.setAttribute("aria-rowindex", String(base + index + headRows + 1));
+      row._check?.remove();
       while (row.children.length < grid._order.length) {
         const cell = document.createElement("div");
         cell.className = "data-grid-cell";
@@ -1261,12 +1665,45 @@ function renderRows2(grid) {
           editorControl2(ed.editor).focus({ preventScroll: true });
       }
     }
-    if (grid.dataset.select)
+    if (rowAria)
       row.setAttribute("aria-selected", String(selected.has(id)));
     else
       row.removeAttribute("aria-selected");
-    for (let c = 0;c < row.children.length; c++) {
-      row.children[c].tabIndex = focus.row === index && focus.col === c ? 0 : -1;
+    const drags = draggable && !(ed && ed.id === id);
+    if (row.draggable !== drags)
+      row.draggable = drags;
+    if (checkOn) {
+      if (!row._check)
+        row._check = checkCell();
+      if (row.lastElementChild !== row._check)
+        row.append(row._check);
+      row._check.firstElementChild.checked = selected.has(id);
+    } else if (row._check) {
+      row._check.remove();
+      row._check = null;
+    }
+    const g = base + index;
+    for (let c = checkOn ? -1 : 0;c < columns; c++) {
+      const cell = c < 0 ? row._check : row.children[c];
+      if (c >= 0)
+        cell.tabIndex = focus.row === index && focus.col === c ? 0 : -1;
+      const on = isSel(g, c);
+      cell.toggleAttribute("data-selected", on);
+      if (c >= 0 && cellAria)
+        cell.setAttribute("aria-selected", String(on));
+      else
+        cell.removeAttribute("aria-selected");
+      const edge = on ? [
+        !isSel(g - 1, c) && "top",
+        !isSel(g + 1, c) && "bottom",
+        !isSel(g, c - 1) && "start",
+        !isSel(g, c + 1) && "end"
+      ].filter(Boolean).join(" ") : "";
+      if (!edge)
+        delete cell.dataset.edge;
+      else if (cell.dataset.edge !== edge)
+        cell.dataset.edge = edge;
+      cell.toggleAttribute("data-hover", hover !== null && cell.dataset.field === hover);
     }
   }
   if (grid._editor && !edShown && !grid._writing)
@@ -1298,8 +1735,7 @@ function renderFooter(grid, config) {
   }
   if (mode === "infinite" && visible)
     text = `${count(shownRows)} loaded · ${text}`;
-  if (grid._selected.size)
-    text += ` · ${count(grid._selected.size)} selected`;
+  text += selectionText(selectionView(grid, config), count);
   if (!grid._parts.status) {
     const status = document.createElement("span");
     status.className = "data-grid-status";
@@ -1345,6 +1781,7 @@ function renderFooter(grid, config) {
   }
 }
 function refresh3(grid, config, previous) {
+  const before = grid._result;
   grid._config = config;
   if (grid._editor && !grid._writing) {
     grid._writing = true;
@@ -1357,15 +1794,18 @@ function refresh3(grid, config, previous) {
   grid._shown = shown(grid, config);
   layoutColumns(grid, config);
   syncFilters(grid, config);
-  grid._gen = (grid._gen || 0) + 1;
+  syncCheckAll(grid);
+  if (!(grid._selecting && grid._result === before))
+    grid._gen = (grid._gen || 0) + 1;
   const prev = previous?.config || {};
   const moved = ["filters", "sorters", "page"].some((k) => JSON.stringify(prev[k] ?? null) !== JSON.stringify(config[k] ?? null));
   if (moved && paging(grid) !== "infinite")
     grid._parts.viewport.scrollTop = 0;
   if (moved)
     grid._focus = { row: grid._focus.row < 0 ? -1 : 0, col: grid._focus.col };
-  grid.setAttribute("aria-rowcount", String((grid._result.entries.length || 0) + (grid._parts.filters ? 2 : 1)));
-  grid.setAttribute("aria-colcount", String(grid._order.length));
+  const { viewport } = grid._parts;
+  viewport.setAttribute("aria-rowcount", String((grid._result.entries.length || 0) + (grid._parts.filters ? 2 : 1)));
+  viewport.setAttribute("aria-colcount", String(grid._order.length));
   if (grid._focus.col >= grid._order.length)
     grid._focus = { ...grid._focus, col: Math.max(0, grid._order.length - 1) };
   renderRows2(grid);
@@ -1400,31 +1840,139 @@ var dataGridApi = componentState3({
 df$3.dataGridApi = dataGridApi;
 df$3.dataGridStates = dataGridStates;
 var query2 = (grid, patch) => dataGridApi.setState(grid, grid.store.value.name === "loading" ? "loading" : "default", patch);
-function toggleRow(grid, index, mode) {
-  const entry = grid._shown[index];
-  if (!entry || !grid.dataset.select)
-    return;
-  const id = entry.row[grid._source.idField];
-  let next;
-  if (grid.dataset.select === "single" || mode === "only")
-    next = grid._selected.has(id) && grid._selected.size === 1 && mode !== "only" ? [] : [id];
-  else if (mode === "range" && grid._anchor != null) {
-    const from = Math.min(grid._anchor, index);
-    const to = Math.max(grid._anchor, index);
-    next = [
-      ...new Set([...grid._selected, ...grid._shown.slice(from, to + 1).map((e) => e.row[grid._source.idField])])
-    ];
-  } else {
-    next = grid._selected.has(id) ? [...grid._selected].filter((x) => x !== id) : [...grid._selected, id];
+function setSelection(grid, patch) {
+  grid._selecting = true;
+  try {
+    query2(grid, patch);
+  } finally {
+    grid._selecting = false;
   }
-  if (mode !== "range")
-    grid._anchor = index;
-  query2(grid, { selected: next });
+}
+function currentOf(grid, kind) {
+  const config = configOf2(grid);
+  if (kind === "row")
+    return [...grid._selected];
+  return kind === "column" ? config.selectedColumns || [] : config.selectedRanges || [];
+}
+function select2(grid, g, c, how, kind) {
+  const model = modelOf(grid);
+  const column = grid._order?.[c];
+  if (!model || !grid._source || !column)
+    return;
+  const id = idAt(grid, g);
+  if (kind !== "column" && id === undefined)
+    return;
+  const many = multi(grid);
+  const a = grid._anchor;
+  const from = a && a.kind === kind ? { g: kind === "column" ? 0 : indexOfId(grid, a.id), c: colOf(grid, a.field) } : null;
+  if (how === "range" && (!many || !from || from.g < 0 || from.c < 0))
+    how = "only";
+  if (how !== "range")
+    grid._anchor = { id, field: column.field, kind };
+  grid._lead = { id, field: column.field, kind };
+  const keep = how === "range" ? grid._keep || [] : [];
+  const union = (xs, ys) => [...new Set([...xs, ...ys])];
+  const config = configOf2(grid);
+  if (kind === "row") {
+    const sel = [...grid._selected];
+    let next;
+    if (how === "range") {
+      const ids = (grid._result?.entries ?? []).slice(Math.min(from.g, g), Math.max(from.g, g) + 1).map((e) => e.row[grid._source.idField]);
+      next = union(keep, ids);
+    } else if (how === "toggle" && grid._selected.has(id))
+      next = grid._keep = sel.filter((x) => x !== id);
+    else if (how === "toggle" && many) {
+      grid._keep = sel;
+      next = [...sel, id];
+    } else {
+      grid._keep = [];
+      next = [id];
+    }
+    setSelection(grid, model === "both" ? { selected: next, selectedColumns: [] } : { selected: next });
+    return;
+  }
+  if (kind === "column") {
+    const sel = config.selectedColumns || [];
+    let next;
+    if (how === "range")
+      next = union(keep, grid._order.slice(Math.min(from.c, c), Math.max(from.c, c) + 1).map((x) => x.field));
+    else if (how === "toggle" && sel.includes(column.field))
+      next = grid._keep = sel.filter((f) => f !== column.field);
+    else if (how === "toggle" && many) {
+      grid._keep = sel;
+      next = [...sel, column.field];
+    } else {
+      grid._keep = [];
+      next = [column.field];
+    }
+    setSelection(grid, model === "both" ? { selectedColumns: next, selected: [] } : { selectedColumns: next });
+    return;
+  }
+  const ranges = config.selectedRanges || [];
+  const here = { id, field: column.field };
+  const single = (r) => r.from.id === id && r.to.id === id && r.from.field === column.field && r.to.field === column.field;
+  let next;
+  if (how === "range")
+    next = [...keep, { from: { id: a.id, field: a.field }, to: here }];
+  else if (how === "toggle" && ranges.some(single))
+    next = grid._keep = ranges.filter((r) => !single(r));
+  else if (how === "toggle" && many) {
+    grid._keep = ranges;
+    next = [...ranges, { from: here, to: { ...here } }];
+  } else {
+    grid._keep = [];
+    next = [{ from: here, to: { ...here } }];
+  }
+  setSelection(grid, { selectedRanges: next });
 }
 function selectAll(grid) {
+  const model = modelOf(grid);
+  const entries = grid._result?.entries ?? [];
   const idField = grid._source?.idField ?? "id";
-  query2(grid, { selected: (grid._result?.entries ?? []).map((e) => e.row[idField]) });
+  if (model === "column")
+    return setSelection(grid, { selectedColumns: grid._order.map((c) => c.field) });
+  if (model === "cell") {
+    if (!entries.length)
+      return;
+    const first = grid._order[0].field;
+    const last = grid._order[grid._order.length - 1].field;
+    return setSelection(grid, {
+      selectedRanges: [
+        {
+          from: { id: entries[0].row[idField], field: first },
+          to: { id: entries[entries.length - 1].row[idField], field: last }
+        }
+      ]
+    });
+  }
+  setSelection(grid, {
+    selected: entries.map((e) => e.row[idField]),
+    ...model === "both" ? { selectedColumns: [] } : {}
+  });
 }
+function followFocus(grid, e, prevRow, prevCol) {
+  const model = modelOf(grid);
+  const { row, col } = grid._focus;
+  if (!model || row < 0)
+    return;
+  const base = baseOf(grid);
+  const extend = e.shiftKey && multi(grid) && prevRow >= 0;
+  if (model === "cell" && !extend)
+    return select2(grid, base + row, col, "only", "cell");
+  if (!extend)
+    return;
+  const kind = model === "cell" ? "cell" : row !== prevRow && model !== "column" ? "row" : col !== prevCol && model !== "row" ? "column" : null;
+  if (!kind)
+    return;
+  const lead = grid._lead;
+  const at = (l) => kind === "column" ? colOf(grid, l.field) === prevCol : indexOfId(grid, l.id) === base + prevRow && (kind === "row" || colOf(grid, l.field) === prevCol);
+  if (!(lead?.kind === kind && at(lead))) {
+    grid._anchor = { id: idAt(grid, base + prevRow), field: grid._order[prevCol].field, kind };
+    grid._keep = currentOf(grid, kind);
+  }
+  select2(grid, base + row, col, "range", kind);
+}
+var baseOf = (grid) => paging(grid) === "pages" ? Math.max(0, configOf2(grid).page || 0) * pageSize(grid) : 0;
 function toggleExpand(grid, index, open) {
   const entry = grid._shown[index];
   if (!entry?.meta.hasChildren)
@@ -1584,21 +2132,27 @@ function showEditProblem(ed, problem) {
   }
   dfDollar3(note).text(problem);
 }
-function writeRecord(grid, id, patch) {
+function writeRecords(grid, patches) {
   const idField = grid._source.idField;
   const rows = grid._source.rows;
-  const at = rows.findIndex((r) => r[idField] === id);
-  if (at < 0)
-    return null;
-  const record = { ...rows[at], ...patch };
-  const next = rows.slice();
-  next[at] = record;
+  const written = new Map;
+  const next = rows.map((r) => {
+    const patch = patches.get(r[idField]);
+    if (!patch)
+      return r;
+    const record = { ...r, ...patch };
+    written.set(r[idField], record);
+    return record;
+  });
+  if (!written.size)
+    return written;
   grid._source.setRows(next);
   grid._writing = true;
   triggerStateChange3(grid, grid.store.value, grid.store.value);
   grid._writing = false;
-  return record;
+  return written;
 }
+var writeRecord = (grid, id, patch) => writeRecords(grid, new Map([[id, patch]])).get(id) ?? null;
 function commitEdit(grid, then = "stay") {
   const ed = grid._editor;
   if (!ed)
@@ -1656,6 +2210,10 @@ function onKeydown2(grid, e) {
   if (e.target.closest?.(".data-grid-row :is(a, button, input, select, textarea, label, [contenteditable])"))
     return;
   const { row, col } = grid._focus;
+  if ((e.ctrlKey || e.metaKey) && !e.altKey && /^[cv]$/i.test(e.key)) {
+    clipboardKey(grid, e.key.toLowerCase() === "c" ? "copy" : "paste");
+    return;
+  }
   const page = Math.max(1, Math.floor((grid._parts.viewport.clientHeight - grid._parts.head.offsetHeight) / rowHeight(grid)) - 1);
   const last = grid._shown.length - 1;
   const entry = row >= 0 ? grid._shown[row] : null;
@@ -1690,14 +2248,14 @@ function onKeydown2(grid, e) {
       next = [Math.max(-1, row - 1), col];
       break;
     case "ArrowRight":
-      if (isTree(grid) && entry && col === 0 && entry.meta.hasChildren && !entry.meta.isExpanded) {
+      if (isTree(grid) && !e.shiftKey && entry && col === 0 && entry.meta.hasChildren && !entry.meta.isExpanded) {
         toggleExpand(grid, row, true);
         next = [row, 0];
       } else
         next = [row, col + 1];
       break;
     case "ArrowLeft":
-      if (isTree(grid) && entry && col === 0) {
+      if (isTree(grid) && !e.shiftKey && entry && col === 0) {
         if (entry.meta.hasChildren && entry.meta.isExpanded) {
           toggleExpand(grid, row, false);
           next = [row, 0];
@@ -1721,15 +2279,20 @@ function onKeydown2(grid, e) {
     case "PageUp":
       next = [Math.max(0, row - page), col];
       break;
-    case " ":
-      if (row >= 0) {
-        toggleRow(grid, row, e.shiftKey ? "range" : "toggle");
-        next = [row, col];
-      }
+    case " ": {
+      const model = modelOf(grid);
+      const how = e.shiftKey ? "range" : "toggle";
+      const g = row < 0 ? -1 : baseOf(grid) + row;
+      if (model === "column" || model === "both" && (row < 0 || e.ctrlKey || e.metaKey))
+        select2(grid, g, col, how, "column");
+      else if (model && row >= 0)
+        select2(grid, g, col, how, model === "cell" ? "cell" : "row");
+      next = [row, col];
       break;
+    }
     case "a":
     case "A":
-      if (!(e.ctrlKey || e.metaKey) || grid.dataset.select !== "multiple")
+      if (!(e.ctrlKey || e.metaKey) || !multi(grid) || !modelOf(grid))
         return;
       selectAll(grid);
       next = [row, col];
@@ -1760,9 +2323,13 @@ function onKeydown2(grid, e) {
       return;
   }
   e.preventDefault();
-  if (next)
-    focusCell(grid, next[0], next[1]);
+  if (!next)
+    return;
+  focusCell(grid, next[0], next[1]);
+  if (MOVES.has(e.key))
+    followFocus(grid, e, row, col);
 }
+var MOVES = new Set(["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Home", "End", "PageDown", "PageUp"]);
 function onClick2(grid, e) {
   const t = e.target;
   if (grid._suppressClick || t.closest(".data-grid-menu, .data-grid-resizer, .data-grid-editor"))
@@ -1782,12 +2349,24 @@ function onClick2(grid, e) {
     query2(grid, { page: Math.max(0, Math.min(pageCount(grid) - 1, target)) });
     return;
   }
+  const check = t.closest(".data-grid-check");
+  if (check && check === grid._parts.check)
+    return toggleAll(grid);
+  const checkRow = check?.closest(".data-grid-row");
+  if (checkRow && grid._parts.pool.contains(checkRow)) {
+    select2(grid, baseOf(grid) + checkRow._index, 0, e.shiftKey ? "range" : "toggle", "row");
+    focusCell(grid, checkRow._index, Math.max(0, grid._focus.col));
+    return;
+  }
   const header = t.closest(".data-grid-header");
   if (header && grid.contains(header)) {
     const column = grid._columns.find((c) => c.el === header);
-    if (column?.sortable)
+    const at = grid._order.indexOf(column);
+    if (column && at >= 0 && selectsColumns(grid))
+      select2(grid, -1, at, howOf(e), "column");
+    else if (column?.sortable)
       query2(grid, { sorters: cycleSort(configOf2(grid).sorters, column.sortField, e.shiftKey), page: 0 });
-    grid._focus = { row: -1, col: grid._order.indexOf(column) };
+    grid._focus = { row: -1, col: at };
     return;
   }
   const row = t.closest(".data-grid-row");
@@ -1795,12 +2374,609 @@ function onClick2(grid, e) {
     return;
   const index = row._index;
   const cell = t.closest(".data-grid-cell");
-  grid._focus = { row: index, col: Math.max(0, [...row.children].indexOf(cell)) };
+  const col = Math.max(0, [...row.children].indexOf(cell));
+  grid._focus = { row: index, col };
   if (t.closest(".data-grid-toggle"))
     return toggleExpand(grid, index);
   if (t.closest("a, button, input, select, textarea, label"))
     return;
-  toggleRow(grid, index, e.shiftKey ? "range" : e.ctrlKey || e.metaKey ? "toggle" : "only");
+  if (grid._pressed)
+    return;
+  select2(grid, baseOf(grid) + index, col, howOf(e), bodyKind(grid));
+}
+function onBodyPress(grid, e) {
+  if (!modelOf(grid) || e.button !== 0 || !e.isPrimary)
+    return;
+  const t = e.target;
+  if (t.closest(".data-grid-toggle, .data-grid-editor, a, button, input, select, textarea, label, [contenteditable]"))
+    return;
+  const rowEl = t.closest(".data-grid-row");
+  const cell = t.closest(".data-grid-cell");
+  if (!rowEl || !cell || !grid._parts.pool.contains(rowEl))
+    return;
+  const at = { row: rowEl._index, col: [...rowEl.children].indexOf(cell) };
+  const kind = bodyKind(grid);
+  const sweep = {
+    id: e.pointerId,
+    kind,
+    touch: e.pointerType === "touch",
+    x: e.clientX,
+    y: e.clientY,
+    lastX: e.clientX,
+    lastY: e.clientY,
+    to: at,
+    active: false,
+    captured: false,
+    timer: 0,
+    edge: null,
+    frame: 0
+  };
+  grid._sweep = sweep;
+  const start = (how) => {
+    sweep.active = true;
+    grid._focus = { ...at };
+    select2(grid, baseOf(grid) + at.row, at.col, how, kind);
+  };
+  if (grid.hasAttribute("data-drag")) {
+    grid._sweep = null;
+    if (sweep.touch)
+      return;
+    if (howOf(e) === "only" && kind === "row" && grid._selected.has(idAt(grid, baseOf(grid) + at.row)))
+      return;
+    grid._pressed = true;
+    grid._focus = { ...at };
+    select2(grid, baseOf(grid) + at.row, at.col, howOf(e), kind);
+    return;
+  }
+  if (sweep.touch) {
+    sweep.timer = setTimeout(() => {
+      start(e.shiftKey ? "range" : "only");
+      grid.setAttribute("data-sweeping", "");
+      if (navigator.userActivation?.hasBeenActive)
+        navigator.vibrate?.(10);
+    }, LONG_PRESS_MS);
+    return;
+  }
+  grid._pressed = true;
+  start(howOf(e));
+}
+function onSweepMove(grid, e) {
+  const sweep = grid._sweep;
+  if (e.pointerId !== sweep.id)
+    return;
+  if (!sweep.active) {
+    if (sweep.touch && Math.hypot(e.clientX - sweep.x, e.clientY - sweep.y) > TOUCH_SLOP)
+      endSweep(grid);
+    return;
+  }
+  if (!sweep.touch && !e.buttons)
+    return endSweep(grid);
+  sweep.lastX = e.clientX;
+  sweep.lastY = e.clientY;
+  sweepTo(grid);
+}
+function sweepTo(grid) {
+  const sweep = grid._sweep;
+  if (!sweep?.active)
+    return;
+  const { viewport, head, body } = grid._parts;
+  const box = viewport.getBoundingClientRect();
+  const top = box.top + head.offsetHeight;
+  const bottom = box.top + viewport.clientHeight;
+  const left = box.left;
+  const right = box.left + viewport.clientWidth;
+  const x = Math.min(right - 1, Math.max(left + 1, sweep.lastX));
+  const y = Math.min(bottom - 1, Math.max(top + 1, sweep.lastY));
+  const total = grid._shown.length;
+  const row = Math.max(0, Math.min(total - 1, Math.floor((y - body.getBoundingClientRect().top) / rowHeight(grid))));
+  let col = grid._order.findIndex((c) => {
+    const r = c.el.getBoundingClientRect();
+    return x >= r.left && x < r.right;
+  });
+  if (col < 0)
+    col = sweep.to.col;
+  if (row !== sweep.to.row || col !== sweep.to.col) {
+    sweep.to = { row, col };
+    if (!sweep.captured) {
+      try {
+        viewport.setPointerCapture(sweep.id);
+      } catch {}
+      sweep.captured = true;
+      grid.setAttribute("data-sweeping", "");
+    }
+    grid._focus = { row, col };
+    select2(grid, baseOf(grid) + row, col, "range", sweep.kind);
+  }
+  const dy = sweep.lastY < top ? -1 : sweep.lastY > bottom ? 1 : 0;
+  const dx = sweep.lastX < left ? -1 : sweep.lastX > right ? 1 : 0;
+  sweep.edge = dx || dy ? [dx, dy] : null;
+  if (sweep.edge && !sweep.frame)
+    sweep.frame = requestAnimationFrame(() => {
+      sweep.frame = 0;
+      if (grid._sweep !== sweep || !sweep.edge)
+        return;
+      viewport.scrollTop += sweep.edge[1] * rowHeight(grid);
+      viewport.scrollLeft += sweep.edge[0] * 24;
+      sweepTo(grid);
+    });
+}
+function endSweep(grid) {
+  const sweep = grid._sweep;
+  if (!sweep)
+    return;
+  grid._sweep = null;
+  clearTimeout(sweep.timer);
+  cancelAnimationFrame(sweep.frame);
+  if (sweep.captured)
+    try {
+      grid._parts.viewport.releasePointerCapture(sweep.id);
+    } catch {}
+  grid.removeAttribute("data-sweeping");
+  if (sweep.active && (sweep.touch || sweep.captured)) {
+    grid._suppressClick = true;
+    setTimeout(() => {
+      grid._suppressClick = false;
+    });
+    focusCell(grid, sweep.to.row, sweep.to.col);
+  }
+}
+function hoverAt(grid, t) {
+  const el = selectsColumns(grid) ? t?.closest?.(".data-grid-cell, .data-grid-header") : null;
+  const field = el && grid.contains(el) ? el.dataset.field || null : null;
+  if (field === (grid._hover ?? null))
+    return;
+  grid._hover = field;
+  for (const row of grid._parts.pool.children)
+    for (const cell of row.children)
+      cell.toggleAttribute("data-hover", field !== null && cell.dataset.field === field);
+}
+var fieldsOf2 = (grid) => ({
+  idField: grid._source.idField,
+  parentIdField: grid._source.tree?.parentIdField ?? null
+});
+function dragIds(grid, index) {
+  const idField = grid._source.idField;
+  const id = grid._shown[index]?.row[idField];
+  if (id === undefined)
+    return [];
+  if (bodyKind(grid) !== "row" || !grid._selected.has(id))
+    return [id];
+  return (grid._result?.entries ?? []).map((e) => e.row[idField]).filter((x) => grid._selected.has(x));
+}
+function onDragStart(grid, e) {
+  const rowEl = e.target;
+  if (!grid.hasAttribute("data-drag") || !grid._source || !rowEl.classList?.contains("data-grid-row"))
+    return;
+  if (!grid._parts.pool.contains(rowEl))
+    return;
+  const roots = dragIds(grid, rowEl._index);
+  if (!roots.length)
+    return e.preventDefault();
+  const fields = fieldsOf2(grid);
+  const records = subtreeOf2(grid._source.rows, roots, fields);
+  const matrix = records.map((r) => grid._order.map((c) => plainValue(r[c.field], c)));
+  const drag = {
+    source: grid,
+    records,
+    roots,
+    ...fields,
+    effects: dropEffects2(grid.dataset.drag),
+    remove: () => writeRows(grid, withoutRecords2(grid._source.rows, records, fields.idField)),
+    done: (effect, target) => grid.dispatchEvent(new CustomEvent("data-grid-dragend", {
+      bubbles: true,
+      detail: { records, effect, target }
+    }))
+  };
+  grid._pressed = false;
+  const first = grid._order[0];
+  const root = records.find((r) => r[fields.idField] === roots[0]);
+  const label = roots.length > 1 ? `${roots.length} rows` : format(root?.[first.field], first.format, grid) || "1 row";
+  startRecordDrag2(e, drag, { plain: toTsv(matrix), html: toHtml(matrix) }, label);
+  grid.setAttribute("data-dragging-rows", "");
+}
+function onDragEnd(grid) {
+  grid.removeAttribute("data-dragging-rows");
+  const drag = recordDrag2();
+  if (drag?.source === grid)
+    endRecordDrag2(drag);
+}
+function dropAt(grid, e) {
+  const h = rowHeight(grid);
+  const y = e.clientY - grid._parts.body.getBoundingClientRect().top;
+  const index = Math.max(0, Math.floor(y / h));
+  const entry = grid._shown[index];
+  if (!entry)
+    return { at: { id: null, place: "end" }, index: grid._shown.length };
+  const f = y / h - index;
+  const place = isTree(grid) ? f < 0.25 ? "before" : f > 0.75 ? "after" : "into" : f < 0.5 ? "before" : "after";
+  return { at: { id: entry.row[grid._source.idField], place }, index };
+}
+function showDrop(grid, at, index = 0) {
+  let mark = grid._parts.drop;
+  if (!at) {
+    mark?.remove();
+    grid._parts.drop = null;
+    return;
+  }
+  if (!mark) {
+    mark = grid._parts.drop = document.createElement("div");
+    mark.className = "data-grid-row-drop";
+    mark.setAttribute("aria-hidden", "true");
+  }
+  if (mark.parentElement !== grid._parts.body)
+    grid._parts.body.append(mark);
+  const h = rowHeight(grid);
+  const row = at.place === "end" ? grid._shown.length : at.place === "after" ? index + 1 : index;
+  mark.dataset.place = at.place;
+  mark.style.top = `${row * h}px`;
+}
+function dragScroll(grid, e) {
+  const { viewport, head } = grid._parts;
+  const box = viewport.getBoundingClientRect();
+  const edge = rowHeight(grid);
+  if (e.clientY < box.top + head.offsetHeight + edge)
+    viewport.scrollTop -= 12;
+  else if (e.clientY > box.top + viewport.clientHeight - edge)
+    viewport.scrollTop += 12;
+}
+function onDragOver(grid, e) {
+  if (!grid.hasAttribute("data-drop") || !grid._source || !carriesRecords2(e))
+    return;
+  const drag = recordDrag2();
+  const effect = dropEffectFor2(e, dropEffects2(grid.dataset.drop), drag);
+  const { at, index } = dropAt(grid, e);
+  dragScroll(grid, e);
+  const within = drag?.source === grid && effect === "move";
+  const fields = fieldsOf2(grid);
+  if (!effect || within && at.id !== null && drag.records.some((r) => r[fields.idField] === at.id)) {
+    if (e.dataTransfer)
+      e.dataTransfer.dropEffect = "none";
+    showDrop(grid, null);
+    return;
+  }
+  e.preventDefault();
+  if (e.dataTransfer)
+    e.dataTransfer.dropEffect = effect;
+  showDrop(grid, at, index);
+}
+function onDrop(grid, e) {
+  showDrop(grid, null);
+  if (!grid.hasAttribute("data-drop") || !grid._source)
+    return;
+  const drag = recordDrag2();
+  const payload = droppedRecords2(e);
+  const effect = dropEffectFor2(e, dropEffects2(grid.dataset.drop), drag);
+  if (!payload || !effect)
+    return;
+  e.preventDefault();
+  dropRecords(grid, payload, effect, dropAt(grid, e).at, drag);
+}
+function dropRecords(grid, payload, effect, at, drag) {
+  const fields = fieldsOf2(grid);
+  const within = !!drag && drag.source === grid && effect === "move";
+  const placed = placeRecords2({
+    rows: grid._source.rows,
+    ...fields,
+    from: payload,
+    at,
+    copy: effect === "copy",
+    within
+  });
+  const source = drag?.source ?? null;
+  const detail = { records: placed?.inserted ?? [], effect, source, at };
+  if (!placed || !grid.dispatchEvent(new CustomEvent("data-grid-beforedrop", { bubbles: true, cancelable: true, detail }))) {
+    endRecordDrag2(drag);
+    return null;
+  }
+  if (drag && effect === "move" && !within)
+    drag.remove();
+  const patch = {};
+  if (modelOf(grid) && bodyKind(grid) === "row")
+    patch.selected = multi(grid) ? placed.roots : placed.roots.slice(0, 1);
+  if (at.place === "into" && isTree(grid))
+    patch.expanded = [...new Set([...configOf2(grid).expanded || [], at.id])];
+  writeRows(grid, placed.rows, patch);
+  drag?.done(effect, grid);
+  endRecordDrag2(drag);
+  if (grid._order.length)
+    focusRecord(grid, placed.roots[0], grid._order[0].field);
+  grid.dispatchEvent(new CustomEvent("data-grid-drop", { bubbles: true, detail }));
+  return placed.inserted;
+}
+function writeRows(grid, next, patch = {}) {
+  grid._source.setRows(next);
+  const ids = new Set(next.map((r) => r[grid._source.idField]));
+  const selected = configOf2(grid).selected || [];
+  const kept = selected.filter((id) => ids.has(id));
+  if (!patch.selected && kept.length !== selected.length)
+    patch = { ...patch, selected: kept };
+  grid._writing = true;
+  try {
+    if (Object.keys(patch).length)
+      query2(grid, patch);
+    else
+      triggerStateChange3(grid, grid.store.value, grid.store.value);
+  } finally {
+    grid._writing = false;
+  }
+}
+var pad2 = (n) => String(n).padStart(2, "0");
+function plainValue(value, column) {
+  if (value == null)
+    return "";
+  if (typeof value === "string" && column.format === "date" && /^\d{4}-\d{2}-\d{2}/.test(value))
+    return value.slice(0, 10);
+  if (value instanceof Date || column.format === "date" && typeof value === "number") {
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime()))
+      return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  }
+  return typeof value === "object" ? JSON.stringify(value) : String(value);
+}
+var tsvField = (text) => /[\t\r\n"]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+var htmlText = (text) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/\r?\n/g, "<br>");
+function selectionMatrix(grid) {
+  const view = selectionView(grid, configOf2(grid));
+  if (!view)
+    return null;
+  const entries = grid._result?.entries ?? [];
+  const every = (k) => Array.from({ length: k }, (_, i) => i);
+  const byNumber = (a, b) => a - b;
+  let rows;
+  let cols;
+  if (view.kind === "row") {
+    rows = [...view.rows].map((id) => indexOfId(grid, id)).filter((g) => g >= 0).sort(byNumber);
+    cols = every(grid._order.length);
+  } else if (view.kind === "column") {
+    rows = every(entries.length);
+    cols = [...view.cols].sort(byNumber);
+  } else {
+    const rs = new Set;
+    const cs = new Set;
+    for (const b of view.boxes) {
+      for (let g = b.r0;g <= b.r1; g++)
+        rs.add(g);
+      for (let c = b.c0;c <= b.c1; c++)
+        cs.add(c);
+    }
+    rows = [...rs].sort(byNumber);
+    cols = [...cs].sort(byNumber);
+  }
+  if (!rows.length || !cols.length)
+    return null;
+  return rows.map((g) => cols.map((c) => {
+    const column = grid._order[c];
+    return view.has(g, c) ? plainValue(entries[g].row[column.field], column) : "";
+  }));
+}
+var toTsv = (matrix) => matrix.map((line) => line.map(tsvField).join("\t")).join(`
+`);
+var toHtml = (matrix) => `<table><tbody>${matrix.map((line) => `<tr>${line.map((v) => `<td>${htmlText(v)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+function parseTsv(text) {
+  const lines = [];
+  let line = [];
+  let field = "";
+  let quoted = false;
+  let fresh = true;
+  for (let i = 0;i < text.length; i++) {
+    const ch = text[i];
+    if (quoted) {
+      if (ch !== '"')
+        field += ch;
+      else if (text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else
+        quoted = false;
+      continue;
+    }
+    if (ch === '"' && fresh) {
+      quoted = true;
+      fresh = false;
+    } else if (ch === "\t") {
+      line.push(field);
+      field = "";
+      fresh = true;
+    } else if (ch === "\r" || ch === `
+`) {
+      if (ch === "\r" && text[i + 1] === `
+`)
+        i++;
+      line.push(field);
+      lines.push(line);
+      line = [];
+      field = "";
+      fresh = true;
+    } else {
+      field += ch;
+      fresh = false;
+    }
+  }
+  if (field !== "" || line.length)
+    lines.push([...line, field]);
+  return lines;
+}
+function parseNumber(text, grid) {
+  const plain = Number(text.replace(/[\s  ]/g, ""));
+  if (!Number.isNaN(plain))
+    return plain;
+  const parts = new Intl.NumberFormat(textLocale(grid)).formatToParts(12345.6);
+  const group = parts.find((p) => p.type === "group")?.value ?? ",";
+  const decimal = parts.find((p) => p.type === "decimal")?.value ?? ".";
+  let s = text.replace(/[\s  ]/g, "").split(group).join("");
+  const percent = s.endsWith("%");
+  s = s.split(decimal).join(".").replace(/[^\d.+-]/g, "");
+  const n = s ? Number(s) : NaN;
+  return percent ? n / 100 : n;
+}
+function pastedValue(text, ctx, grid) {
+  const t = text.trim();
+  if (ctx.type === "number")
+    return { value: t === "" ? null : parseNumber(t, grid) };
+  if (ctx.type === "boolean") {
+    if (/^(true|yes|on|1|x|✓)$/i.test(t))
+      return { value: true };
+    if (/^(false|no|off|0|)$/i.test(t))
+      return { value: false };
+    return { problem: "Not true or false" };
+  }
+  if (ctx.rules.options && t !== "") {
+    const option = ctx.rules.options.find((o) => String(o).toLowerCase() === t.toLowerCase());
+    return option === undefined ? { problem: `Not one of ${ctx.rules.options.join(", ")}` } : { value: option };
+  }
+  return { value: ctx.type === "string" || ctx.type === "enum" ? t : text };
+}
+function pasteInto(grid, text) {
+  const detail = { written: 0, skipped: 0, refused: [] };
+  const clip = parseTsv(text);
+  const view = selectionView(grid, configOf2(grid));
+  if (!view || !clip.length || grid.hasAttribute("data-readonly") || grid._editor)
+    return detail;
+  const entries = grid._result?.entries ?? [];
+  const n = entries.length;
+  const m = grid._order.length;
+  const h = clip.length;
+  const w = Math.max(...clip.map((l) => l.length));
+  const targets = new Map;
+  const put = (g, c, i, j) => {
+    if (g < 0 || g >= n || c < 0 || c >= m || h > 1 && i >= h || w > 1 && j >= w)
+      return;
+    const value = clip[h === 1 ? 0 : i][w === 1 ? 0 : j];
+    if (value !== undefined)
+      targets.set(g * m + c, value);
+  };
+  let block = null;
+  if (view.kind === "row") {
+    const rows = [...view.rows].map((id) => indexOfId(grid, id)).filter((g) => g >= 0).sort((a, b) => a - b);
+    rows.forEach((g, i) => {
+      for (let c = 0;c < m; c++)
+        put(g, c, i, c);
+    });
+  } else if (view.kind === "column") {
+    const cols = [...view.cols].sort((a, b) => a - b);
+    for (let g = 0;g < (h === 1 ? n : Math.min(h, n)); g++)
+      cols.forEach((c, j) => put(g, c, g, j));
+  } else if (view.boxes.length === 1 && view.boxes[0].r0 === view.boxes[0].r1 && view.boxes[0].c0 === view.boxes[0].c1) {
+    const { r0, c0 } = view.boxes[0];
+    for (let i = 0;i < h; i++)
+      for (let j = 0;j < w; j++)
+        put(r0 + i, c0 + j, i, j);
+    block = {
+      from: { id: idAt(grid, r0), field: grid._order[c0].field },
+      to: { id: idAt(grid, Math.min(n - 1, r0 + h - 1)), field: grid._order[Math.min(m - 1, c0 + w - 1)].field }
+    };
+  } else {
+    for (const b of view.boxes)
+      for (let g = b.r0;g <= b.r1; g++)
+        for (let c = b.c0;c <= b.c1; c++)
+          put(g, c, g - b.r0, c - b.c0);
+  }
+  const idField = grid._source.idField;
+  const patches = new Map;
+  const changes = [];
+  for (const [key, cellText] of targets) {
+    const column = grid._order[key % m];
+    const record = entries[Math.floor(key / m)].row;
+    const id = record[idField];
+    const ctx = editContext(grid, record, column);
+    if (!column.editable || grid._sourceOptions?.getEditorFn?.(column.field, record[column.field], ctx) === false) {
+      detail.skipped++;
+      continue;
+    }
+    const parsed = pastedValue(cellText, ctx, grid);
+    let problem = parsed.problem || editorProblem2(ctx.rules, parsed.value);
+    if (!problem) {
+      const answer = grid._sourceOptions?.validateFn?.(column.field, parsed.value, ctx);
+      if (typeof answer === "string" && answer)
+        problem = answer;
+      else if (answer === false)
+        problem = "Invalid value";
+    }
+    const refuse = (message) => detail.refused.push({ id, field: column.field, text: cellText, message });
+    if (problem) {
+      refuse(problem);
+      continue;
+    }
+    const oldValue = record[column.field];
+    if (JSON.stringify(parsed.value) === JSON.stringify(oldValue))
+      continue;
+    const before = new CustomEvent("data-grid-beforeedit", {
+      bubbles: true,
+      cancelable: true,
+      detail: { record, field: column.field, value: parsed.value, oldValue }
+    });
+    if (!grid.dispatchEvent(before)) {
+      refuse("Cancelled");
+      continue;
+    }
+    patches.set(id, { ...patches.get(id), [column.field]: parsed.value });
+    changes.push({ id, field: column.field, value: parsed.value, oldValue });
+  }
+  const written = writeRecords(grid, patches);
+  for (const change of changes)
+    grid.dispatchEvent(new CustomEvent("data-grid-edit", {
+      bubbles: true,
+      detail: {
+        record: written.get(change.id),
+        field: change.field,
+        value: change.value,
+        oldValue: change.oldValue
+      }
+    }));
+  detail.written = changes.length;
+  if (block && block.from.id !== undefined && block.to.id !== undefined) {
+    grid._anchor = { ...block.from, kind: "cell" };
+    grid._keep = [];
+    setSelection(grid, { selectedRanges: [block] });
+  }
+  grid.dispatchEvent(new CustomEvent("data-grid-paste", { bubbles: true, detail }));
+  return detail;
+}
+function clipboardKey(grid, act) {
+  if (grid._editor || !modelOf(grid))
+    return;
+  let matrix = null;
+  if (act === "copy") {
+    matrix = selectionMatrix(grid);
+    if (!matrix)
+      return;
+  } else if (grid.hasAttribute("data-readonly") || !grid._order.some((c) => c.editable))
+    return;
+  const back = document.activeElement;
+  const proxy = document.createElement("textarea");
+  proxy.className = "data-grid-clipboard";
+  proxy.setAttribute("aria-hidden", "true");
+  proxy.tabIndex = -1;
+  if (matrix)
+    proxy.value = toTsv(matrix);
+  const done = () => {
+    if (!proxy.isConnected)
+      return;
+    proxy.remove();
+    back?.focus({ preventScroll: true });
+  };
+  proxy.addEventListener("copy", (e) => {
+    if (!matrix || !e.clipboardData)
+      return;
+    e.preventDefault();
+    e.clipboardData.setData("text/plain", proxy.value);
+    e.clipboardData.setData("text/html", toHtml(matrix));
+    grid.dispatchEvent(new CustomEvent("data-grid-copy", {
+      bubbles: true,
+      detail: { text: proxy.value, rows: matrix.length, columns: matrix[0].length }
+    }));
+  });
+  proxy.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const text = e.clipboardData?.getData("text/plain") ?? "";
+    done();
+    if (text)
+      pasteInto(grid, text);
+  });
+  dfDollar3(grid).append(proxy);
+  proxy.focus({ preventScroll: true });
+  proxy.select();
+  setTimeout(done);
 }
 function onFilterInput(grid, e) {
   const input = e.target.closest?.(".data-grid-filter");
@@ -2123,6 +3299,8 @@ function onPointerDown(grid, e) {
     }, LONG_PRESS_MS);
 }
 function onPointerMove(grid, e) {
+  if (grid._sweep)
+    return onSweepMove(grid, e);
   const press = grid._press;
   if (!press || e.pointerId !== press.id)
     return;
@@ -2219,6 +3397,12 @@ function dragTo(grid) {
   }
 }
 function onPointerUp(grid, e) {
+  if (grid._pressed)
+    setTimeout(() => {
+      grid._pressed = false;
+    });
+  if (grid._sweep?.id === e.pointerId)
+    endSweep(grid);
   const press = grid._press;
   if (!press || e.pointerId !== press.id)
     return;
@@ -2273,7 +3457,7 @@ df$3.dataGrid = {
     grid._cells = options.cells || null;
     grid._load = options.load || null;
     grid._exhausted = false;
-    grid.setAttribute("role", parentIdField ? "treegrid" : "grid");
+    dfDollar3(grid).children(".data-grid-viewport").attr("role", parentIdField ? "treegrid" : "grid");
     if (!grid.store)
       return;
     if (grid._parts.filters)
@@ -2298,8 +3482,13 @@ df$3.dataGrid = {
   },
   selectAll: (target) => selectAll(resolve2(target)),
   clearSelection: (target) => {
-    query2(resolve2(target), { selected: [] });
+    setSelection(resolve2(target), { selected: [], selectedColumns: [], selectedRanges: [] });
   },
+  copyText(target) {
+    const matrix = selectionMatrix(resolve2(target));
+    return matrix ? toTsv(matrix) : "";
+  },
+  paste: (target, text) => pasteInto(resolve2(target), text),
   expandAll(target) {
     const grid = resolve2(target);
     query2(grid, { expanded: grid._source.branchIds(), collapsed: [] });
@@ -2333,6 +3522,34 @@ df$3.dataGrid = {
         detail: { record, field, value: patch[field], oldValue: old[field] }
       }));
     return record;
+  },
+  insert(target, records, at = { id: null, place: "end" }) {
+    const grid = resolve2(target);
+    if (!grid?._source || !grid.store)
+      return null;
+    const fields = fieldsOf2(grid);
+    const placed = placeRecords2({
+      rows: grid._source.rows,
+      ...fields,
+      from: { version: 1, records, roots: records.map((r) => r[fields.idField]), ...fields },
+      at,
+      copy: false,
+      within: false
+    });
+    if (!placed)
+      return null;
+    writeRows(grid, placed.rows);
+    return placed.inserted;
+  },
+  remove(target, ids) {
+    const grid = resolve2(target);
+    if (!grid?._source || !grid.store)
+      return [];
+    const fields = fieldsOf2(grid);
+    const gone = subtreeOf2(grid._source.rows, ids, fields);
+    if (gone.length)
+      writeRows(grid, withoutRecords2(grid._source.rows, gone, fields.idField));
+    return gone;
   }
 };
 function init3() {
@@ -2361,10 +3578,27 @@ function init3() {
     grid._focus = { row: 0, col: 0 };
     grid._selected = new Set;
     grid._rowHeight = parseFloat(getComputedStyle(grid).getPropertyValue("--data-grid-row-height")) || 36;
-    if (!grid.hasAttribute("role"))
-      grid.setAttribute("role", grid.dataset.parentField ? "treegrid" : "grid");
+    if (!viewport.hasAttribute("role"))
+      viewport.setAttribute("role", grid.dataset.parentField ? "treegrid" : "grid");
+    const moveName = () => {
+      for (const name of ["aria-label", "aria-labelledby"]) {
+        const value = grid.getAttribute(name);
+        if (value === null)
+          continue;
+        viewport.setAttribute(name, value);
+        grid.removeAttribute(name);
+      }
+    };
+    moveName();
+    new MutationObserver(moveName).observe(grid, {
+      attributes: true,
+      attributeFilter: ["aria-label", "aria-labelledby"]
+    });
     if (grid.dataset.select === "multiple")
-      grid.setAttribute("aria-multiselectable", "true");
+      viewport.setAttribute("aria-multiselectable", "true");
+    const headerRow = headerRowOf(grid);
+    headerRow?.setAttribute("role", "row");
+    headerRow?.setAttribute("aria-rowindex", "1");
     for (const column of grid._columns) {
       column.el.setAttribute("role", "columnheader");
       column.el.tabIndex = -1;
@@ -2383,6 +3617,8 @@ function init3() {
       expanded: [],
       collapsed: [],
       selected: [],
+      selectedColumns: [],
+      selectedRanges: [],
       ...early.query,
       ...attachPersistence2(grid, early.persist)
     };
@@ -2408,7 +3644,21 @@ function init3() {
     head.addEventListener("pointerdown", (e) => onPointerDown(grid, e));
     grid.addEventListener("pointermove", (e) => onPointerMove(grid, e));
     grid.addEventListener("pointerup", (e) => onPointerUp(grid, e));
-    grid.addEventListener("pointercancel", () => endPress(grid));
+    grid.addEventListener("pointercancel", () => {
+      endPress(grid);
+      endSweep(grid);
+    });
+    body.addEventListener("pointerdown", (e) => onBodyPress(grid, e));
+    grid.addEventListener("pointerover", (e) => hoverAt(grid, e.target));
+    grid.addEventListener("pointerleave", () => hoverAt(grid, null));
+    body.addEventListener("touchmove", (e) => {
+      if (grid._sweep?.active && grid._sweep.touch)
+        e.preventDefault();
+    }, { passive: false });
+    body.addEventListener("contextmenu", (e) => {
+      if (grid._sweep?.touch)
+        e.preventDefault();
+    });
     head.addEventListener("touchmove", (e) => {
       if (grid._press && (grid._press.long || grid._press.dragging || grid._press.resize))
         e.preventDefault();
@@ -2440,6 +3690,21 @@ function init3() {
       query2(grid, { widths });
     });
     grid.addEventListener("keydown", (e) => onKeydown2(grid, e));
+    body.addEventListener("dragstart", (e) => onDragStart(grid, e));
+    body.addEventListener("dragend", () => onDragEnd(grid));
+    viewport.addEventListener("dragenter", (e) => onDragOver(grid, e));
+    viewport.addEventListener("dragover", (e) => onDragOver(grid, e));
+    viewport.addEventListener("dragleave", (e) => {
+      if (!viewport.contains(e.relatedTarget))
+        showDrop(grid, null);
+    });
+    viewport.addEventListener("drop", (e) => onDrop(grid, e));
+    new MutationObserver(() => {
+      if (!grid.store || !grid._source)
+        return;
+      grid._gen++;
+      triggerStateChange3(grid, grid.store.value, grid.store.value);
+    }).observe(grid, { attributes: true, attributeFilter: ["data-select", "data-select-model", "data-drag"] });
     grid.addEventListener("input", (e) => onFilterInput(grid, e));
     grid.addEventListener("change", (e) => onFilterInput(grid, e));
     grid.addEventListener("focusin", (e) => {
@@ -2931,5 +4196,5 @@ function init4() {
 init4();
 new MutationObserver(init4).observe(document, { childList: true, subtree: true });
 
-//# debugId=DB5F7216615A5F0B64756E2164756E21
+//# debugId=56BDC59675D6C07964756E2164756E21
 //# sourceMappingURL=big-data.js.map

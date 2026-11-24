@@ -5,15 +5,53 @@
       "version": "unreleased",
       "created": [],
       "updated": [
+        "data-grid",
+        "data-tree",
         "graph-explorer",
-        "index"
+        "index",
+        "scaffold-calendar",
+        "system-in-numbers",
+        "tree-grid"
       ],
       "examples": {
+        "data-grid": {
+          "created": [
+            "Selection models",
+            "Checkbox selection",
+            "Drag and drop between grids"
+          ],
+          "updated": []
+        },
+        "data-tree": {
+          "created": [
+            "Drag and drop between trees"
+          ],
+          "updated": []
+        },
         "graph-explorer": {
           "created": [],
           "updated": [
             "A code base as a graph"
           ]
+        },
+        "scaffold-calendar": {
+          "created": [],
+          "updated": [
+            "Calendar"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
+          ]
+        },
+        "tree-grid": {
+          "created": [
+            "Checkbox selection",
+            "Checkboxes and drag into a branch"
+          ],
+          "updated": []
         }
       }
     },

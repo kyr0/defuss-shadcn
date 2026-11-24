@@ -24,7 +24,7 @@ if (!__df$shared || __df$shared.abi !== '0.10.0') {
     'defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone',
   );
 }
-const { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence, dataSource, parseFilter, filterText, virtualWindow, sizerHeight, scrollIntoViewTop, asEditor, builtinEditor, editorControl, editorKey, editorProblem, focusEditor, valueType, } = __df$shared;
+const { defussGlobals, defussQuery, componentState, bindComponent, persisted, viewPersistence, dataSource, parseFilter, filterText, virtualWindow, sizerHeight, scrollIntoViewTop, asEditor, builtinEditor, editorControl, editorKey, editorProblem, focusEditor, valueType, carriesRecords, dropEffectFor, dropEffects, droppedRecords, endRecordDrag, placeRecords, recordDrag, startRecordDrag, subtreeOf, withoutRecords, } = __df$shared;
 const df$ = defussGlobals();
 const dfDollar = defussQuery();
 const dataTreeStates = ['default', 'loading', 'empty'];
@@ -87,6 +87,7 @@ function renderItems(tree) {
     const { size, pos } = siblingInfo(tree);
     const selected = configOf(tree).selected ?? null;
     const idField = tree._source.idField;
+    const draggable = tree.hasAttribute('data-drag');
     let active = null;
     let edShown = false;
     for (let i = 0; i < pool.children.length; i++) {
@@ -130,6 +131,10 @@ function renderItems(tree) {
             }
         }
         item.setAttribute('aria-selected', String(selected !== null && entry.row[idField] === selected));
+        // data-drag: items drag out - the one being edited does not (a drag in its field selects text)
+        const drags = draggable && !(ed && ed.id === entry.row[idField]);
+        if (item.draggable !== drags)
+            item.draggable = drags;
         item.toggleAttribute('data-active', index === tree._active);
         if (index === tree._active)
             active = item;
@@ -434,15 +439,15 @@ df$.dataTreeStates = dataTreeStates;
 // -- interaction ------------------------------------------------------------------
 const query = (tree, patch) => dataTreeApi.setState(tree, tree.store.value.name === 'loading' ? 'loading' : 'default', patch);
 const entryAt = (tree, index) => tree._result?.entries[index];
-/** a record's ancestors, the root first (parent ids cached per source) */
+/** a record's ancestors, the root first (parent ids cached per set of records - a drop or an edit replaces them) */
 function ancestorsOf(tree, id) {
     const src = tree._source;
-    if (tree._parents?.source !== src) {
+    if (tree._parents?.rows !== src.rows) {
         const field = tree._parentField || 'parentId';
         const map = new Map();
         for (const row of src.rows)
             map.set(row[src.idField], row[field] ?? null);
-        tree._parents = { source: src, map };
+        tree._parents = { rows: src.rows, map };
     }
     const map = tree._parents.map;
     const out = [];
@@ -575,6 +580,217 @@ function onClick(tree, e) {
         return;
     }
     select(tree, item._index);
+}
+// -- drag and drop: items out of a tree with data-drag, into one with data-drop -----------------------------------
+// The drag, its effect and where a drop lands belong to src/shared/record-drag.ts (a Data Grid drags the same way);
+// this tree finds its records, draws where they would land and writes them.
+const fieldsOf = (tree) => ({
+    idField: tree._source.idField,
+    parentIdField: (tree._source.tree?.parentIdField ?? tree._parentField ?? 'parentId'),
+});
+/** the dragged records as text: a label a line, indented by a tab per level - a spreadsheet shows the outline */
+function outline(tree, records, root) {
+    const { idField, parentIdField } = fieldsOf(tree);
+    const children = new Map();
+    for (const r of records) {
+        const p = r[parentIdField] ?? null;
+        if (!children.has(p))
+            children.set(p, []);
+        children.get(p).push(r);
+    }
+    const lines = [];
+    const items = [];
+    const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const walk = (r, depth) => {
+        const label = String(r[labelField(tree)] ?? '');
+        lines.push('\t'.repeat(depth) + label);
+        const kids = children.get(r[idField]) ?? [];
+        items.push(`<li>${esc(label)}`);
+        if (kids.length) {
+            items.push('<ul>');
+            for (const k of kids)
+                walk(k, depth + 1);
+            items.push('</ul>');
+        }
+        items.push('</li>');
+    };
+    const top = records.find((r) => r[idField] === root);
+    if (top)
+        walk(top, 0);
+    return { plain: lines.join('\n'), html: `<ul>${items.join('')}</ul>` };
+}
+function onTreeDragStart(tree, e) {
+    const item = e.target;
+    // a link or a picture in a label drags itself
+    if (!tree.hasAttribute('data-drag') || !tree._source || !item.classList?.contains('data-tree-item'))
+        return;
+    if (!tree._pool.contains(item))
+        return;
+    const entry = entryAt(tree, item._index);
+    if (!entry)
+        return e.preventDefault();
+    const fields = fieldsOf(tree);
+    const root = entry.row[fields.idField];
+    const records = subtreeOf(tree._source.rows, [root], fields);
+    const drag = {
+        source: tree,
+        records,
+        roots: [root],
+        ...fields,
+        effects: dropEffects(tree.dataset.drag),
+        remove: () => writeTreeRows(tree, withoutRecords(tree._source.rows, records, fields.idField)),
+        done: (effect, target) => 
+        // Fires on the tree an item was dragged from, once a drop took it - on a move it has left (with its subtree).
+        tree.dispatchEvent(new CustomEvent('data-tree-dragend', {
+            bubbles: true,
+            detail: { records, effect, target },
+        })),
+    };
+    const label = String(entry.row[labelField(tree)] ?? '');
+    startRecordDrag(e, drag, outline(tree, records, root), records.length > 1 ? `${label} (+${records.length - 1})` : label);
+    tree.setAttribute('data-dragging-items', '');
+}
+function onTreeDragEnd(tree) {
+    tree.removeAttribute('data-dragging-items');
+    const drag = recordDrag();
+    if (drag?.source === tree)
+        endRecordDrag(drag);
+}
+/** where a drop lands: beside the item under the pointer (its outer quarters), into it (its middle half), or last */
+function treeDropAt(tree, e) {
+    const h = tree._rowHeight;
+    const y = e.clientY - tree._sizer.getBoundingClientRect().top;
+    const index = Math.max(0, Math.floor(y / h));
+    const entry = entryAt(tree, index);
+    if (!entry)
+        return { at: { id: null, place: 'end' }, index: tree._result?.entries.length ?? 0 };
+    const f = y / h - index;
+    const place = f < 0.25 ? 'before' : f > 0.75 ? 'after' : 'into';
+    return { at: { id: entry.row[tree._source.idField], place }, index };
+}
+/** the line where a drop would land (indented to its level), or the frame of the item it goes into; null: away */
+function showTreeDrop(tree, at, index = 0) {
+    let mark = tree._dropMark;
+    if (!at) {
+        mark?.remove();
+        tree._dropMark = null;
+        return;
+    }
+    if (!mark) {
+        mark = tree._dropMark = document.createElement('div');
+        mark.className = 'data-tree-drop';
+        mark.setAttribute('aria-hidden', 'true');
+    }
+    if (mark.parentElement !== tree._sizer)
+        tree._sizer.append(mark);
+    const entries = tree._result?.entries ?? [];
+    const row = at.place === 'end' ? entries.length : at.place === 'after' ? index + 1 : index;
+    mark.dataset.place = at.place;
+    mark.style.top = `${row * tree._rowHeight}px`;
+    mark.style.setProperty('--depth', String(at.place === 'end' ? 0 : (entries[index]?.meta.depth ?? 0)));
+}
+function onTreeDragOver(tree, e) {
+    if (!tree.hasAttribute('data-drop') || !tree._source || !carriesRecords(e))
+        return;
+    const drag = recordDrag();
+    const effect = dropEffectFor(e, dropEffects(tree.dataset.drop), drag);
+    const { at, index } = treeDropAt(tree, e);
+    // near an edge the items scroll on
+    const box = tree.getBoundingClientRect();
+    if (e.clientY < box.top + tree._rowHeight)
+        tree.scrollTop -= 12;
+    else if (e.clientY > box.bottom - tree._rowHeight)
+        tree.scrollTop += 12;
+    // a move onto the item it moves, or into what lies under it, goes nowhere
+    const within = drag?.source === tree && effect === 'move';
+    const idField = tree._source.idField;
+    if (!effect || (within && at.id !== null && drag.records.some((r) => r[idField] === at.id))) {
+        if (e.dataTransfer)
+            e.dataTransfer.dropEffect = 'none';
+        showTreeDrop(tree, null);
+        return;
+    }
+    e.preventDefault();
+    if (e.dataTransfer)
+        e.dataTransfer.dropEffect = effect;
+    showTreeDrop(tree, at, index);
+}
+function onTreeDrop(tree, e) {
+    showTreeDrop(tree, null);
+    if (!tree.hasAttribute('data-drop') || !tree._source)
+        return;
+    const drag = recordDrag();
+    const payload = droppedRecords(e);
+    const effect = dropEffectFor(e, dropEffects(tree.dataset.drop), drag);
+    if (!payload || !effect)
+        return;
+    e.preventDefault();
+    dropTreeRecords(tree, payload, effect, treeDropAt(tree, e).at, drag);
+}
+/**
+ * Take dropped records: data-tree-beforedrop may refuse them; a move out of another component lets go of them first,
+ * then the tree writes its records once, opens the item they went into and selects the first of them.
+ */
+function dropTreeRecords(tree, payload, effect, at, drag) {
+    const fields = fieldsOf(tree);
+    const within = !!drag && drag.source === tree && effect === 'move';
+    const placed = placeRecords({
+        rows: tree._source.rows,
+        ...fields,
+        from: payload,
+        at,
+        copy: effect === 'copy',
+        within,
+    });
+    const source = drag?.source ?? null;
+    const detail = { records: placed?.inserted ?? [], effect, source, at };
+    if (!placed ||
+        // Fires before dropped records are written - cancel it to refuse them (the drag ends without a change).
+        !tree.dispatchEvent(new CustomEvent('data-tree-beforedrop', { bubbles: true, cancelable: true, detail }))) {
+        endRecordDrag(drag);
+        return null;
+    }
+    if (drag && effect === 'move' && !within)
+        drag.remove();
+    const first = placed.roots[0];
+    // the way to it opens (into an item: that item too) - in the same write
+    const parentOf = new Map(placed.rows.map((r) => [r[fields.idField], r[fields.parentIdField] ?? null]));
+    const way = [];
+    const seen = new Set();
+    for (let p = parentOf.get(first) ?? null; p !== null && parentOf.has(p) && !seen.has(p); p = parentOf.get(p) ?? null) {
+        seen.add(p);
+        way.unshift(p);
+    }
+    const patch = { selected: first ?? null };
+    if (way.length)
+        patch.expanded = [...new Set([...(configOf(tree).expanded || []), ...way])];
+    writeTreeRows(tree, placed.rows, patch);
+    drag?.done(effect, tree);
+    endRecordDrag(drag);
+    const index = tree._result?.entries.findIndex((x) => x.row[fields.idField] === first) ?? -1;
+    if (index >= 0)
+        activate(tree, index);
+    tree.focus({ preventScroll: true });
+    // Fires after dropped records were written into the tree - as inserted, with new ids where they needed one.
+    tree.dispatchEvent(new CustomEvent('data-tree-drop', { bubbles: true, detail }));
+    return placed.inserted;
+}
+/** Replace the records (a drop, a move out, insert(), remove()): a selection that is gone goes; patch goes with it. */
+function writeTreeRows(tree, next, patch = {}) {
+    tree._source.setRows(next);
+    const sel = configOf(tree).selected ?? null;
+    if (!('selected' in patch) && sel !== null && !next.some((r) => r[tree._source.idField] === sel))
+        patch = { ...patch, selected: null };
+    tree._writing = true;
+    try {
+        if (Object.keys(patch).length)
+            query(tree, patch);
+        else
+            triggerStateChange(tree, tree.store.value, tree.store.value);
+    }
+    finally {
+        tree._writing = false;
+    }
 }
 // one page-wide listener: <input data-tree-filter="tree-id" [data-field]> filters that tree
 if (!document.__dataTreeFilterInit) {
@@ -737,6 +953,53 @@ df$.dataTree = {
         const id = configOf(tree).selected ?? null;
         return id === null ? null : (tree._source?.rows.find((r) => r[tree._source.idField] === id) ?? null);
     },
+    /**
+     * Insert records - what a drop writes, from script (a button that moves the selected item to another tree, the
+     * keyboard's way to do what a drag does). Records may bring their children (linked by parent id among themselves);
+     * the others take the place's parent: beside a record its parent, into a record that record, at the end none. A
+     * record whose id the tree already holds gets a new one (numbers: after the largest, text: "id-2" ...). No event
+     * fires - the page asked for it.
+     * @param target - the .data-tree element or its selector
+     * @param records - the records to insert
+     * @param at - where: beside a record ({ id, place: 'before' | 'after' }), into one ('into'), or at the end (the
+     *   default: roots)
+     * @returns the records as inserted (with their ids), null when the place is no record of the tree
+     */
+    insert(target, records, at = { id: null, place: 'end' }) {
+        const tree = resolve(target);
+        if (!tree?._source || !tree.store)
+            return null;
+        const fields = fieldsOf(tree);
+        const placed = placeRecords({
+            rows: tree._source.rows,
+            ...fields,
+            from: { version: 1, records, roots: records.map((r) => r[fields.idField]), ...fields },
+            at,
+            copy: false,
+            within: false,
+        });
+        if (!placed)
+            return null;
+        writeTreeRows(tree, placed.rows);
+        return placed.inserted;
+    },
+    /**
+     * Take records out with everything under them - what a move takes out of the tree it leaves. A selected record
+     * that goes is no longer selected. No event fires - the page asked for it.
+     * @param target - the .data-tree element or its selector
+     * @param ids - the ids of the records to take out
+     * @returns the records taken out (with the ones under them), in source order
+     */
+    remove(target, ids) {
+        const tree = resolve(target);
+        if (!tree?._source || !tree.store)
+            return [];
+        const fields = fieldsOf(tree);
+        const gone = subtreeOf(tree._source.rows, ids, fields);
+        if (gone.length)
+            writeTreeRows(tree, withoutRecords(tree._source.rows, gone, fields.idField));
+        return gone;
+    },
 };
 // -- init --------------------------------------------------------------------------
 function init() {
@@ -782,6 +1045,21 @@ function init() {
         new ResizeObserver(() => renderItems(tree)).observe(tree);
         tree.addEventListener('click', (e) => onClick(tree, e));
         tree.addEventListener('keydown', (e) => onKeydown(tree, e));
+        // items drag out (data-drag) and records drop in (data-drop) - the native Drag and Drop API
+        tree.addEventListener('dragstart', (e) => onTreeDragStart(tree, e));
+        tree.addEventListener('dragend', () => onTreeDragEnd(tree));
+        tree.addEventListener('dragenter', (e) => onTreeDragOver(tree, e));
+        tree.addEventListener('dragover', (e) => onTreeDragOver(tree, e));
+        tree.addEventListener('dragleave', (e) => {
+            if (!tree.contains(e.relatedTarget))
+                showTreeDrop(tree, null);
+        });
+        tree.addEventListener('drop', (e) => onTreeDrop(tree, e));
+        // data-drag switched: the items say whether they drag
+        new MutationObserver(() => {
+            tree._gen = (tree._gen || 0) + 1;
+            renderItems(tree);
+        }).observe(tree, { attributes: true, attributeFilter: ['data-drag'] });
         // a double click on an item edits it (data-editable)
         tree.addEventListener('dblclick', (e) => {
             const item = e.target.closest?.('.data-tree-item');

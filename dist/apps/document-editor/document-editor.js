@@ -2458,6 +2458,164 @@ function editorKey(e, editor) {
     return e.shiftKey ? "prev" : "next";
   return null;
 }
+// src/shared/record-drag.ts
+var RECORDS_MIME = "application/x-defuss-records+json";
+var current = null;
+function dropEffects(value) {
+  const words = (value ?? "").split(/\s+/).filter((w) => w === "move" || w === "copy");
+  return words.length ? [...new Set(words)] : ["move", "copy"];
+}
+function subtreeOf(rows, roots, fields) {
+  const take = new Set(roots);
+  if (fields.parentIdField) {
+    const children = new Map;
+    for (const r of rows) {
+      const p = r[fields.parentIdField] ?? null;
+      if (!children.has(p))
+        children.set(p, []);
+      children.get(p).push(r);
+    }
+    const queue = [...roots];
+    while (queue.length) {
+      const id = queue.shift();
+      for (const child of children.get(id) ?? []) {
+        const cid = child[fields.idField];
+        if (take.has(cid))
+          continue;
+        take.add(cid);
+        queue.push(cid);
+      }
+    }
+  }
+  return rows.filter((r) => take.has(r[fields.idField]));
+}
+function topRoots(records, roots, fields) {
+  if (!fields.parentIdField)
+    return [...roots];
+  const byId = new Map(records.map((r) => [r[fields.idField], r]));
+  const set = new Set(roots);
+  return roots.filter((id) => {
+    let parent = byId.get(id)?.[fields.parentIdField];
+    const seen = new Set;
+    while (parent != null && !seen.has(parent)) {
+      if (set.has(parent))
+        return false;
+      seen.add(parent);
+      parent = byId.get(parent)?.[fields.parentIdField];
+    }
+    return true;
+  });
+}
+function startRecordDrag(e, drag, text, label) {
+  current = drag;
+  const dt = e.dataTransfer;
+  if (!dt)
+    return;
+  const payload = {
+    version: 1,
+    records: drag.records,
+    roots: drag.roots,
+    idField: drag.idField,
+    parentIdField: drag.parentIdField
+  };
+  try {
+    dt.setData(RECORDS_MIME, JSON.stringify(payload));
+  } catch {}
+  dt.setData("text/plain", text.plain);
+  dt.setData("text/html", text.html);
+  dt.effectAllowed = drag.effects.length === 2 ? "copyMove" : drag.effects[0];
+  const image = document.createElement("div");
+  image.className = "record-drag-image";
+  image.textContent = label;
+  image.style.cssText = "position:absolute;top:-1000px;left:0;padding:0.25rem 0.625rem;border:1px solid var(--border);" + "border-radius:var(--radius-md);background:var(--popover);color:var(--popover-foreground);" + "font:500 0.8125rem/1.4 var(--font-sans);white-space:nowrap;box-shadow:var(--shadow-md)";
+  document.body.append(image);
+  dt.setDragImage(image, -12, -12);
+  setTimeout(() => image.remove());
+}
+var recordDrag = () => current?.source.isConnected ? current : null;
+var carriesRecords = (e) => !!recordDrag() || !!e.dataTransfer?.types.includes(RECORDS_MIME);
+function endRecordDrag(drag) {
+  if (!drag || drag === current)
+    current = null;
+}
+function dropEffectFor(e, target, drag) {
+  const allowed = (drag ? drag.effects : ["copy"]).filter((x) => target.includes(x));
+  if (!allowed.length)
+    return null;
+  if (allowed.length === 1)
+    return allowed[0];
+  return e.altKey || e.ctrlKey ? "copy" : "move";
+}
+function droppedRecords(e) {
+  const drag = recordDrag();
+  if (drag)
+    return {
+      version: 1,
+      records: drag.records,
+      roots: drag.roots,
+      idField: drag.idField,
+      parentIdField: drag.parentIdField
+    };
+  try {
+    const data = JSON.parse(e.dataTransfer?.getData(RECORDS_MIME) || "null");
+    if (data?.version === 1 && Array.isArray(data.records) && Array.isArray(data.roots) && data.idField)
+      return data;
+  } catch {}
+  return null;
+}
+function placeRecords(spec) {
+  const { idField, parentIdField, from, at } = spec;
+  const fromParent = from.parentIdField;
+  const roots = topRoots(from.records, from.roots, from);
+  const moving = new Set(from.records.map((r) => r[from.idField]));
+  if (spec.within && at.id !== null && moving.has(at.id))
+    return null;
+  const base = spec.within ? spec.rows.filter((r) => !moving.has(r[idField])) : spec.rows.slice();
+  const target = at.id === null ? null : base.find((r) => r[idField] === at.id);
+  if (at.id !== null && !target)
+    return null;
+  const taken = new Set(base.map((r) => r[idField]));
+  let next = Math.max(0, ...[...taken].filter((x) => typeof x === "number" && Number.isFinite(x))) + 1;
+  const ids = new Map;
+  for (const r of from.records) {
+    const old = r[from.idField];
+    let id = old;
+    if (spec.copy || taken.has(id)) {
+      if (typeof old === "number")
+        id = next++;
+      else
+        for (let n = 2;taken.has(id = `${old}-${n}`); n++)
+          ;
+    }
+    taken.add(id);
+    ids.set(old, id);
+  }
+  const parent = !parentIdField ? null : at.place === "into" ? at.id : at.place === "end" ? null : target?.[parentIdField] ?? null;
+  const rootSet = new Set(roots);
+  const inserted = from.records.map((r) => {
+    const old = r[from.idField];
+    const record = { ...r };
+    delete record[from.idField];
+    record[idField] = ids.get(old);
+    if (parentIdField) {
+      const was = fromParent ? r[fromParent] : null;
+      if (fromParent && fromParent !== parentIdField)
+        delete record[fromParent];
+      record[parentIdField] = rootSet.has(old) || !ids.has(was) ? parent : ids.get(was);
+    }
+    return record;
+  });
+  const index = at.place === "end" || at.place === "into" || !target ? base.length : base.indexOf(target) + (at.place === "after" ? 1 : 0);
+  return {
+    rows: [...base.slice(0, index), ...inserted, ...base.slice(index)],
+    inserted,
+    roots: roots.map((id) => ids.get(id))
+  };
+}
+function withoutRecords(rows, records, idField) {
+  const gone = new Set(records.map((r) => r[idField]));
+  return rows.filter((r) => !gone.has(r[idField]));
+}
 // src/shared/locale.ts
 var DEFAULT_LOCALE = "en";
 function valid(tag) {
@@ -5366,6 +5524,17 @@ shadcn.shared = {
   editorProblem,
   focusEditor,
   valueType,
+  carriesRecords,
+  dropEffectFor,
+  dropEffects,
+  droppedRecords,
+  endRecordDrag,
+  placeRecords,
+  recordDrag,
+  startRecordDrag,
+  subtreeOf,
+  topRoots,
+  withoutRecords,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -8642,6 +8811,6 @@ function init13() {
 init13();
 new MutationObserver(init13).observe(document, { childList: true, subtree: true });
 
-//# debugId=EB0F076429BA6D2264756E2164756E21
+//# debugId=CEE89C06C57FEA1764756E2164756E21
 /* defuss-shadcn v0.10.0 runtime provenance: bundles defuss-morph@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599) + defuss-query@0.2.0 (MIT, sha256:6265fec10f843f2aa8bf9f2a44bbf584dbb0dcbfef8a37a53dd04848f7ab4599); full notice: NOTICE.txt */
 //# sourceMappingURL=document-editor.js.map

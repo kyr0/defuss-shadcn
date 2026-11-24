@@ -7,6 +7,8 @@
   .data-grid {
     --data-grid-row-height: 36px;
     --data-grid-template: repeat(4, minmax(8rem, 1fr));
+    /* data-select-model="checkbox": the column of checkboxes in front of the rows */
+    --data-grid-check-width: 2.5rem;
 
     display: flex;
     flex-direction: column;
@@ -45,7 +47,9 @@
     width: max-content;
     min-width: 100%;
     background: var(--muted);
-    color: var(--muted-foreground);
+    /* muted text on the muted head measured 4.34:1 in the default theme - a quarter of the foreground mixed in lifts
+       it past AA (4.5:1) in light and dark, in any theme whose foreground reads on its muted surface */
+    color: color-mix(in oklch, var(--muted-foreground) 75%, var(--foreground));
     border-bottom: 1px solid var(--border);
   }
 
@@ -88,7 +92,9 @@
   /* the last locked column draws the edge the rest scrolls under */
   .data-grid[data-has-locked]
     :is(.data-grid-header, .data-grid-cell, .data-grid-filter-cell)[data-locked]:not(:has(~ [data-locked])) {
+    /* a selected cell keeps its edges (--_ring) under the locked edge */
     box-shadow:
+      var(--_ring, 0 0 #0000),
       1px 0 0 var(--border),
       6px 0 8px -6px color-mix(in oklch, var(--foreground) 25%, transparent);
   }
@@ -493,10 +499,6 @@
     &:hover {
       background: color-mix(in oklch, var(--accent) 60%, var(--card));
     }
-
-    &[aria-selected="true"] {
-      background: color-mix(in oklch, var(--primary) 12%, var(--card));
-    }
   }
 
   .data-grid-cell {
@@ -506,6 +508,161 @@
       outline: 2px solid var(--ring);
       outline-offset: -2px;
     }
+  }
+
+  /* -- selection models -----------------------------------------------------------
+     Hover is a soft neutral tint; a selected cell a mid tint of the primary colour with a strong 2px line along the
+     edges of its region (data-edge: top bottom start end, written per cell) - the two never look alike. A grid that
+     selects keeps the browser's text selection out of the body: a drag sweeps cells, Ctrl / Cmd + C copies them. */
+  .data-grid[data-select] .data-grid-body {
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+
+    & :is(input, textarea, [contenteditable]) {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+  }
+
+  /* the cell and column models hover a cell or a column, never the row */
+  .data-grid[data-select]:is([data-select-model~="cell"], [data-select-model="column"])
+    .data-grid-body
+    .data-grid-row:hover {
+    background: var(--card);
+  }
+  .data-grid[data-select][data-select-model~="cell"] .data-grid-body {
+    & .data-grid-cell {
+      cursor: cell;
+    }
+    & .data-grid-cell:hover:not([data-selected]) {
+      background: color-mix(in oklch, var(--accent) 60%, var(--card));
+    }
+  }
+
+  .data-grid-body .data-grid-cell[data-hover]:not([data-selected]) {
+    background: color-mix(in oklch, var(--accent) 60%, var(--card));
+  }
+
+  /* a selected cell (and a selected row's checkbox) under the pointer - the cell, its column, its row - is more
+     selected, never the soft hover: a deeper tint, the same strong line */
+  .data-grid-body :is(.data-grid-cell, .data-grid-check)[data-selected] {
+    --_edge-top: 0px;
+    --_edge-bottom: 0px;
+    --_edge-start: 0px;
+    --_edge-end: 0px;
+    --_ring:
+      inset 0 var(--_edge-top) 0 0 var(--primary), inset 0 calc(-1 * var(--_edge-bottom)) 0 0 var(--primary),
+      inset var(--_edge-start) 0 0 0 var(--primary), inset calc(-1 * var(--_edge-end)) 0 0 0 var(--primary);
+    /* the tint is the cells' own: a selected row's tint ends where its frame does */
+    background: color-mix(in oklch, var(--primary) 20%, var(--card));
+    box-shadow: var(--_ring);
+
+    &:hover,
+    &[data-hover] {
+      background: color-mix(in oklch, var(--primary) 32%, var(--card));
+    }
+    &[data-edge~="top"] {
+      --_edge-top: 2px;
+    }
+    &[data-edge~="bottom"] {
+      --_edge-bottom: 2px;
+    }
+    &[data-edge~="start"] {
+      --_edge-start: 2px;
+    }
+    &[data-edge~="end"] {
+      --_edge-end: 2px;
+    }
+    /* start and end are logical; the shadows are physical */
+    &:dir(rtl) {
+      --_ring:
+        inset 0 var(--_edge-top) 0 0 var(--primary), inset 0 calc(-1 * var(--_edge-bottom)) 0 0 var(--primary),
+        inset calc(-1 * var(--_edge-start)) 0 0 0 var(--primary), inset var(--_edge-end) 0 0 0 var(--primary);
+    }
+  }
+
+  /* the row models: the row under the pointer deepens its selected cells alike */
+  .data-grid:not([data-select-model~="cell"], [data-select-model="column"])
+    .data-grid-body
+    .data-grid-row:hover
+    > :is(.data-grid-cell, .data-grid-check)[data-selected] {
+    background: color-mix(in oklch, var(--primary) 32%, var(--card));
+  }
+
+  /* the checkbox model: a checkbox in front of every row (sticky at the start, first whatever the column order - the
+     element is its row's last), one in the head for every row of the query */
+  .data-grid-check {
+    order: -1;
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: inherit;
+    cursor: pointer;
+  }
+  .data-grid-head > .data-grid-row:not(.data-grid-filters) > .data-grid-check {
+    height: var(--data-grid-row-height);
+    background: var(--muted);
+  }
+  .data-grid-filters .data-grid-check {
+    cursor: default;
+  }
+  .data-grid[data-select="single"] .data-grid-head .data-grid-check .checkbox {
+    visibility: hidden;
+  }
+
+  /* -- drag and drop: rows that drag (data-drag), where dropped records would land (data-drop) -- */
+  .data-grid[data-drag] .data-grid-body .data-grid-row[draggable="true"] {
+    cursor: grab;
+  }
+  .data-grid[data-dragging-rows] .data-grid-body .data-grid-row[aria-selected="true"] {
+    opacity: 0.6;
+  }
+  .data-grid-row-drop {
+    position: absolute;
+    inset-inline: 0;
+    z-index: 4;
+    height: 2px;
+    margin-top: -1px;
+    background: var(--primary);
+    pointer-events: none;
+
+    /* into a row: it becomes its parent - framed */
+    &[data-place="into"] {
+      height: var(--data-grid-row-height);
+      margin-top: 0;
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      box-shadow: inset 0 0 0 2px var(--primary);
+    }
+  }
+
+  /* the column models: a selected column's header */
+  .data-grid-header[aria-selected="true"] {
+    --_ring: inset 0 -2px 0 0 var(--primary);
+    background: color-mix(in oklch, var(--primary) 20%, var(--muted));
+    color: var(--foreground);
+    box-shadow: var(--_ring);
+  }
+
+  .data-grid[data-sweeping] {
+    cursor: cell;
+  }
+
+  /* the stand-in that carries a copy or a paste for a moment (Ctrl / Cmd + C, V) - never seen */
+  .data-grid-clipboard {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+    resize: none;
   }
 
   .data-grid-content {
@@ -568,7 +725,9 @@
   }
   /* an editable cell says so on hover: a double click edits it */
   .data-grid-row > .data-grid-cell[data-editable]:not([data-editing]):hover {
-    box-shadow: inset 0 0 0 1px var(--input);
+    box-shadow:
+      var(--_ring, 0 0 #0000),
+      inset 0 0 0 1px var(--input);
   }
 
   /* -- tree grid: the first column indents and carries the toggle --- */
@@ -778,6 +937,15 @@
     .data-grid-footer {
       color: var(--foreground);
     }
+
+    .data-grid-body :is(.data-grid-cell, .data-grid-check)[data-selected] {
+      background: color-mix(in oklch, var(--primary) 26%, var(--card));
+
+      &:hover,
+      &[data-hover] {
+        background: color-mix(in oklch, var(--primary) 38%, var(--card));
+      }
+    }
   }
 }
 
@@ -791,7 +959,9 @@
       border-color: ButtonText;
     }
 
-    .data-grid-body .data-grid-row[aria-selected="true"] {
+    .data-grid-body .data-grid-row[aria-selected="true"],
+    .data-grid-body :is(.data-grid-cell, .data-grid-check)[data-selected],
+    .data-grid-header[aria-selected="true"] {
       background: Highlight;
       color: HighlightText;
     }
@@ -819,6 +989,7 @@
     }
 
     .data-grid-drop-marker,
+    .data-grid-row-drop,
     .data-grid-resizer::after {
       background: Highlight;
     }

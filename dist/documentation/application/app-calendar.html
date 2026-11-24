@@ -394,6 +394,29 @@
     border-radius: 50%;
     background: inherit;
   }
+  /* moving an event: the original waits dimmed, the ghost shows where it lands, a month day it would land on is framed */
+  .ag-ev[data-moving],
+  .ag-bar[data-moving] {
+    opacity: 0.45;
+  }
+  .ag-chip[data-moving] {
+    position: relative;
+    z-index: 5;
+    background: var(--popover);
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+  }
+  .ag-mday[data-drop] {
+    outline: 2px dashed var(--ring);
+    outline-offset: -2px;
+  }
+  [data-ag-moving] {
+    cursor: grabbing;
+  }
+  [data-ag-moving] .ag-ev,
+  [data-ag-moving] .ag-col {
+    cursor: grabbing;
+  }
   .ag-ghost {
     position: absolute;
     inset-inline: 2px;
@@ -2028,6 +2051,8 @@
         legendFree: 'Everyone is free',
         cal: { work: 'Work', personal: 'Personal', family: 'Family', birthdays: 'Birthdays', holidays: 'Holidays' },
         endBeforeStart: 'An event ends after it starts.',
+        moved: 'Event moved',
+        movedOne: 'This occurrence moved',
       },
       de: {
         you: 'Du',
@@ -2058,6 +2083,8 @@
         legendFree: 'Alle haben Zeit',
         cal: { work: 'Arbeit', personal: 'Privat', family: 'Familie', birthdays: 'Geburtstage', holidays: 'Feiertage' },
         endBeforeStart: 'Ein Termin endet nach seinem Beginn.',
+        moved: 'Termin verschoben',
+        movedOne: 'Nur dieser Termin verschoben',
       },
     };
     const t = () => WORDS[lang().startsWith('de') ? 'de' : 'en'];
@@ -2303,7 +2330,7 @@
     const hiddenCals = () => new Set(conf().hidden);
     const occursOn = (e, day) => {
       const first = parse(e.date);
-      if (dayNo(day) < dayNo(first)) return false;
+      if (dayNo(day) < dayNo(first) || e.except?.includes(iso(day))) return false;
       switch (e.repeat) {
         case 'daily':
           return true;
@@ -2354,6 +2381,7 @@
     // ---- the state: a view and a date - the address holds both (#/week/2026-11-17)
     const state = { view: 'week', date: today() };
     let pendingCard = null;
+    let pendingFocus = null;
     const go = (view, date = state.date) => {
       const target = '#/' + view + (view === 'find' ? '' : '/' + iso(date));
       if (location.hash === target) show(view, date);
@@ -2669,6 +2697,10 @@
         const chip = one('[data-ag-ev="' + CSS.escape(pendingCard) + '"]');
         if (chip) openDetail(pendingCard, chip);
         pendingCard = null;
+      }
+      if (pendingFocus) {
+        one('[data-ag-ev="' + CSS.escape(pendingFocus) + '"]')?.focus();
+        pendingFocus = null;
       }
       all('[data-ag-views] .toggle').forEach((b) => b.setAttribute('aria-pressed', String(b.value === state.view)));
     }
@@ -3381,6 +3413,235 @@
       }
       const day = e.target.closest('.ag-mday');
       if (day && !e.target.closest('button')) newEvent(parse(day.dataset.day));
+    });
+
+    // ---- moving events: drag one to another time or day - a mouse at once, a finger after resting on it - or
+    //      Alt+arrows on a focused one (Up / Down 15 minutes in the time grid, a week in the month; Left / Right a day).
+    //      A repeating event moves one occurrence: the series skips that day, the occurrence becomes an event of its own.
+    const movable = (x) => !!x && !x.e.readOnly && x.e.cal !== 'holidays';
+    /** move an instance by days and minutes; returns the key it has now */
+    const moveInstance = (x, days, mins) => {
+      const e = x.e;
+      if (!days && !mins) return null;
+      const date = addDays(x.start, days);
+      let endDate = addDays(x.end, days);
+      let start = e.start;
+      let end = e.end;
+      if (!e.allDay && mins) {
+        // the start moves, the length stays - past midnight it carries into the next day
+        const length = (dayNo(x.end) - dayNo(x.start)) * 1440 + e.end - e.start;
+        start = Math.max(0, Math.min(1440 - 15, e.start + mins));
+        let over = Math.floor((start + length) / 1440);
+        end = (start + length) % 1440;
+        if (over > 0 && end === 0) {
+          over--;
+          end = 1439;
+        }
+        endDate = addDays(date, over);
+      }
+      const changes = { date: iso(date), endDate: iso(endDate), start, end };
+      if (e.repeat === 'none') {
+        events = events.map((v) => (v.id === e.id ? { ...v, ...changes } : v));
+        return e.id + '@' + changes.date;
+      }
+      const { id: _series, except: _skipped, ...rest } = e;
+      const single = ev({ ...rest, ...changes, repeat: 'none' });
+      events = events.map((v) => (v.id === e.id ? { ...v, except: [...(v.except ?? []), iso(x.start)] } : v));
+      events.push(single);
+      return single.id + '@' + changes.date;
+    };
+    const announceMove = (x, key) => {
+      const moved = instanceByKey(key);
+      toast(x.e.repeat === 'none' ? t().moved : t().movedOne, x.e.title + (moved ? ' - ' + whenText(moved) : ''));
+    };
+    /** the minute under a pointer in a time-grid column */
+    const minuteAt = (col, y) => {
+      const r = col.getBoundingClientRect();
+      return ((y - r.top) / r.height) * 1440;
+    };
+    const colAt = (x) =>
+      all('.ag-col').find((c) => {
+        const r = c.getBoundingClientRect();
+        return x >= r.left && x < r.right;
+      });
+    let moving = null;
+    let swallowClick = false;
+    app.addEventListener('pointerdown', (e) => {
+      const el = e.target.closest('.ag-ev, .ag-bar, .ag-chip');
+      if (!el || e.button !== 0 || !e.isPrimary) return;
+      const x = instanceByKey(el.dataset.agEv);
+      if (!movable(x)) return;
+      const col = el.closest('.ag-col');
+      moving = {
+        el,
+        x,
+        kind: el.classList.contains('ag-ev') ? 'time' : el.classList.contains('ag-chip') ? 'chip' : 'bar',
+        id: e.pointerId,
+        sx: e.clientX,
+        sy: e.clientY,
+        touch: e.pointerType === 'touch',
+        live: false,
+        timer: 0,
+        days: 0,
+        mins: 0,
+        // where it was grabbed: the day (and in the time grid the minute) under the pointer
+        day: col?.dataset.day ?? el.closest('.ag-mday')?.dataset.day ?? null,
+        minute: col ? minuteAt(col, e.clientY) : 0,
+        ghost: null,
+        drop: null,
+        column: el.style.gridColumn,
+      };
+      if (moving.touch) {
+        const m = moving;
+        m.timer = setTimeout(() => {
+          if (moving === m) liftMove(m);
+        }, 450);
+      }
+    });
+    const liftMove = (m) => {
+      m.live = true;
+      if (!m.day && m.kind === 'bar') {
+        const c = colAt(m.sx);
+        m.day = c?.dataset.day ?? null;
+      }
+      if (!m.day) {
+        moving = null;
+        return;
+      }
+      if (detail.matches(':popover-open')) detail.hidePopover();
+      try {
+        m.el.setPointerCapture(m.id);
+      } catch {
+        // a pointer that already ended
+      }
+      m.el.setAttribute('data-moving', '');
+      app.setAttribute('data-ag-moving', '');
+      if (m.touch && navigator.userActivation?.hasBeenActive) navigator.vibrate?.(10);
+    };
+    const trackMove = (m, cx, cy) => {
+      if (m.kind === 'chip') {
+        m.el.style.translate = cx - m.sx + 'px ' + (cy - m.sy) + 'px';
+        const day = document.elementFromPoint(cx, cy)?.closest('.ag-mday');
+        if (m.drop !== day) {
+          m.drop?.removeAttribute('data-drop');
+          m.drop = day ?? null;
+          m.drop?.setAttribute('data-drop', '');
+        }
+        m.days = day ? dayNo(parse(day.dataset.day)) - dayNo(parse(m.day)) : 0;
+        return;
+      }
+      const col = colAt(cx);
+      if (!col) return;
+      m.days = dayNo(parse(col.dataset.day)) - dayNo(parse(m.day));
+      if (m.kind === 'bar') {
+        // the bar slides along the visible days
+        const days = all('.ag-col').map((c) => c.dataset.day);
+        const span = dayNo(m.x.end) - dayNo(m.x.start);
+        const first = Math.max(0, days.indexOf(iso(addDays(m.x.start, m.days))));
+        m.el.style.gridColumn = first + 2 + ' / ' + (Math.min(days.length - 1, first + span) + 3);
+        return;
+      }
+      m.mins = Math.round((minuteAt(col, cy) - m.minute) / 15) * 15;
+      const seg = segment(m.x, parse(m.day));
+      const s = Math.max(0, Math.min(1440 - 15, seg.s + m.mins));
+      if (!m.ghost) {
+        m.ghost = document.createElement('div');
+        m.ghost.className = 'ag-ghost';
+      }
+      if (m.ghost.parentElement !== col) $(col).append(m.ghost);
+      m.ghost.style.setProperty('--s', String(s));
+      m.ghost.style.setProperty('--d', String(Math.min(seg.e - seg.s, 1440 - s)));
+    };
+    app.addEventListener('pointermove', (e) => {
+      const m = moving;
+      if (!m || e.pointerId !== m.id) return;
+      if (!m.live) {
+        const far = Math.hypot(e.clientX - m.sx, e.clientY - m.sy);
+        // a finger that moves before it rests scrolls; a mouse moves an event once it travels a little
+        if (m.touch) {
+          if (far > 10) {
+            clearTimeout(m.timer);
+            moving = null;
+          }
+          return;
+        }
+        if (far < 5) return;
+        liftMove(m);
+        if (!moving) return;
+      }
+      trackMove(m, e.clientX, e.clientY);
+    });
+    const endMove = (drop) => {
+      const m = moving;
+      if (!m) return;
+      moving = null;
+      clearTimeout(m.timer);
+      m.ghost?.remove();
+      m.drop?.removeAttribute('data-drop');
+      m.el.removeAttribute('data-moving');
+      m.el.style.removeProperty('translate');
+      m.el.style.gridColumn = m.column;
+      app.removeAttribute('data-ag-moving');
+      if (!m.live) return;
+      // the click that ends a move opens nothing
+      swallowClick = true;
+      setTimeout(() => {
+        swallowClick = false;
+      });
+      const key = drop ? moveInstance(m.x, m.days, m.mins) : null;
+      if (!key) return;
+      render();
+      announceMove(m.x, key);
+    };
+    addEventListener('pointerup', () => endMove(true));
+    addEventListener('pointercancel', () => endMove(false));
+    app.addEventListener(
+      'click',
+      (e) => {
+        if (!swallowClick) return;
+        swallowClick = false;
+        e.stopPropagation();
+        e.preventDefault();
+      },
+      true,
+    );
+    // a finger moving an event must not scroll the grid under it, nor a long press open a menu
+    app.addEventListener(
+      'touchmove',
+      (e) => {
+        if (moving?.live) e.preventDefault();
+      },
+      { passive: false },
+    );
+    app.addEventListener('contextmenu', (e) => {
+      if (moving?.touch) e.preventDefault();
+    });
+    app.addEventListener('keydown', (e) => {
+      if (!e.altKey || e.ctrlKey || e.metaKey || !e.key.startsWith('Arrow')) return;
+      const el = e.target.closest?.('.ag-ev, .ag-bar, .ag-chip');
+      const x = el && instanceByKey(el.dataset.agEv);
+      if (!movable(x)) return;
+      e.preventDefault();
+      const time = el.classList.contains('ag-ev');
+      const vertical = e.key === 'ArrowUp' || e.key === 'ArrowDown';
+      const sign = e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 1;
+      if (vertical && !time && !el.classList.contains('ag-chip')) return;
+      const key = vertical
+        ? time
+          ? moveInstance(x, 0, sign * 15)
+          : moveInstance(x, sign * 7, 0)
+        : moveInstance(x, sign, 0);
+      if (!key) return;
+      const moved = instanceByKey(key);
+      render();
+      const again = one('[data-ag-ev="' + CSS.escape(key) + '"]');
+      if (again) again.focus();
+      else if (moved) {
+        // out of the view: go where it is now
+        pendingFocus = key;
+        go(state.view, moved.start);
+      }
+      announceMove(x, key);
     });
 
     // ---- clicks
