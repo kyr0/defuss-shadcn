@@ -113,6 +113,27 @@ export {
   type EditorRules,
   type EditorType,
 } from './editors.js';
+// dragging records between the Data Grid (and Tree Grid) and the Data Tree: the drag in progress, its effect, where
+// a drop lands
+export {
+  RECORDS_MIME,
+  carriesRecords,
+  dropEffectFor,
+  dropEffects,
+  droppedRecords,
+  endRecordDrag,
+  placeRecords,
+  recordDrag,
+  startRecordDrag,
+  subtreeOf,
+  topRoots,
+  withoutRecords,
+  type DropAt,
+  type DropEffect,
+  type DropPlace,
+  type RecordDrag,
+  type RecordDragPayload,
+} from './record-drag.js';
 // the Video and Audio components are one media engine (HTMLMediaElement state, declarative controls, captions);
 // the Media Timeline formats its clock with the same mediaTime and keys its text rows through mediaTextTracks.
 // VERIFIED: (video.e2e, audio.e2e, media-timeline.e2e) both players and the timeline run on it

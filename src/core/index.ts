@@ -38,6 +38,17 @@ import {
   editorProblem,
   focusEditor,
   valueType,
+  carriesRecords,
+  dropEffectFor,
+  dropEffects,
+  droppedRecords,
+  endRecordDrag,
+  placeRecords,
+  recordDrag,
+  startRecordDrag,
+  subtreeOf,
+  topRoots,
+  withoutRecords,
   bindMedia,
   mediaApply,
   mediaMarkup,
@@ -114,6 +125,17 @@ type ShadcnNamespace = {
     editorProblem: typeof editorProblem;
     focusEditor: typeof focusEditor;
     valueType: typeof valueType;
+    carriesRecords: typeof carriesRecords;
+    dropEffectFor: typeof dropEffectFor;
+    dropEffects: typeof dropEffects;
+    droppedRecords: typeof droppedRecords;
+    endRecordDrag: typeof endRecordDrag;
+    placeRecords: typeof placeRecords;
+    recordDrag: typeof recordDrag;
+    startRecordDrag: typeof startRecordDrag;
+    subtreeOf: typeof subtreeOf;
+    topRoots: typeof topRoots;
+    withoutRecords: typeof withoutRecords;
     bindMedia: typeof bindMedia;
     mediaApply: typeof mediaApply;
     mediaMarkup: typeof mediaMarkup;
@@ -215,6 +237,18 @@ shadcn.shared = {
   editorProblem,
   focusEditor,
   valueType,
+  // dragging records between the Data Grid (Tree Grid) and the Data Tree (src/shared/record-drag.ts)
+  carriesRecords,
+  dropEffectFor,
+  dropEffects,
+  droppedRecords,
+  endRecordDrag,
+  placeRecords,
+  recordDrag,
+  startRecordDrag,
+  subtreeOf,
+  topRoots,
+  withoutRecords,
   // the media engine of Video and Audio, the Media Timeline's clock (src/shared/media.ts)
   bindMedia,
   mediaApply,

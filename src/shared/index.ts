@@ -43,6 +43,26 @@ export {
   type EditorRules,
   type EditorType,
 } from './editors.js';
+// dragging records between the Data Grid (and Tree Grid) and the Data Tree
+export {
+  RECORDS_MIME,
+  carriesRecords,
+  dropEffectFor,
+  dropEffects,
+  droppedRecords,
+  endRecordDrag,
+  placeRecords,
+  recordDrag,
+  startRecordDrag,
+  subtreeOf,
+  topRoots,
+  withoutRecords,
+  type DropAt,
+  type DropEffect,
+  type DropPlace,
+  type RecordDrag,
+  type RecordDragPayload,
+} from './record-drag.js';
 export { textLocale, DEFAULT_LOCALE } from './locale.js';
 export { bindGlobalKeys, isEditableTarget, type GlobalKeyHandler, type GlobalKeyOptions } from './keys.js';
 export { defussGlobals, safeShowPopover } from './state-api.js';
