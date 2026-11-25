@@ -208,6 +208,15 @@ try {
     assert.equal(await page.$eval('#pm-sidebar [data-pm-unread]', (b) => (b as HTMLElement).hidden), true);
   });
 
+  await check('the projects page shows its table in the list layout', async () => {
+    // VERIFIED regression (0.10.1): the issue table's `.pm-table { display: none }` also hid the projects table.
+    assert.equal(await page.getAttribute('.pm-layout .toggle[value="list"]', 'aria-pressed'), 'true');
+    await page.click('#pm-sidebar .sidebar-link[href="#/projects"]:not([data-alias])');
+    await page.waitForFunction(() => !document.getElementById('projects')!.hidden);
+    assert.equal(await page.$$eval('#projects tbody tr', (rows) => rows.length), 5);
+    assert.equal(await page.isVisible('#projects tbody tr >> nth=0'), true);
+  });
+
   await check('narrow: the sidebar becomes a drawer, the issue page stacks its properties first', async () => {
     await page.setViewportSize({ width: 420, height: 860 });
     await page.goto(`${server.url}${PAGE}#/issues/ENG-141`);

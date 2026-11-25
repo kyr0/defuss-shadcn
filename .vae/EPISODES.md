@@ -184,3 +184,4 @@ A lesson recurring ≥2 → test | .agents/VERIFY.py rule | MEMORY line, then de
 2026-11-23T16:21:47Z s=41de57d1 FINDING tests/e2e/site/scaffold-calendar.e2e.ts:moving learn=none: a test-authoring mistake; the product behaved as specified
 2026-11-23T22:30:48Z s=41de57d1 FINDING src/documentation/pages/big-data/data-grid.mdx:Drag and drop between grids learn=none: an example-authoring slip; the ARIA table already documents that the name moves to the viewport
 2026-11-23T22:30:48Z s=41de57d1 FINDING src/components/big-data/data-grid/data-grid.css:.data-grid-check in the head learn=none: a visual detail; a check would pin a token colour of the default theme
+2026-11-25T07:34:32Z s=dcdb118f FINDING src/documentation/data/whats-new.json learn=none: VERIFIED: bun run verify passes in the gate.
