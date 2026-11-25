@@ -1173,15 +1173,15 @@
     }
   }
 
-  /* projects */
-  .pm-table {
+  /* projects: a class of its own, because .pm-table is the issue table that only the table layout shows */
+  .pm-projects {
     max-width: calc(100% - 1.5rem);
     margin: 0.75rem;
   }
-  .pm-table :is(th, td) {
+  .pm-projects :is(th, td) {
     white-space: nowrap;
   }
-  .pm-table th[scope='row'] {
+  .pm-projects th[scope='row'] {
     font-weight: 500;
   }
   .pm-proj,
@@ -3281,7 +3281,7 @@
           >
         </header>
         <div class="pm-scroll">
-          <div class="table-container pm-table">
+          <div class="table-container pm-projects">
             <table class="table">
               <thead
                 ><tr class="table-row"

@@ -2,6 +2,21 @@
   "version": 1,
   "releases": [
     {
+      "version": "unreleased",
+      "created": [],
+      "updated": [
+        "scaffold-issue-tracker"
+      ],
+      "examples": {
+        "scaffold-issue-tracker": {
+          "created": [],
+          "updated": [
+            "Issue tracker"
+          ]
+        }
+      }
+    },
+    {
       "version": "0.10.1",
       "created": [],
       "updated": [
