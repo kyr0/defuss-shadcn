@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "version": "v0.10.2",
+      "date": "November 25, 2026",
+      "commits": [
+        "build: regenerate dist and What's new for the projects table fix",
+        "fix(scaffold-issue-tracker): the projects table shows in the list layout"
+      ]
+    },
+    {
       "version": "v0.10.1",
       "date": "November 24, 2026",
       "commits": [
