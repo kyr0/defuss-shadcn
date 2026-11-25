@@ -1,7 +1,7 @@
 // dist/components/anim-canvas/anim-canvas.js
 var __df$core = globalThis.df$;
 var __df$shared = __df$core && __df$core.shadcn && __df$core.shadcn.shared;
-if (!__df$shared || __df$shared.abi !== "0.10.1") {
+if (!__df$shared || __df$shared.abi !== "0.10.2") {
   throw new Error("defuss-shadcn: runtime incomplete; load core before component scripts, or load all alone");
 }
 var { defussGlobals, defussQuery, anim, bindGlobalKeys, entrance, draw, animateCount, componentState, bindComponent } = __df$shared;
@@ -474,5 +474,5 @@ bindKeys();
 init();
 new MutationObserver(init).observe(document, { childList: true, subtree: true });
 
-//# debugId=2BB9C24CA0AD7F3C64756E2164756E21
+//# debugId=6BB86E8CC67CEE4D64756E2164756E21
 //# sourceMappingURL=guides.js.map

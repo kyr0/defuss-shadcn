@@ -6,7 +6,8 @@
       "commits": [
         "build: regenerate dist and What's new for the projects table fix",
         "fix(scaffold-issue-tracker): the projects table shows in the list layout"
-      ]
+      ],
+      "hash": "4c20d1071"
     },
     {
       "version": "v0.10.1",

@@ -2,16 +2,25 @@
   "version": 1,
   "releases": [
     {
-      "version": "unreleased",
+      "version": "0.10.2",
       "created": [],
       "updated": [
-        "scaffold-issue-tracker"
+        "index",
+        "installation",
+        "scaffold-issue-tracker",
+        "system-in-numbers"
       ],
       "examples": {
         "scaffold-issue-tracker": {
           "created": [],
           "updated": [
             "Issue tracker"
+          ]
+        },
+        "system-in-numbers": {
+          "created": [],
+          "updated": [
+            "Design System Report"
           ]
         }
       }
